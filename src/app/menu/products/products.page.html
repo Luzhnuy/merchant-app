@@ -1,0 +1,33 @@
+<ion-content>
+  <app-add-product-button-big [accountId]="userService.user.id"></app-add-product-button-big>
+  <div padding>
+    <table class="table table-striped table-with-actions">
+      <thead>
+        <tr>
+          <th scope="col">Name</th>
+          <th scope="col">Description</th>
+          <th scope="col" class="ion-text-right small-cell">Price</th>
+          <th scope="col" class="small-cell"></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let product of products$ | async">
+          <th scope="row">{{product.nameeng}}</th>
+          <td>{{product.shortdescriptioneng}}</td>
+          <td class="ion-text-right">
+            ${{product.price | number:'1.2-2'}}
+          </td>
+          <td>
+            <ion-buttons>
+              <app-product-eye-button [accountId]="userService.user.id" [product]="product"></app-product-eye-button>
+              <ion-button (click)="showProductModal(userService.user.id, product)">
+                <ion-icon name="create"></ion-icon>
+              </ion-button>
+              <app-product-delete-button [accountId]="userService.user.id" [productId]="product.id"></app-product-delete-button>
+            </ion-buttons>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</ion-content>

@@ -1,0 +1,37 @@
+<ion-content padding class="transparent">
+
+  <ion-card class="full-page-card">
+    <h1 class="text-align-center"><ion-icon name="calendar"></ion-icon> History (3 months)</h1>
+    <ion-list>
+      <ng-container *ngFor="let order of history">
+        <ion-item>
+          <ion-grid class="display-flex">
+            <ion-col size="4">
+              <ion-label>
+                <strong>
+                  {{order.dropoffLocation.name}}
+                </strong>
+              </ion-label>
+            </ion-col>
+            <ion-col size="6" class="text-align-center">
+              <ion-label>
+                <span class="flex-1 text-align-center">{{order.lastUpdated | date:'medium'}}</span>
+              </ion-label>
+            </ion-col>
+            <ion-col size="2" class="text-align-center badge-col"> <!--no-padding-->
+              <app-status-badge [status]="order.currentStatus"></app-status-badge>
+            </ion-col>
+          </ion-grid>
+          <ion-button slot="end" (click)="toggleOrderDetails(order.id)" margin-start="0">
+            <ion-icon name="add" *ngIf="expandedOrderId !== order.id"></ion-icon>
+            <ion-icon name="remove" *ngIf="expandedOrderId === order.id"></ion-icon>
+          </ion-button>
+        </ion-item>
+        <div class='expand-wrapper' *ngIf="expandedOrderId === order.id">
+          <app-order-details [order]="order"></app-order-details>
+        </div>
+      </ng-container>
+    </ion-list>
+  </ion-card>
+
+</ion-content>

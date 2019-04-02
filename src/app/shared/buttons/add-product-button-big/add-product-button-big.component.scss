@@ -1,0 +1,15 @@
+ion-fab-button {
+  --border-radius: 15px;
+  --box-shadow: none;
+  --ion-color-light-shade: #EFEFEF;
+  --ion-color-base: #cfcfcf !important;
+  height: 35px;
+  width: 200px;
+  overflow: visible;
+  margin: 20px auto 10px;
+
+  ion-icon {
+    position: absolute;
+    left: 10px;
+  }
+}

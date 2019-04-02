@@ -1,0 +1,96 @@
+<ion-content padding class="transparent auth-page">
+  <ion-card>
+    <h1 class="text-align-center">
+      <img src="./assets/img/logo.png" />
+    </h1>
+
+    <form (submit)="register()" #form="ngForm">
+      <div class="input-group">
+        <div class="input-group-prepend">
+          <span class="input-group-text" id="firstnamePrepend">
+            <ion-icon name="person"></ion-icon>
+          </span>
+        </div>
+        <input type="text"
+               class="form-control"
+               id="firstname"
+               placeholder="First name"
+               aria-describedby="firstnamePrepend"
+               matInput
+               required
+               name="firstname"
+               [(ngModel)]="firstname"
+        >
+      </div>
+      <div class="input-group">
+        <div class="input-group-prepend">
+          <span class="input-group-text" id="lastnamePrepend">
+            <ion-icon name="person"></ion-icon>
+          </span>
+        </div>
+        <input type="text"
+               class="form-control"
+               id="lastname"
+               placeholder="Last name"
+               aria-describedby="lastnamePrepend"
+               matInput
+               required
+               name="lastname"
+               [(ngModel)]="lastname"
+        >
+      </div>
+      <div class="input-group">
+        <div class="input-group-prepend">
+          <span class="input-group-text" id="emailPrepend">
+            <ion-icon name="mail"></ion-icon>
+          </span>
+        </div>
+        <input type="email"
+               class="form-control"
+               id="email"
+               placeholder="Email"
+               aria-describedby="emailPrepend"
+               matInput
+               required
+               email
+               name="email"
+               [(ngModel)]="email"
+        >
+      </div>
+      <div class="input-group">
+        <div class="input-group-prepend">
+          <span class="input-group-text" id="passwordPrepend">
+            <ion-icon name="lock"></ion-icon>
+          </span>
+        </div>
+        <input type="password"
+               class="form-control"
+               id="password"
+               placeholder="Password"
+               aria-describedby="passwordPrepend"
+               matInput
+               required
+               minlength="5"
+               name="password"
+               [(ngModel)]="password"
+        >
+      </div>
+      <div class="input-group">
+        <ion-button type="submit" class="submit-button" [disabled]="form.invalid">
+          <ion-icon slot="start" name="add-circle-outline"></ion-icon>
+          Register
+        </ion-button>
+      </div>
+
+      <div class="text-align-center ion-margin-bottom">
+        <a [routerLink]="['/login']">
+          <ion-icon name="log-in" class="small-button"></ion-icon>
+          |
+          Log in
+        </a>
+      </div>
+
+    </form>
+
+  </ion-card>
+</ion-content>

@@ -1,0 +1,30 @@
+<ion-content>
+  <app-add-category-button [accountId]="userService.user.id"></app-add-category-button>
+  <div padding>
+    <table class="table table-striped table-with-actions">
+      <thead>
+        <tr>
+          <th scope="col">Name</th>
+          <th scope="col">Description</th>
+          <th scope="col" class="small-cell"></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let menu of menuService.menus$ | async">
+          <th scope="row">{{menu.category.nameeng}}</th>
+          <td>{{menu.category.shortdescriptioneng}}</td>
+          <td>
+            <ion-buttons>
+              <app-category-eye-button [accountId]="userService.user.id" [products]="menu.products"></app-category-eye-button>
+              <ion-button (click)="showCategoryModal(userService.user.id, menu.category)">
+                <ion-icon name="create"></ion-icon>
+              </ion-button>
+              <app-category-delete-button [accountId]="userService.user.id" [categoryId]="menu.category.id"></app-category-delete-button>
+            </ion-buttons>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+</ion-content>

@@ -1,0 +1,70 @@
+<ion-card-content>
+  <ion-grid>
+    <ion-row>
+      <ion-col>
+        <p>
+          <ion-icon name="pin" class="green"></ion-icon>
+        </p>
+        <p><b>{{order.pickupLocation.name}}</b></p>
+        <p><b>Address: </b>{{order.pickupLocation.address}}</p>
+        <p><b>Phone: </b>{{order.pickupLocation.phone}}</p>
+      </ion-col>
+      <ion-col>
+        <p>
+          <ion-icon name="pin" class="red"></ion-icon>
+        </p>
+        <p><b>{{order.dropoffLocation.name}}</b></p>
+        <p><b>Address: </b>{{order.dropoffLocation.address}}</p>
+        <p><b>Phone: </b>{{order.dropoffLocation.phone}}</p>
+      </ion-col>
+      <ion-col>
+        <p>
+          <ion-icon name="briefcase"></ion-icon>
+        </p>
+        <p><b>Reference ID: </b>{{order.reference}}</p>
+        <p><b>Created: </b>{{order.created | date:'short'}}</p>
+        <p><b>Distance: </b>{{order.estimatedDistance.kilometres}}km</p>
+        <p *ngIf="order.pickupTime"><b>PickupTime: </b>{{order.pickupTime | date:'short'}}</p>
+      </ion-col>
+    </ion-row>
+    <ion-row>
+      <ion-col>
+        <p>
+          <ion-icon name="car"></ion-icon>
+        </p>
+        <p><b>Driver</b></p>
+        <p *ngIf="order.driver && order.driver.name"><b>Name: </b>{{order.driver.name}}</p>
+        <p *ngIf="!order.driver || !order.driver.name">No associated driver</p>
+      </ion-col>
+      <ion-col>
+        <p>
+          <ion-icon name="list"></ion-icon>
+        </p>
+        <p><b>Instructions: </b></p>
+        <p>{{order.deliveryInstructions}}</p>
+      </ion-col>
+      <ion-col>
+        <p>
+          <ion-icon name="print" class="print-icon" (click)="print()"></ion-icon>
+        </p>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+  <ion-list *ngIf="order.items.length">
+    <ion-list-header>
+      <h1>
+        <i class="fa fa-product-hunt bag-color fa-2x"></i>
+        Products
+      </h1>
+    </ion-list-header>
+    <ion-item *ngFor="let item of order.items">
+      <p>
+        {{item.quantity}}x {{item.description}} ${{item.price | number:'1.2-2' }}
+      </p>
+    </ion-item>
+  </ion-list>
+  <ion-button color="light" [href]="order.trackingUrls.www" target="_blank">
+    <ion-icon name="link"></ion-icon>
+    Tracking Link
+  </ion-button>
+</ion-card-content>

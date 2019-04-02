@@ -1,0 +1,43 @@
+ion-title {
+  min-width: 150px !important;
+  max-width: 200px !important;
+
+  img {
+    height: 40px;
+  }
+}
+
+ion-toolbar ion-button {
+  --ion-border-color: #fff;
+  --border-width: 1px;
+  --border-style: solid;
+  --overflow: hidden;
+  height: 32px;
+  margin-left: 10px;
+  text-transform: capitalize;
+}
+
+ion-button.bold {
+  font-weight: bold;
+}
+
+ion-split-pane.split-pane > ion-menu {
+  min-width: 180px;
+  max-width: 200px;
+}
+
+ion-router-outlet.menu-content {
+  background-color: #ECF0F5;
+}
+
+ion-item.active-order {
+  --background: #eee;
+}
+
+ion-split-pane {
+  padding-top: 52px;
+}
+
+.history-icon {
+  margin: 0 4px;
+}

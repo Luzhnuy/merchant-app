@@ -1,0 +1,10 @@
+ion-tabs {
+  top: 80px;
+
+  ::ng-deep {
+
+    .tabs-inner {
+      margin-bottom: 100px;
+    }
+  }
+}

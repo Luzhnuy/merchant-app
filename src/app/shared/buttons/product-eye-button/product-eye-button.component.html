@@ -1,0 +1,6 @@
+<ion-button (click)="toggle()">
+  <ion-icon
+      [name]="product.disabled === '1' ? 'eye-off' : 'eye'"
+      [ngClass]="{'opacity-05': product.disabled === '0'}"
+  ></ion-icon>
+</ion-button>

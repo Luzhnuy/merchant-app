@@ -1,3 +1,85 @@
 <ion-app>
-  <ion-router-outlet></ion-router-outlet>
+  <!--<ion-split-pane when="md">-->
+  <ion-header *ngIf="isLogged">
+    <ion-toolbar class="header-horizontal-padding-phone">
+      <ion-title slot="start" class="hide-phone">
+        <img src="./assets/img/logo-menu-n.png"/>
+      </ion-title>
+      <ion-buttons slot="start">
+        <ion-button [routerLink]="['/home']" class="no-margin-phone hide-phone">
+          <ion-icon name="menu"></ion-icon>
+        </ion-button>
+        <ion-button [routerLink]="['/orders-list']" class="no-margin-phone hide-tablet">
+          <ion-icon name="menu"></ion-icon>
+        </ion-button>
+      </ion-buttons>
+      <ion-buttons slot="end">
+        <ion-button [routerLink]="['/history']">
+          <!--<span class="hide-tablet history-icon">H</span>-->
+          <ion-icon slot="start" name="calendar" class="no-margin-phone"></ion-icon>
+          <span class="hide-phone">History</span>
+        </ion-button>
+        <ion-button [routerLink]="['/booking']" class="bold">
+          <!--<ion-icon slot="start" name="add" class="no-margin-phone"></ion-icon>-->
+          <ion-icon slot="start" name="add-circle-outline" class="no-margin-phone"></ion-icon>
+          <span class="hide-phone">BOOKING</span>
+        </ion-button>
+        <ion-button [routerLink]="['/settings']">
+          <ion-icon slot="start" name="settings" class="no-margin-phone"></ion-icon>
+          <span class="hide-phone">More</span>
+        </ion-button>
+        <ion-button [routerLink]="['/login']" (click)="logout()">
+          <ion-icon slot="start" name="log-out" class="no-margin-phone"></ion-icon>
+          <span class="hide-phone">Logout</span>
+        </ion-button>
+      </ion-buttons>
+    </ion-toolbar>
+  </ion-header>
+  <!--</ion-split-pane>-->
+  <ion-split-pane when="md">
+    <ion-menu  [hidden]="!isLogged">
+      <ion-content style="--offset-top: 52px;">
+        <ion-list>
+          <ion-menu-toggle auto-hide="false" *ngFor="let order of ordersService.orders | async">
+            <ion-item
+                [routerDirection]="'root'"
+                [routerLink]="['/home']"
+                (click)="setCurrentOrder(order)"
+                [ngClass]="{'active-order': order.id === curOrder.id}"
+            >
+              <!--<ion-icon slot="start" [name]="p.icon"></ion-icon>-->
+              <ion-label>
+                <h1>{{order.dropoffLocation.name}}</h1>
+                <p>{{order.created | date:'short'}}</p>
+                <app-status-badge [status]="order.currentStatus"></app-status-badge>
+              </ion-label>
+            </ion-item>
+          </ion-menu-toggle>
+        </ion-list>
+      </ion-content>
+    </ion-menu>
+      <ion-router-outlet main></ion-router-outlet>
+  </ion-split-pane>
+  <!--<ion-footer slot="bottom">-->
+    <!--<ion-toolbar>-->
+      <!--&lt;!&ndash;<ion-title>Footer</ion-title>&ndash;&gt;-->
+      <!--<ion-buttons>-->
+        <!--<ion-button>-->
+          <!--<ion-icon name="add"></ion-icon>-->
+        <!--</ion-button>-->
+        <!--<ion-button>-->
+          <!--<ion-icon name="add"></ion-icon>-->
+        <!--</ion-button>-->
+        <!--<ion-button>-->
+          <!--<ion-icon name="add"></ion-icon>-->
+        <!--</ion-button>-->
+        <!--<ion-button>-->
+          <!--<ion-icon name="settings"></ion-icon>-->
+        <!--</ion-button>-->
+        <!--<ion-button>-->
+          <!--<ion-icon name="exit"></ion-icon>-->
+        <!--</ion-button>-->
+      <!--</ion-buttons>-->
+    <!--</ion-toolbar>-->
+  <!--</ion-footer>-->
 </ion-app>

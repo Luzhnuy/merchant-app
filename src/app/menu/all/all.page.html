@@ -1,0 +1,38 @@
+<ion-content>
+  <app-add-category-button [accountId]="userService.user.id"></app-add-category-button>
+
+  <div padding *ngFor="let menu of menuService.menus$ | async" class="menu-grid-container">
+    <ion-toolbar color="light">
+      <ion-title>
+        <span class="category-title">
+          {{menu.category.nameeng}}: {{menu.category.shortdescriptioneng}}
+        </span>
+        <app-add-product-button [accountId]="userService.user.id" [categoryId]="menu.category.id"></app-add-product-button>
+      </ion-title>
+      <ion-buttons slot="end">
+        <app-category-eye-button [accountId]="userService.user.id" [products]="menu.products"></app-category-eye-button>
+        <ion-button (click)="showCategoryModal(userService.user.id, menu.category)">
+          <ion-icon name="create"></ion-icon>
+        </ion-button>
+        <app-category-delete-button [accountId]="userService.user.id" [categoryId]="menu.category.id"></app-category-delete-button>
+      </ion-buttons>
+    </ion-toolbar>
+    <ion-item *ngFor="let product of menu.products">
+      <ion-label>
+        <span class="product-inner-label">
+          {{product.nameeng}}: {{product.shortdescriptioneng}}
+        </span>
+        <b class="product-price">
+          ${{product.price | number:'1.2-2'}}
+        </b>
+      </ion-label>
+      <ion-buttons slot="end">
+        <app-product-eye-button [accountId]="userService.user.id" [product]="product"></app-product-eye-button>
+        <ion-button (click)="showProductModal(userService.user.id, product)">
+          <ion-icon name="create"></ion-icon>
+        </ion-button>
+        <app-product-delete-button [accountId]="userService.user.id" [productId]="product.id"></app-product-delete-button>
+      </ion-buttons>
+    </ion-item>
+  </div>
+</ion-content>

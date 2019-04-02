@@ -1,0 +1,27 @@
+<ion-content padding class="transparent">
+
+  <ion-card padding class="full-page-card">
+    <h1 class="text-align-center">
+      <ion-icon name="settings"></ion-icon>
+      More
+    </h1>
+    <div class="image-container display-flex"
+         [style.background-image]="'url(\'' + userService.user.logo + '\')'"
+    >
+      <div class="display-flex flex-1">
+        <h2>{{userService.user.name}}</h2>
+        <h4>{{userService.user.phone}}</h4>
+        <h4>{{userService.user.address}}</h4>
+      </div>
+    </div>
+
+    <div class="ion-text-center">
+      <ion-button [routerLink]="['/change-password']">Change Password</ion-button>
+      <ion-button [routerLink]="['/opening-time']">Opening Time</ion-button>
+      <ion-button [routerLink]="['/menu', 'all']">Menu</ion-button>
+      <ion-button [routerLink]="['/contact-us']">Contact Us</ion-button>
+    </div>
+
+  </ion-card>
+
+</ion-content>

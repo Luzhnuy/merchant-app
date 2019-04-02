@@ -1,0 +1,9 @@
+<ion-badge
+    [color]="['Accepted', 'Cancelled'].indexOf(status) > -1 ? 'warning' :
+                    status === 'Completed' ? 'success' :
+                    status === 'Received' ? 'primary' :
+                    'light'
+                  "
+>
+  {{status}}
+</ion-badge>

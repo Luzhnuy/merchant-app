@@ -1,0 +1,122 @@
+<ion-content padding class="transparent">
+
+  <ion-card padding class="full-page-card">
+    <h1 class="text-align-center position-relative">
+      <app-back-button></app-back-button>
+      <ion-icon name="mail"></ion-icon>
+      Contact us
+    </h1>
+    <p padding>
+      SnapGrab wants to be the best delivery app in Montreal, and your feedback helps us reach our goal. Do you have questions, comments, suggestions, ideas, complaints or compliments? SnapGrab believes that all information is good information. So, let us know what you think ! When contacting us about an order, please have your order number on hand.
+    </p>
+    <ion-grid>
+      <ion-row>
+        <ion-col size="8">
+          <form #form="ngForm">
+            <ion-grid>
+              <ion-row>
+                <ion-col size="6">
+
+                  <div class="form-group">
+                    <label for="name">Name:</label>
+                    <div class="input-group">
+                      <input type="text"
+                             class="form-control"
+                             id="name"
+                             placeholder="Name"
+                             name="name"
+                             readonly
+                             [value]="name"
+                      >
+                    </div>
+                  </div>
+
+                  <div class="form-group">
+                    <label for="email">Email:</label>
+                    <div class="input-group">
+                      <div class="input-group-prepend">
+                        <span class="input-group-text" id="emailPrepend">
+                          <ion-icon name="mail"></ion-icon>
+                        </span>
+                      </div>
+                      <input type="email"
+                             class="form-control"
+                             id="email"
+                             placeholder="Email"
+                             aria-describedby="emailPrepend"
+                             name="email"
+                             readonly
+                             [value]="email"
+                      >
+                    </div>
+                  </div>
+
+                  <div class="form-group">
+                    <label for="subject">&nbsp;</label>
+                    <div class="input-group">
+                      <select
+                          class="form-control"
+                          id="subject"
+                          name="subject"
+                          [(ngModel)]="subject"
+                      >
+                        <option selected value="0" disabled>Choose one:</option>
+                        <option *ngFor="let subj of subjects" [value]="subj.value">
+                          {{subj.title}}
+                        </option>
+                      </select>
+                    </div>
+                  </div>
+                </ion-col>
+                <ion-col size="6">
+
+                  <div class="form-group">
+                    <div class="input-group">
+                      <textarea
+                          class="form-control"
+                          placeholder="Message"
+                          id="message"
+                          rows="8"
+                          name="message"
+                          required
+                          minlength="5"
+                          #messageEl="ngModel"
+                          [(ngModel)]="message"
+                      ></textarea>
+                    </div>
+                  </div>
+                </ion-col>
+              </ion-row>
+            </ion-grid>
+            <div *ngIf="messageEl.invalid && (messageEl.dirty || messageEl.touched)">
+              <small>Please, enter a message (min 5 characters)</small>
+            </div>
+            <ion-item class="background-transparent">
+              <ion-button slot="end" (click)="sendEmail()" [disabled]="form.invalid">
+                <ion-icon slot="start" name="send"></ion-icon>
+                Send Message
+              </ion-button>
+            </ion-item>
+          </form>
+        </ion-col>
+        <ion-col size="4">
+          <p>
+            <ion-button color="success" href="tel:438-927-7627">
+              <ion-icon slot="start" name="call"></ion-icon>
+              Call us
+            </ion-button>
+          </p>
+          <p>
+            <b>EMAIL ADDRESS </b>
+            <a href="mailto:support@snapgrabdelivery.com">support@snapgrabdelivery.com</a>
+          </p>
+          <p>
+            <b>TECH SUPPORT </b>
+            <a href="mailto:Tech@snapgrabdelivery.com">Tech@snapgrabdelivery.com</a>
+          </p>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+  </ion-card>
+
+</ion-content>

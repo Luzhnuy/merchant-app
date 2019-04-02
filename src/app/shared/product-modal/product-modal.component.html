@@ -1,0 +1,116 @@
+<ion-toolbar color="light">
+  <ion-title class="ion-text-center">
+    {{data && data.id ? 'Edit' : 'Add'}} Product
+  </ion-title>
+</ion-toolbar>
+<ion-content>
+  <form (submit)="submit()" #form="ngForm" padding>
+    <div class="form-group">
+      <label for="name">Product Name:</label>
+      <div class="input-group">
+        <input type="text"
+               class="form-control"
+               id="name"
+               placeholder="Product Name"
+               matInput
+               required
+               minlength="3"
+               name="name"
+               #nameEl="ngModel"
+               autocomplete="NoAutocomplete"
+               [(ngModel)]="name"
+        >
+      </div>
+    </div>
+
+    <div *ngIf="nameEl.invalid && (nameEl.dirty || nameEl.touched)" class="ion-margin-bottom">
+      <small class="error">Please enter product name</small>
+    </div>
+
+    <div class="form-group">
+      <label for="description">Product Description:</label>
+      <div class="input-group">
+        <input type="text"
+               class="form-control"
+               id="description"
+               placeholder="Product Description"
+               name="description"
+               #descriptionEl="ngModel"
+               autocomplete="NoAutocomplete"
+               [(ngModel)]="description"
+        >
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="price">Price:</label>
+      <div class="input-group">
+        <input type="number"
+               class="form-control"
+               id="price"
+               matInput
+               required
+               name="price"
+               #priceEl="ngModel"
+               autocomplete="NoAutocomplete"
+               [(ngModel)]="price"
+        >
+      </div>
+    </div>
+
+    <div *ngIf="priceEl.invalid && (priceEl.dirty || priceEl.touched)" class="ion-margin-bottom">
+      <small class="error">Please select the price</small>
+    </div>
+
+    <div class="form-group">
+      <label for="category">Category:</label>
+      <div class="input-group">
+        <select
+            class="form-control"
+            id="category"
+            required
+            #categoryEl="ngModel"
+            name="category"
+            [(ngModel)]="category"
+        >
+          <option *ngFor="let category of categories" [value]="category.id">{{category.nameeng}}</option>
+        </select>
+      </div>
+    </div>
+
+    <div *ngIf="categoryEl.invalid && (categoryEl.dirty || categoryEl.touched)" class="ion-margin-bottom">
+      <small class="error">Please select the category</small>
+    </div>
+
+    <div class="form-group checkbox-container">
+      <div class="input-group">
+        <input
+            class="form-check-input"
+            type="checkbox"
+            [(ngModel)]="disabled"
+            name="disabled"
+            id="disabled"
+        >
+      </div>
+      <label class="form-check-label" for="disabled">
+        Disabled
+      </label>
+    </div>
+
+    <div class="input-group ion-text-center display-flex">
+      <ion-button
+          class="cancel-button"
+          (click)="cancel()"
+      >
+        Cancel
+      </ion-button>
+      <ion-button
+          type="submit"
+          class="submit-button"
+          [disabled]="form.invalid"
+      >
+        Save
+      </ion-button>
+    </div>
+  </form>
+</ion-content>

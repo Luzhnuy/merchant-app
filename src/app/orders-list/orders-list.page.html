@@ -1,0 +1,20 @@
+<ion-content padding class="transparent">
+
+  <ion-card class="full-page-card">
+    <h1 class="text-align-center">Active Orders List</h1>
+    <ion-list>
+      <ion-item
+          [routerLink]="['/home']"
+          (click)="onOrderClick(order)"
+          *ngFor="let order of ordersService.orders | async"
+      >
+        <!--<ion-icon slot="start" [name]="p.icon"></ion-icon>-->
+        <ion-label>
+          <h1>{{order.dropoffLocation.name}}</h1>
+          <p>{{order.created | date:'short'}}</p>
+          <app-status-badge [status]="order.currentStatus"></app-status-badge>
+        </ion-label>
+      </ion-item>
+    </ion-list>
+  </ion-card>
+</ion-content>
