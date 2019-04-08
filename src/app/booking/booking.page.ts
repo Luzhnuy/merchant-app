@@ -9,6 +9,7 @@ import { isSuccess } from '@angular/http/src/http_utils';
 import { OrdersHistoryService } from '../shared/orders-history.service';
 import { NgForm } from '@angular/forms';
 import { BookingExtra } from '../shared/booking-extra';
+import { Address } from 'ngx-google-places-autocomplete/objects/address';
 
 @Component({
   selector: 'app-booking',
@@ -23,8 +24,8 @@ export class BookingPage implements OnInit {
   address: string;
   zipcode: string;
   fee: string;
-  date: string;
-  time: string;
+  date: string;             // format 2019-01-01 or 2019-01-01 00:00:00 (be careful)
+  time: string;             // format 00:00
   instruction: string;
   phone: string;
   bringBack = false;
@@ -39,6 +40,14 @@ export class BookingPage implements OnInit {
 
   private formatted_address: string;
   private distance: string;
+
+  private readonly MIN_HOURS = 10;
+  private readonly MAX_HOURS = 22;
+
+  private shortDate: string; // format 2019-01-01
+  private shortTime: string; // format 00:00:00
+
+  private googlePlaceAddress: Address;
 
   readonly placesOptions = {
     types: ['address'],
@@ -82,6 +91,14 @@ export class BookingPage implements OnInit {
   }
 
   createOrder() {
+
+    // Check time, because it can be in the past
+    this.timeChanged({detail: {value: this.shortTime.substring(0, 5)}});
+
+    if (this.timeInvalid || this.dateInvalid) {
+      return;
+    }
+
     const data = {
       customerFee: this.fee,
       deliveryInstructions: `Booking Form Instruction: ${this.instruction}`,
@@ -100,7 +117,7 @@ export class BookingPage implements OnInit {
         name: this.userService.user.name,
         phone: this.userService.user.phone,
       },
-      pickupTime: this.getShortDate(this.date) + ` ${this.time}`, // time in input
+      pickupTime: this.getFormatDateString(`${this.shortDate} ${this.shortTime}`, 60),
       reference: this.userService.user.token,
     };
     const extra: BookingExtra = {
@@ -146,9 +163,9 @@ export class BookingPage implements OnInit {
     const shortZipcode = longZipcode ? longZipcode.long_name.substring(0, 3) : '';
     this.zipcode = shortZipcode;
     this.formatted_address = $event.formatted_address;
+    this.googlePlaceAddress = $event;
 
     if (this.zipcodeszone.indexOf(shortZipcode) > -1) {
-      debugger;
       this.initialFee = 12.99;
       this.calculateTotalFee();
     } else if (this.zipcodeszone1.indexOf(shortZipcode) > -1) {
@@ -160,9 +177,6 @@ export class BookingPage implements OnInit {
         ))
         .subscribe((resp: any) => {
           if (resp.status === 'OK' && resp.rows.length > 0) {
-
-            debugger;
-
             const dist = resp.rows[0].elements[0].distance.value / 1000;
             this.distance = dist.toFixed(2);
             const fee = 9 + (dist * 0.90);
@@ -184,12 +198,14 @@ export class BookingPage implements OnInit {
     } else {
       this.addressInvalid = true;
     }
+
+    this.timeChanged({detail: {value: this.shortTime.substring(0, 5)}});
   }
 
   dateChanged({detail: {value}}) {
-    const dateStr = value + ' ' + (this.time || '00:00');
-    const date = new Date(dateStr);
-    const now = this.getNow(!this.time);
+    this.shortDate = value.substring(0, 10);
+    const date = this.getSelectDateTime();
+    const now = this.getNow(!this.shortTime);
     if (now.getTime() > date.getTime()) {
       this.dateInvalid = true;
     } else {
@@ -198,13 +214,14 @@ export class BookingPage implements OnInit {
   }
 
   timeChanged({detail: {value}}) {
+    this.shortTime = value + ':00';
     const timeCmps = value.split(':').map(v => +v);
     const timeHM = {
       h: timeCmps[0],
       m: timeCmps[1],
     };
-    const minH = 10;
-    let maxH = 22;
+    const minH = this.MIN_HOURS;
+    let maxH = this.MAX_HOURS;
     if (timeHM.m) {
       maxH = 21;
     }
@@ -215,7 +232,7 @@ export class BookingPage implements OnInit {
     }
 
     if (!this.timeInvalid && this.date) {
-      const date = new Date(`${this.date} ${this.time}`);
+      const date = this.getSelectDateTime();
       const now = this.getNow();
       if (now.getTime() >= date.getTime()) {
         this.dateInvalid = true;
@@ -255,18 +272,93 @@ export class BookingPage implements OnInit {
 
     const now = this.getNow();
     const curYear = now.getFullYear();
-    this.time = ('0' + (now.getHours() + 1)).slice(-2) + ':' + ('0' + now.getMinutes()).slice(-2);
-    this.date = curYear + '-' + ('0' + (now.getMonth() + 1)).slice(-2) + '-' + ('0' + now.getDate()).slice(-2);
+    this.time = this.getDefDeliveryTime();
+    this.date = this.getDefDeliveryDate();
     this.minYear = curYear;
     this.maxYear = curYear + 1;
+
+    this.shortDate = this.date.substring(0, 10);
+    this.shortTime = this.time + ':00';
   }
 
-  private getShortDate(dateStr) {
-    const date = new Date(dateStr);
-    return date.getFullYear() + '-' + ('0' + (date.getMonth() + 1)).slice(-2) + '-' + ('0' + date.getDate()).slice(-2);
+  private getDefDeliveryTime() {
+    const now = this.getNow();
+    const hours = now.getHours() + 1;
+    const minutes = now.getMinutes();
+    if (
+      (minutes > 0 && hours > this.MAX_HOURS - 1)
+      || (minutes === 0 && hours > this.MAX_HOURS)
+      || hours < this.MIN_HOURS
+    ) {
+      return '10:00';
+    }
+    return ('0' + (now.getHours() + 1)).slice(-2) + ':' + ('0' + now.getMinutes()).slice(-2);
   }
 
-  private getNow(clearTime = false) {
+  private getDefDeliveryDate() {
+    const now = this.getNow();
+    const hours = now.getHours() + 1;
+    const minutes = now.getMinutes();
+    if (
+      (minutes > 0 && hours > this.MAX_HOURS - 1)
+      || (minutes === 0 && hours > this.MAX_HOURS)
+    ) {
+      now.setDate(now.getDate() + 1);
+    }
+    return now.getFullYear() + '-'
+      + this.leadWithZero(now.getMonth() + 1) + '-'
+      + this.leadWithZero(now.getDate()) + ' '
+      + '00:00:00';
+  }
+
+  private getUTCDateString(dateStr) {
+    const d = new Date(dateStr);
+    return d.getUTCFullYear() + '-'
+      + this.leadWithZero(d.getUTCMonth() + 1) + '-'
+      + this.leadWithZero(d.getUTCDate()) + ' '
+      + this.leadWithZero(d.getUTCHours()) + ':'
+      + this.leadWithZero(d.getUTCMinutes()) + ':00'
+      + '+00:00';
+  }
+
+  private getSelectDateTime(): Date {
+    const dateStr = `${this.shortDate} ${this.shortTime}`;
+    let date: Date;
+    if (this.googlePlaceAddress) {
+      // Selected location timezone
+      date = new Date(this.getFormatDateString(dateStr));
+    } else {
+      // Operator's timezone
+      date = new Date(dateStr);
+    }
+    return date;
+  }
+
+  /**
+   * Returns formatted date string with location timezone
+   * @param dateStr string
+   */
+  private getFormatDateString(dateStr, additionalOffset = 0): string {
+
+    const d = new Date(dateStr);
+    const timeOffset = this.googlePlaceAddress.utc_offset + additionalOffset; // Because getswift adds 1 hour to delivery time
+    const hoursOffset = Math.abs(Math.floor(timeOffset / 60));
+    const minutesOffset = Math.abs(timeOffset % 60);
+
+    return d.getFullYear() + '-'
+      + this.leadWithZero(d.getMonth() + 1) + '-'
+      + this.leadWithZero(d.getDate()) + ' '
+      + this.leadWithZero(d.getHours()) + ':'
+      + this.leadWithZero(d.getMinutes()) + ':00'
+      + (timeOffset >= 0 ? '+' : '-')
+      + this.leadWithZero(hoursOffset) + ':' + this.leadWithZero(minutesOffset);
+  }
+
+  private leadWithZero(number) {
+    return ('0' + number).slice(-2);
+  }
+
+  private getNow(clearTime = false): Date {
     const now = new Date();
 
     if (clearTime) {

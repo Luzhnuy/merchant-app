@@ -4,7 +4,7 @@ export class Order {
     www: string;
   };
   reference: string;
-  pickupTime: any; // TODO maybe string
+  pickupTime: any;
   pickupLocation: {
     address: string;
     name: string;

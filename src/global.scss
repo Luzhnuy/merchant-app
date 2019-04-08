@@ -41,6 +41,10 @@ ion-card.full-page-card {
   min-height: calc(100% - 20px);
 }
 
+.display-none {
+  display: none;
+}
+
 .display-block {
   display: block;
 }
@@ -138,7 +142,7 @@ ion-icon[name=eye] {
   }
 
   .submit-button {
-    width: 180px;
+    width: 200px;
     margin: 30px auto 10px;
   }
 }
@@ -159,15 +163,23 @@ tooltip-box {
   .hide-xs {
     display: none;
   }
+
+  .show-xs {
+    display: block;
+  }
 }
 
-@media (min-width: 576px) and (max-width: 768px) {
+@media (min-width: 576px) and (max-width: 767px) {
   .hide-sm {
     display: none;
   }
 }
 
-@media (max-width: 768px) {
+@media (max-width: 767px) {
+
+  .hide-phone {
+    display: none;
+  }
 
   tooltip-box {
     font-size: 12px !important;
@@ -181,10 +193,6 @@ tooltip-box {
     [padding], .padding {
       --ion-padding: 16px;
     }
-  }
-
-  .hide-phone {
-    display: none;
   }
 
   .no-margin-phone {

@@ -156,13 +156,23 @@
 
       <ion-item>
         <ion-label>Date</ion-label>
+        <!--<ion-datetime-->
+            <!--displayFormat="YYYY-MM-DD"-->
+            <!--picker-format="YYYY MM DD"-->
+            <!--[min]="minYear"-->
+            <!--[max]="maxYear"-->
+            <!--(ionChange)="dateChanged($event)"-->
+            <!--[(ngModel)]="date"-->
+            <!--[ngClass]="{'sg-invalid': dateInvalid}"-->
+            <!--name="date"-->
+        <!--&gt;</ion-datetime>-->
         <ion-datetime
             displayFormat="YYYY-MM-DD"
             picker-format="YYYY MM DD"
             [min]="minYear"
             [max]="maxYear"
             (ionChange)="dateChanged($event)"
-            [(ngModel)]="date"
+            [value]="date"
             [ngClass]="{'sg-invalid': dateInvalid}"
             name="date"
         ></ion-datetime>
@@ -170,12 +180,20 @@
 
       <ion-item>
         <ion-label>Time</ion-label>
+        <!--<ion-datetime-->
+            <!--display-format="HH:mm"-->
+            <!--picker-format="HH mm"-->
+            <!--hourValues="10,11,12,13,14,15,16,17,18,19,20,21,22"-->
+            <!--(ionChange)="timeChanged($event)"-->
+            <!--[(ngModel)]="time"-->
+            <!--name="time"-->
+        <!--&gt;</ion-datetime>-->
         <ion-datetime
             display-format="HH:mm"
             picker-format="HH mm"
             hourValues="10,11,12,13,14,15,16,17,18,19,20,21,22"
             (ionChange)="timeChanged($event)"
-            [(ngModel)]="time"
+            [value]="time"
             name="time"
         ></ion-datetime>
       </ion-item>

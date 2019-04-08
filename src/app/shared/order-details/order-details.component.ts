@@ -15,7 +15,6 @@ export class OrderDetailsComponent implements OnInit {
   ngOnInit() {}
 
   print() {
-    // TODO check Android correctly
     const ua = navigator.userAgent.toLowerCase();
     const isAndroid = ua.indexOf('android') > -1; //&& ua.indexOf("mobile");
 

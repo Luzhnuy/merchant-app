@@ -30,7 +30,6 @@ export class BookingService {
         data,
       )
       .subscribe((resp) => {
-        // TODO check resp
         event.emit(true);
       }, (err) => {
         event.error(false);

@@ -60,48 +60,48 @@ export class UserService {
   }
 
   restorePassword(username) {
-    const payload = new FormData();
+    const event = new EventEmitter<boolean>();
+    this.http
+      .post(
+        this.apiService.getUrl('users/apigetpasswordjson/'),
+        { username },
+      )
+      .subscribe(
+        (res: {success: boolean}) => {  // success | invalid
+          event.emit(res.success);
+        },
+        err => {
+          event.emit(false);
+        });
 
-    // payload.append('username', username);
-    payload.append('{"username":"marie@marie.com"}', '');
+    return event.asObservable();
+  }
 
-
-    // $http({
-    //   method: 'POST',
-    //   url: urlApi + '/users/apigetpassword/',
-    //   data: $scope.olduser,
-    //   headers: {
-    //     'Content-Type': 'application/x-www-form-urlencoded'
-    //   }
-    // })
-    //   .success(function(data) {
-    //     console.log(data);
-    //     if (data == "success") {
-    //       $scope.olduser.username = '';
-    //       $scope.forgotpasswordsuccess = true;
-    //
-    //     } else if (data == "invalid") {
-    //       $scope.forgotpasswordinvalid = true;
-    //     } else {
-    //       $scope.forgotpassworderror = true;
-    //     }
-    //   });
-
+  createUser(firstname: string, lastname: string, email: string, password: string) {
+    const event = new EventEmitter<boolean>();
 
     this.http
       .post(
-        this.apiService.getUrl('users/apigetpassword/'),
-        payload
+        this.apiService.getUrl('users/apiaddjson'),
+        {
+          firstname,
+          lastname,
+          username: email,
+          password,
+        },
       )
       .subscribe(
-        (res) => {  // success | invalid
-          debugger;
+        (data: {success: boolean}) => {
+          event.emit(data.success);
         },
         err => {
-          debugger;
+          if (err.statusText === 'OK') {
+            event.emit(true);
+          } else {
+            event.emit(false);
+          }
         });
-    // success | invalid
-    // Username or Email invalid.
+    return event.asObservable();
   }
 
   updateUserData(data: Partial<User>) {
@@ -114,6 +114,10 @@ export class UserService {
     this._user = null;
     this._user$.next(null);
     localStorage.setItem('user', null);
+  }
+
+  isAuthenticated() {
+    return this.user && this.user.id && this.user.account !== 'NONE';
   }
 
 }

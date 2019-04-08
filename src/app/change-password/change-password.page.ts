@@ -43,7 +43,6 @@ export class ChangePasswordPage implements OnInit {
       )
       .subscribe(
         (resp) => {
-          // TODO check resp in future
           this.showSuccess();
         },
         err => {

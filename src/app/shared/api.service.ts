@@ -5,7 +5,8 @@ import { Injectable } from '@angular/core';
 })
 export class ApiService {
 
-  readonly apiUrl = 'http://pizza-delivery.local/';
+  // readonly apiUrl = 'http://pizza-delivery.local/';
+  readonly apiUrl = 'http://admin.api.snapgrabdelivery.com/';
   // readonly apiUrl = 'http://search.api.snapgrabdelivery.com/';
 
   constructor() {}

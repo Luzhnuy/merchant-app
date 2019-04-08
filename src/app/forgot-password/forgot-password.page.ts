@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { UserService } from '../shared/user.service';
+import { HelperService } from '../shared/helper.service';
 
 @Component({
   selector: 'app-forgot-password',
@@ -12,18 +13,22 @@ export class ForgotPasswordPage implements OnInit {
 
   constructor(
     private userService: UserService,
+    private helper: HelperService,
   ) { }
 
   ngOnInit() {
   }
 
-  // TODO implement method
   restorePassword() {
-    alert('Not implemented yet. Please use Login for now');
-    // this.userService
-    //   .restorePassword(this.email);
-    // alert('restorePassword');
-    // Success Please check you email to get your password
+    this.userService
+      .restorePassword(this.email)
+      .subscribe(res => {
+        if (res) {
+          this.helper.showToast('Please check you email to get your password');
+        } else {
+          this.helper.showError('Problems with restoring password. Please, try later or contact us');
+        }
+      });
   }
 
 }

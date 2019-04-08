@@ -38,6 +38,8 @@ export class OrdersHistoryService {
             return Object.keys(response.data).map(key => {
               const orderData = response.data[key];
               orderData.items = Object.keys(orderData.items).map(itemKey => orderData.items[itemKey]);
+              orderData.created += '+00:00';
+              orderData.updated += '+00:00';
               return new Order(orderData);
             });
           }
@@ -59,7 +61,6 @@ export class OrdersHistoryService {
 
   stopLoadingCurrentOrders() {
     clearInterval(this.interval);
-    // TODO stop load current orders (cancel request)
   }
 
   mergeOrders(initialOrders: Order[], newOrders: Order[]) {
@@ -111,6 +112,8 @@ export class OrdersHistoryService {
             return Object.keys(response.data).map(key => {
               const orderData = response.data[key];
               orderData.items = orderData.items ? Object.keys(orderData.items).map(itemKey => orderData.items[itemKey]) : [];
+              orderData.created += '+00:00';
+              orderData.updated += '+00:00';
               return new Order(orderData);
             });
           }
