@@ -1,17 +1,17 @@
 <ion-content padding class="transparent">
 
-  <ion-card [ngClass]="{'full-page-card': !this.curOrder}">
+  <ion-card [ngClass]="{'full-page-card': !curOrder}">
     <app-order-details
-        *ngIf="this.curOrder"
-        [order]="this.curOrder"
+        *ngIf="curOrder"
+        [order]="curOrder"
     ></app-order-details>
-    <h1 *ngIf="!this.curOrder" padding class="text-align-center">
+    <h1 *ngIf="!curOrder" padding class="text-align-center">
       No order selected
     </h1>
   </ion-card>
 
   <ion-card
-      *ngIf="this.curOrder"
+      *ngIf="curOrder"
   >
     <h1 padding class="text-align-center">
       <div id="googleMap" style="height: 500px; width: 100%;"></div>

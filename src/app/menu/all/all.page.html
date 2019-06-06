@@ -5,7 +5,10 @@
     <ion-toolbar color="light">
       <ion-title>
         <span class="category-title">
-          {{menu.category.nameeng}}: {{menu.category.shortdescriptioneng}}
+          {{menu.category.nameeng}}:
+          <small>
+            {{menu.category.shortdescriptioneng}}
+          </small>
         </span>
         <app-add-product-button [accountId]="userService.user.id" [categoryId]="menu.category.id"></app-add-product-button>
       </ion-title>

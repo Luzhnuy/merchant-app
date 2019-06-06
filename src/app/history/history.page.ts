@@ -22,7 +22,6 @@ export class HistoryPage implements OnInit {
   ngOnInit() {}
 
   ionViewDidEnter() {
-    console.log('ionViewDidEnter');
     this.helper.showLoading();
     this.loadHistory();
   }

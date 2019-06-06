@@ -46,4 +46,9 @@ export class HelperService {
     return toast;
   }
 
+  fixDateStrFormatForSafari(datestr, addZeroTimezone = true) {
+    datestr += addZeroTimezone ? '+00:00' : '';
+    return datestr.replace(' ', 'T');
+  }
+
 }

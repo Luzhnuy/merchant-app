@@ -117,7 +117,7 @@ export class BookingPage implements OnInit {
         name: this.userService.user.name,
         phone: this.userService.user.phone,
       },
-      pickupTime: this.getFormatDateString(`${this.shortDate} ${this.shortTime}`, 60),
+      pickupTime: this.getFormatDateString(`${this.shortDate}T${this.shortTime}`, 60),
       reference: this.userService.user.token,
     };
     const extra: BookingExtra = {
@@ -322,7 +322,7 @@ export class BookingPage implements OnInit {
   }
 
   private getSelectDateTime(): Date {
-    const dateStr = `${this.shortDate} ${this.shortTime}`;
+    const dateStr = `${this.shortDate}T${this.shortTime}`;
     let date: Date;
     if (this.googlePlaceAddress) {
       // Selected location timezone
@@ -336,22 +336,29 @@ export class BookingPage implements OnInit {
 
   /**
    * Returns formatted date string with location timezone
-   * @param dateStr string
+   * @param dateStr string format 2019-06-06T11:45:22
    */
   private getFormatDateString(dateStr, additionalOffset = 0): string {
-
+    dateStr += this.getTimezoneOffsetString(additionalOffset, true);
     const d = new Date(dateStr);
-    const timeOffset = this.googlePlaceAddress.utc_offset + additionalOffset; // Because getswift adds 1 hour to delivery time
-    const hoursOffset = Math.abs(Math.floor(timeOffset / 60));
-    const minutesOffset = Math.abs(timeOffset % 60);
-
-    return d.getFullYear() + '-'
+    const formattedDate = d.getFullYear() + '-'
       + this.leadWithZero(d.getMonth() + 1) + '-'
       + this.leadWithZero(d.getDate()) + ' '
       + this.leadWithZero(d.getHours()) + ':'
       + this.leadWithZero(d.getMinutes()) + ':00'
-      + (timeOffset >= 0 ? '+' : '-')
-      + this.leadWithZero(hoursOffset) + ':' + this.leadWithZero(minutesOffset);
+      + this.getTimezoneOffsetString(additionalOffset);
+    return formattedDate;
+  }
+
+  private getTimezoneOffsetString(additionalOffset = 0, inverse = false) {
+    const timeOffset = this.googlePlaceAddress.utc_offset + additionalOffset;
+    const hoursOffset = Math.abs(Math.floor(timeOffset / 60));
+    const minutesOffset = Math.abs(timeOffset % 60);
+    if (!inverse) {
+      return (timeOffset >= 0 ? '+' : '-') + this.leadWithZero(hoursOffset) + ':' + this.leadWithZero(minutesOffset);
+    } else {
+      return (timeOffset < 0 ? '+' : '-') + this.leadWithZero(hoursOffset) + ':' + this.leadWithZero(minutesOffset);
+    }
   }
 
   private leadWithZero(number) {

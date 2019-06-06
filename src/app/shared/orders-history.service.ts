@@ -5,6 +5,7 @@ import { Order } from './order';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { UserService } from './user.service';
 import { ApiService } from './api.service';
+import { HelperService } from './helper.service';
 
 @Injectable({
   providedIn: 'root'
@@ -26,6 +27,7 @@ export class OrdersHistoryService {
     private httpClient: HttpClient,
     private userService: UserService,
     private apiService: ApiService,
+    private helperService: HelperService,
   ) {}
 
   loadHistory() {
@@ -38,8 +40,9 @@ export class OrdersHistoryService {
             return Object.keys(response.data).map(key => {
               const orderData = response.data[key];
               orderData.items = Object.keys(orderData.items).map(itemKey => orderData.items[itemKey]);
-              orderData.created += '+00:00';
-              orderData.updated += '+00:00';
+              orderData.created = this.helperService.fixDateStrFormatForSafari(orderData.created);
+              orderData.lastUpdated = this.helperService.fixDateStrFormatForSafari(orderData.lastUpdated);
+              orderData.pickupTime = this.helperService.fixDateStrFormatForSafari(orderData.pickupTime, false);
               return new Order(orderData);
             });
           }
@@ -112,8 +115,9 @@ export class OrdersHistoryService {
             return Object.keys(response.data).map(key => {
               const orderData = response.data[key];
               orderData.items = orderData.items ? Object.keys(orderData.items).map(itemKey => orderData.items[itemKey]) : [];
-              orderData.created += '+00:00';
-              orderData.updated += '+00:00';
+              orderData.created = this.helperService.fixDateStrFormatForSafari(orderData.created);
+              orderData.lastUpdated = this.helperService.fixDateStrFormatForSafari(orderData.lastUpdated);
+              orderData.pickupTime = this.helperService.fixDateStrFormatForSafari(orderData.pickupTime, false);
               return new Order(orderData);
             });
           }
