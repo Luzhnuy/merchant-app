@@ -1,0 +1,21 @@
+<ion-toolbar color="light">
+  <ion-title class="ion-text-center" text-uppercase>
+    Payment Details
+  </ion-title>
+  <ion-buttons slot="end">
+    <ion-button (click)="closeModal()">
+      <ion-icon name="close"></ion-icon>
+    </ion-button>
+  </ion-buttons>
+</ion-toolbar>
+<ion-content padding>
+  <app-edit-credit-card [card]="card" (cardChanged)="onCreditCardChange($event)"></app-edit-credit-card>
+</ion-content>
+<ion-footer>
+  <ion-toolbar>
+    <ion-title class="ion-float-right">
+      Stored Securely
+    </ion-title>
+    <img class="lock-image ion-float-right" src="./assets/img/lock.png"/>
+  </ion-toolbar>
+</ion-footer>

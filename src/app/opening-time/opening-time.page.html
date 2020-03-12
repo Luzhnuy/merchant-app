@@ -6,7 +6,10 @@
       Opening Time
     </h1>
 
-    <form (submit)="updateOpeningTime()" #form="ngForm">
+    <form
+        *ngIf="merchant"
+        (submit)="updateOpeningTime()" #form="ngForm"
+    >
 
       <ion-item>
         <ion-label>Open Time</ion-label>

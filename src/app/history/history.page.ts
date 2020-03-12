@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
-import { OrdersHistoryService } from '../shared/orders-history.service';
 import { Order } from '../shared/order';
 import { HelperService } from '../shared/helper.service';
+import { OrdersSearchParams, OrdersService } from '../shared/orders.service';
+import { OrderV2 } from '../shared/order-v2';
 
 @Component({
   selector: 'app-history',
@@ -10,44 +11,43 @@ import { HelperService } from '../shared/helper.service';
 })
 export class HistoryPage implements OnInit {
 
-  expandedOrderId: string | null;
+  expandedOrderId: number | null;
+  orders: OrderV2[] = [];
 
-  history: Order[] = [];
+  private params: OrdersSearchParams = new OrdersSearchParams();
 
   constructor(
-    private ordersHistoryService: OrdersHistoryService,
     private helper: HelperService,
+    private ordersService: OrdersService
   ) { }
 
   ngOnInit() {}
 
-  ionViewDidEnter() {
-    this.helper.showLoading();
-    this.loadHistory();
+  async ionViewDidEnter() {
+    await this.helper.showLoading();
+    try {
+      this.orders = await this.ordersService.loadHistory();
+    } finally {
+      await this.helper.stopLoading();
+    }
   }
 
-  toggleOrderDetails(orderId: string) {
+  async sendReceipt(order: OrderV2) {
+    try {
+      await this.ordersService
+        .sendEmail(order)
+        .toPromise();
+      this.helper.showToast('Receipt sent');
+    } catch (e) {
+      this.helper.showError('There was something wrong, receipt not sent');
+    }
+  }
+
+  toggleOrderDetails(orderId: number) {
     if (this.expandedOrderId === orderId) {
       this.expandedOrderId = null;
     } else {
       this.expandedOrderId = orderId;
     }
   }
-
-  private loadHistory() {
-
-    this.ordersHistoryService.loadHistory()
-      .subscribe(
-        (orders) => {
-          this.ordersHistoryService.mergeOrders(this.history, orders);
-          setTimeout(() => {
-            this.helper.stopLoading();
-          }, 100);
-        }, err => {
-          console.log('Error');
-          this.helper.stopLoading();
-        }
-      );
-  }
-
 }

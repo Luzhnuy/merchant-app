@@ -1,15 +1,44 @@
-// http://ionicframework.com/docs/theming/
-@import '~@ionic/angular/css/core.css';
-@import '~@ionic/angular/css/normalize.css';
-@import '~@ionic/angular/css/structure.css';
-@import '~@ionic/angular/css/typography.css';
+/*
+ * App Global CSS
+ * ----------------------------------------------------------------------------
+ * Put style rules here that you want to apply globally. These styles are for
+ * the entire app and not just one component. Additionally, this file can be
+ * used as an entry point to import other CSS/Sass files to be included in the
+ * output CSS.
+ * For more information on global stylesheets, visit the documentation:
+ * https://ionicframework.com/docs/layout/global-stylesheets
+ */
+
+/* Core CSS required for Ionic components to work properly */
+@import "~@ionic/angular/css/core.css";
+
+/* Basic CSS for apps built with Ionic */
+@import "~@ionic/angular/css/normalize.css";
+@import "~@ionic/angular/css/structure.css";
+@import "~@ionic/angular/css/typography.css";
 @import '~@ionic/angular/css/display.css';
-@import '~@ionic/angular/css/padding.css';
-@import '~@ionic/angular/css/float-elements.css';
-@import '~@ionic/angular/css/text-alignment.css';
-@import '~@ionic/angular/css/text-transformation.css';
-@import '~@ionic/angular/css/flex-utils.css';
-//@import "~@angular/material/prebuilt-themes/indigo-pink.css";
+
+/* Optional CSS utils that can be commented out */
+@import "~@ionic/angular/css/padding.css";
+@import "~@ionic/angular/css/float-elements.css";
+@import "~@ionic/angular/css/text-alignment.css";
+@import "~@ionic/angular/css/text-transformation.css";
+@import "~@ionic/angular/css/flex-utils.css";
+
+::placeholder {
+  color: #7f90a9 !important;
+  opacity: 1 !important;
+}
+
+:-ms-input-placeholder {
+  color: #7f90a9 !important;
+  opacity: 1 !important;
+}
+
+::-ms-input-placeholder {
+  color: #7f90a9 !important;
+  opacity: 1 !important;
+}
 
 ion-content.transparent {
   --background: transparent;
@@ -27,6 +56,8 @@ ion-toolbar {
 
 ion-button {
   --background: #EB6061;
+  --background-focused: #E85D5E;
+  --background-hover: #E85D5E;
 
   &.centered {
     margin: 0 auto;
@@ -113,37 +144,67 @@ ion-icon[name=eye] {
 .auth-page {
 
   h1 {
-    margin-top: 60px;
+    margin: 1rem 0;
+  }
+
+  ion-input {
+    background-color: #D1DFED;
+    margin: 8px 2rem;
+    border-radius: 4px;
+    width: auto;
+    --padding-top: 10px;
+    --padding-end: 0;
+    --padding-bottom: 10px;
+    --padding-start: 2rem;
+    font-weight: bold;
+    color: #687077;
   }
 
   ion-card {
-    margin: 50px auto;
-    max-width: 700px;
-    min-width: 320px;
+    margin: 0 auto;
+    max-width: 340px;
     padding: 20px;
+    border-radius: 0;
+    width: 95vw;
+    min-height: 393px;
+    margin-top: calc(50vh - 220px);
+  }
+
+  ion-button {
+    margin: 0 2rem;
+    display: block;
+    //--border-radius: 8px;
+    -webkit-appearance: none;
+
+    ion-icon {
+      position: absolute;
+      left: 15px;
+    }
+  }
+
+  small {
+
+    &.error {
+      margin: 0 2rem;
+    }
   }
 
   form {
-    max-width: 600px;
-    margin: 60px auto;
+    margin: 1.5rem auto 1rem;
   }
 
-  ion-button ion-icon {
-    position: absolute;
-    left: 15px;
-  }
+  .link-wrapper {
+    margin-top: 8px;
+    font-weight: bold;
 
-  .small-icon {
-    margin: auto 2px -2px;
-  }
+    &.forgot-password-container {
+      margin-top: 1.5rem;
+      margin-right: 2rem;
+    }
 
-  .input-group {
-    margin: 20px auto;
-  }
-
-  .submit-button {
-    width: 200px;
-    margin: 30px auto 10px;
+    > a {
+      color: #EB6061;
+    }
   }
 }
 
@@ -159,7 +220,54 @@ tooltip-box {
   left: 30px !important;
 }
 
-@media (max-width: 576px) {
+.form-control,
+.form-control:focus
+{
+  background-color: #e8edf1;
+  color: #7f90a9 !important;
+  border: 0;
+}
+
+.form-control[disabled] {
+  background-color: #e0e5e9;
+  color: #7687a0 !important;
+}
+
+.input-group.has-icon {
+
+  ion-icon {
+    color: #7f90a9;
+    position: absolute;
+    z-index: 10;
+    height: 100%;
+    width: 20px;
+    margin: 0 10px;
+
+    &.icon-right {
+      right: 0;
+    }
+  }
+
+  .has-icon {
+    padding-left: 40px;
+  }
+}
+
+ion-footer ion-toolbar {
+  --ion-background-color: #dfdfdf;
+  --color: #919191;
+
+  .lock-image {
+    height: 26px;
+    margin-top: 3px;
+  }
+
+  ion-title {
+    font-weight: 700;
+  }
+}
+
+@media (max-width: 575px) {
   .hide-xs {
     display: none;
   }
@@ -198,7 +306,7 @@ tooltip-box {
   .no-margin-phone {
     margin: 0 !important;
   }
-  
+
   .header-horizontal-padding-phone {
     padding-left: 5px;
     padding-right: 5px;
@@ -242,5 +350,15 @@ tooltip-box {
 @media (min-width: 768px) {
   .hide-tablet {
     display: none;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  .hide-md {
+    display: none;
+  }
+
+  .show-md {
+    display: block;
   }
 }

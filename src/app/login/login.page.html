@@ -5,67 +5,50 @@
     </h1>
 
     <form (submit)="login()" #form="ngForm">
-      <div class="input-group">
-        <div class="input-group-prepend">
-          <span class="input-group-text" id="emailPrepend">
-            <ion-icon name="mail"></ion-icon>
-          </span>
-        </div>
-        <input type="email"
-               class="form-control"
-               id="email"
-               placeholder="Email"
-               aria-describedby="emailPrepend"
-               matInput
-               required
-               email
-               name="email"
-               [(ngModel)]="email"
-        >
+      <div>
+        <ion-icon name="mail"></ion-icon>
+        <ion-input
+            type="email"
+            placeholder="E-mail"
+            id="email"
+            required
+            email
+            name="email"
+            [(ngModel)]="email"
+        ></ion-input>
       </div>
-      <div class="input-group">
-        <div class="input-group-prepend">
-          <span class="input-group-text" id="passwordPrepend">
-            <ion-icon name="lock"></ion-icon>
-          </span>
-        </div>
-        <input type="password"
-               class="form-control"
-               id="password"
-               placeholder="Password"
-               aria-describedby="passwordPrepend"
-               matInput
-               required
-               minlength="5"
-               name="password"
-               [(ngModel)]="password"
-        >
+      <div>
+        <ion-icon name="lock"></ion-icon>
+        <ion-input
+            type="password"
+            id="password"
+            placeholder="Password"
+            aria-describedby="passwordPrepend"
+            required
+            minlength="5"
+            name="password"
+            [(ngModel)]="password"
+        ></ion-input>
       </div>
-      <div class="input-group">
-        <ion-button type="submit" class="submit-button" [disabled]="form.invalid">
-          <ion-icon slot="start" name="log-in"></ion-icon>
-          Login
-        </ion-button>
-      </div>
-
-      <div class="text-align-center ion-margin-bottom">
+      <ion-button
+          type="submit"
+          [disabled]="form.invalid"
+      >
+        Login
+      </ion-button>
+      <div class="forgot-password-container link-wrapper" text-right >
         <a [routerLink]="['/forgot-password']">
-          <ion-icon name="information-circle" class="small-icon"></ion-icon>
-          |
-          Forgot password
+          Forgot password?
         </a>
       </div>
-
-      <div class="text-align-center">
-        You do not have an account
+      <div class="link-wrapper" text-center>
+        or
+      </div>
+      <div class="link-wrapper" text-center>
         <a [routerLink]="['/sign-up']">
-          <ion-icon name="person-add" class="small-icon"></ion-icon>
-          |
-          Registration
+          Create an Account
         </a>
       </div>
-
     </form>
-
   </ion-card>
 </ion-content>

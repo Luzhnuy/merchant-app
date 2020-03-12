@@ -71,9 +71,9 @@
             required
             #categoryEl="ngModel"
             name="category"
-            [(ngModel)]="category"
+            [(ngModel)]="categoryId"
         >
-          <option *ngFor="let category of categories" [value]="category.id">{{category.nameeng}}</option>
+          <option *ngFor="let category of categories" [value]="category.id">{{category.name}}</option>
         </select>
       </div>
     </div>
@@ -82,21 +82,38 @@
       <small class="error">Please select the category</small>
     </div>
 
-    <div class="form-group checkbox-container">
+    <div class="form-group">
+      <label for="image">Image:</label>
       <div class="input-group">
         <input
-            class="form-check-input"
-            type="checkbox"
-            [(ngModel)]="disabled"
-            name="disabled"
-            id="disabled"
-        >
+            id="image"
+            name="name"
+            type="file"
+            ng2FileSelect
+            [uploader]="uploader"
+            (onFileSelected)="fileProgress($event)"
+        />
       </div>
-      <label class="form-check-label" for="disabled">
-        Disabled
-      </label>
+      <img
+          class="item-image"
+          *ngIf="image"
+          [src]="image"
+      >
     </div>
-
+<!--    <div class="form-group checkbox-container">-->
+<!--      <div class="input-group">-->
+<!--        <input-->
+<!--            class="form-check-input"-->
+<!--            type="checkbox"-->
+<!--            [(ngModel)]="disabled"-->
+<!--            name="disabled"-->
+<!--            id="disabled"-->
+<!--        >-->
+<!--      </div>-->
+<!--      <label class="form-check-label" for="disabled">-->
+<!--        Disabled-->
+<!--      </label>-->
+<!--    </div>-->
     <div class="input-group ion-text-center display-flex">
       <ion-button
           class="cancel-button"

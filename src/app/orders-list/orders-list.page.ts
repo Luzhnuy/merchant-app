@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { OrdersHistoryService } from '../shared/orders-history.service';
-import { Order } from '../shared/order';
+import { OrdersService } from '../shared/orders.service';
+import { OrderV2 } from '../shared/order-v2';
 
 @Component({
   selector: 'app-orders-list',
@@ -9,14 +9,19 @@ import { Order } from '../shared/order';
 })
 export class OrdersListPage implements OnInit {
 
+  public orders: OrderV2[] = [];
+
   constructor(
-    public ordersService: OrdersHistoryService,
+    public ordersService: OrdersService,
   ) { }
 
   ngOnInit() {
+    this.ordersService
+      .getAll()
+      .subscribe(orders => this.orders = orders);
   }
 
-  onOrderClick(order: Order) {
+  onOrderClick(order: OrderV2) {
     this.ordersService.setCurrentOrder(order);
   }
 

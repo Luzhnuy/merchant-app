@@ -23,9 +23,8 @@ export class AddProductButtonComponent implements OnInit {
       component: ProductModalComponent,
       componentProps: {
         accountId: this.accountId,
-        data: {
-          category: this.categoryId,
-        },
+        categoryId: this.categoryId,
+        data: null,
       }
     });
     return await modal.present();

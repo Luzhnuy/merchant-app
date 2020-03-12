@@ -6,4 +6,25 @@ h1 img {
 
 :host {
   top: 0;
+
+  ion-card {
+    max-width: 700px;
+    margin-top: calc(50vh - 302px);
+  }
+}
+
+ion-icon {
+  position: absolute;
+  left: 60px;
+  z-index: 9;
+  margin-top: 12px;
+  font-size: 18px;
+}
+
+ion-card-title {
+  font-weight: bold;
+}
+
+ion-card-subtitle {
+  color: #000;
 }

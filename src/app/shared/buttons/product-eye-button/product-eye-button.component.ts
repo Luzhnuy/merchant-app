@@ -1,8 +1,7 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { Product } from '../../product';
-import { ProductsService } from '../../products.service';
-import { MenuService } from '../../menu.service';
-import { HelperService } from '../../helper.service';
+import { ItemsV2Service } from '../../items-v2.service';
+import { MenuItem } from '../../menu-item';
+import { CategoriesV2Service } from '../../categories-v2.service';
 
 @Component({
   selector: 'app-product-eye-button',
@@ -11,37 +10,26 @@ import { HelperService } from '../../helper.service';
 })
 export class ProductEyeButtonComponent implements OnInit {
 
-  @Input() accountId: string;
-  @Input() product: Product;
+  @Input() item: MenuItem;
 
   constructor(
-    private productsService: ProductsService,
-    private menuService: MenuService,
-    private helper: HelperService,
+    private itemsV2Service: ItemsV2Service,
+    private categoriesV2Service: CategoriesV2Service,
   ) { }
 
-  ngOnInit() {}
-
-  toggle() {
-    this.productsService
-      .saveProduct(
-        this.accountId,
-        new Product({
-          id: this.product.id,
-          nameeng: this.product.nameeng,
-          shortdescriptioneng: this.product.shortdescriptioneng,
-          price: this.product.price,
-          category: this.product.category,
-          disabled: this.product.disabled === '1' ? '0' : '1',
-        })
-      )
-      .subscribe(res => {
-        if (res) {
-          this.menuService.loadMenu();
-        } else {
-          this.helper.showError('Problems with saving product. Please, try later or contact us');
-        }
-      });
+  ngOnInit() {
   }
 
+  toggle() {
+    const item = new MenuItem({
+      id: this.item.id,
+      isPublished: !this.item.isPublished,
+    }, true);
+    this.itemsV2Service
+      .update(item)
+      .subscribe(() => {
+        this.item.isPublished = !this.item.isPublished;
+        this.categoriesV2Service.loadCategories();
+      });
+  }
 }

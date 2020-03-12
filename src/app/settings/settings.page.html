@@ -1,18 +1,21 @@
 <ion-content padding class="transparent">
 
-  <ion-card padding class="full-page-card">
+  <ion-card padding class="full-page-card" *ngIf="merchant">
     <h1 class="text-align-center">
       <ion-icon name="settings"></ion-icon>
       More
     </h1>
     <div class="image-container display-flex"
-         [style.background-image]="'url(\'' + userService.user.logo + '\')'"
     >
-      <div class="display-flex flex-1">
-        <h2>{{userService.user.name}}</h2>
-        <h4>{{userService.user.phone}}</h4>
-        <h4>{{userService.user.address}}</h4>
+      <img *ngIf="logo" [src]="logo" />
+      <div class="merchant-data display-flex flex-1">
+        <input *ngIf="!logo" type="file" ng2FileSelect [uploader]="uploader" (onFileSelected)="fileProgress($event)" />
+        <ion-button *ngIf="logoChanged" (click)="saveImage()" size="small">Save Image</ion-button>
+        <h2>{{ merchant.name }}</h2>
+        <h4>{{ merchant.phone }}</h4>
+        <h4>{{ merchant.departments[0].address }}</h4>
       </div>
+
     </div>
 
     <div class="ion-text-center">
@@ -20,6 +23,12 @@
       <ion-button [routerLink]="['/opening-time']">Opening Time</ion-button>
       <ion-button [routerLink]="['/menu', 'all']">Menu</ion-button>
       <ion-button [routerLink]="['/contact-us']">Contact Us</ion-button>
+      <ion-button [routerLink]="['/credit-card']">Payment</ion-button>
+      <ion-button [routerLink]="['/reports']">Reports</ion-button>
+      <ion-item class="toggle-button">
+        <ion-toggle [(ngModel)]="merchant.subscribedOnReceipt" (ngModelChange)="changeReceiptSubscription($event)"></ion-toggle>
+        <ion-label>Allow to send receipt to e-mail</ion-label>
+      </ion-item>
     </div>
 
   </ion-card>

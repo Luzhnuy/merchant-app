@@ -1,9 +1,10 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { ApiService } from '../shared/api.service';
-import { UserService } from '../shared/user.service';
 import { HelperService } from '../shared/helper.service';
 import { NgForm } from '@angular/forms';
+import { ApiV2Service } from '../shared/api-v2.service';
+import { UserServiceV2 } from '../shared/user-v2.service';
+import { UserV2 } from '../shared/user-v2';
+import { ErrorHandlerService } from '../shared/error-handler.service';
 
 @Component({
   selector: 'app-change-password',
@@ -12,19 +13,25 @@ import { NgForm } from '@angular/forms';
 })
 export class ChangePasswordPage implements OnInit {
 
-  @ViewChild('form') form: NgForm;
+  @ViewChild('form', { static: true }) form: NgForm;
 
-  newpass: string;
+  curPassword: string;
+  newPassword: string;
   newpass2: string;
 
+  private user: UserV2;
+
   constructor(
-    private http: HttpClient,
-    private apiSerivce: ApiService,
-    private userService: UserService,
+    private apiService: ApiV2Service,
+    private userService: UserServiceV2,
     private helper: HelperService,
+    private errorHandler: ErrorHandlerService,
   ) { }
 
   ngOnInit() {
+    this.userService
+      .$user
+      .subscribe(user => this.user = user);
   }
 
   ionViewWillEnter() {
@@ -32,31 +39,14 @@ export class ChangePasswordPage implements OnInit {
   }
 
   changePassword() {
-    this.http
-      .post(
-        this.apiSerivce.getUrl('/users/apichangepassword/'),
-        {
-          password: this.newpass,
-          cfpassword: this.newpass2,
-          id: this.userService.user.id,
-        },
-      )
-      .subscribe(
-        (resp) => {
-          this.showSuccess();
-        },
-        err => {
-          if (err.statusText !== 'OK') {
-            this.showError();
-          } else {
-            this.showSuccess();
-          }
-        }
-      );
+    this.userService
+      .changePassword(this.user.id, this.curPassword, this.newPassword)
+      .subscribe(() => this.showSuccess(), e => this.showError(e));
   }
 
-  private showError() {
-    this.helper.showError('Problems with changing password. Please, try later or contact us');
+  private showError(e) {
+    const message = this.errorHandler.handleError(e);
+    this.helper.showError(message);
   }
 
   private showSuccess() {

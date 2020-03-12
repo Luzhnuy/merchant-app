@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { CategoriesV2Service } from '../shared/categories-v2.service';
 
 @Component({
   selector: 'app-menu',
@@ -7,9 +8,12 @@ import { Component, OnInit } from '@angular/core';
 })
 export class MenuPage implements OnInit {
 
-  constructor() { }
+  constructor(
+    private categoriesV2Service: CategoriesV2Service,
+  ) { }
 
   ngOnInit() {
+    this.categoriesV2Service.loadCategories();
   }
 
 }

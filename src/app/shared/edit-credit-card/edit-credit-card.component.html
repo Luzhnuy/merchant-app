@@ -1,0 +1,122 @@
+<form (submit)="updateCreditCard()" #form="ngForm">
+
+  <div class="form-group">
+    <label for="holderName">Card Holder Name</label>
+    <div class="input-group has-icon">
+      <ion-icon name="person"></ion-icon>
+      <input type="text"
+             class="form-control has-icon"
+             id="holderName"
+             placeholder="Full Name"
+             required
+             name="holderName"
+             minlength="2"
+             pattern="[\s\w'\.\-]+"
+             #holderNameEl="ngModel"
+             autocomplete="NoAutocomplete"
+             [(ngModel)]="holderName"
+      >
+    </div>
+  </div>
+
+  <div *ngIf="holderNameEl.invalid && (holderNameEl.dirty || holderNameEl.touched)">
+    <small class="error">Invalid card holder name</small>
+  </div>
+
+  <div class="form-group position-relative">
+    <label for="cardNumber">Card Number</label>
+    <div class="cards-brands">
+      <img src="./assets/img/card-brands.jpg"/>
+    </div>
+    <div class="input-group has-icon">
+      <ion-icon name="card"></ion-icon>
+      <input type="text"
+             class="form-control has-icon"
+             id="cardNumber"
+             placeholder="Card Number"
+             required
+             name="cardNumber"
+             pattern="\d{4}\s?\d{4}\s?\d{4}\s?\d{3,4}"
+             #cardNumberEl="ngModel"
+             autocomplete="NoAutocomplete"
+             [(ngModel)]="cardNumber"
+      >
+    </div>
+  </div>
+
+  <div *ngIf="cardNumberEl.invalid && (cardNumberEl.dirty || cardNumberEl.touched)">
+    <small class="error">Invalid card number</small>
+  </div>
+
+  <div class="form-group">
+    <label>Expiration Date</label>
+    <br/>
+    <div class="input-group small-input-group ion-float-left has-icon">
+      <ion-icon name="calendar"></ion-icon>
+
+      <input type="text"
+             class="form-control has-icon"
+             placeholder="MM"
+             name="month"
+             required
+             pattern="(0[1-9])?(1[0-2])?"
+             #monthEl="ngModel"
+             autocomplete="NoAutocomplete"
+             [(ngModel)]="month"
+      >
+    </div>
+    <div class="input-group small-input-group has-icon">
+      <ion-icon name="calendar"></ion-icon>
+      <input type="text"
+             class="form-control has-icon"
+             placeholder="YY"
+             required
+             name="year"
+             pattern="\d{2}"
+             #yearEl="ngModel"
+             autocomplete="NoAutocomplete"
+             [(ngModel)]="year"
+      >
+    </div>
+  </div>
+
+  <div *ngIf="monthEl.invalid && (monthEl.dirty || monthEl.touched)">
+    <small class="error">Month is incorrect</small>
+  </div>
+  <div *ngIf="yearEl.invalid && (yearEl.dirty || yearEl.touched)">
+    <small class="error">Year is incorrect</small>
+  </div>
+
+  <div class="form-group">
+    <label>CVV</label>
+    <div class="input-group small-input-group">
+      <input type="text"
+             class="form-control"
+             placeholder="CVV"
+             required
+             name="cvv"
+             minlength="3"
+             maxlength="5"
+             pattern="\d+"
+             #cvvEl="ngModel"
+             autocomplete="NoAutocomplete"
+             [(ngModel)]="cvv"
+      >
+    </div>
+  </div>
+
+  <div *ngIf="cvvEl.invalid && (cvvEl.dirty || cvvEl.touched)">
+    <small class="error">Invalid cvv number</small>
+  </div>
+
+  <div class="input-group ion-text-center" padding>
+    <ion-button
+        type="submit"
+        class="submit-button centered"
+        [disabled]="form.invalid"
+    >
+      <ion-icon slot="start" name="sync"></ion-icon>
+      Save Card
+    </ion-button>
+  </div>
+</form>

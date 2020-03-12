@@ -9,7 +9,7 @@ import { CategoryModalComponent } from '../../category-modal/category-modal.comp
 })
 export class AddCategoryButtonComponent implements OnInit {
 
-  @Input() accountId: string;
+  @Input() accountId: number;
 
   constructor(
     private modalController: ModalController,

@@ -16,6 +16,11 @@ import { BackButtonComponent } from './buttons/back-button/back-button.component
 import { AddProductButtonComponent } from './buttons/add-product-button/add-product-button.component';
 import { AddProductButtonBigComponent } from './buttons/add-product-button-big/add-product-button-big.component';
 import { AddCategoryButtonComponent } from './buttons/add-category-button/add-category-button.component';
+import { EditCreditCardComponent } from './edit-credit-card/edit-credit-card.component';
+import { AskCreditCardModalComponent } from './ask-credit-card-modal/ask-credit-card-modal.component';
+import { ConfirmOrderModalComponent } from './confirm-order-modal/confirm-order-modal.component';
+import { FileUploadModule } from 'ng2-file-upload';
+import { ApiV2Service } from './api-v2.service';
 
 @NgModule({
   declarations: [
@@ -31,23 +36,29 @@ import { AddCategoryButtonComponent } from './buttons/add-category-button/add-ca
     CategoryEyeButtonComponent,
     ProductDeleteButtonComponent,
     CategoryDeleteButtonComponent,
+    EditCreditCardComponent,
+    AskCreditCardModalComponent,
+    ConfirmOrderModalComponent,
   ],
   imports: [
     CommonModule,
     IonicModule,
     HttpClientModule,
     FormsModule,
+    FileUploadModule,
 
     MatFormFieldModule,
     MatInputModule,
     MatSelectModule,
   ],
   providers: [
-    // OrdersHistoryService,
+    ApiV2Service,
   ],
   entryComponents: [
     ProductModalComponent,
     CategoryModalComponent,
+    AskCreditCardModalComponent,
+    ConfirmOrderModalComponent,
   ],
   exports: [
     OrderDetailsComponent,
@@ -62,10 +73,13 @@ import { AddCategoryButtonComponent } from './buttons/add-category-button/add-ca
     CategoryEyeButtonComponent,
     ProductDeleteButtonComponent,
     CategoryDeleteButtonComponent,
+    EditCreditCardComponent,
+    ConfirmOrderModalComponent,
 
     MatFormFieldModule,
     MatInputModule,
     MatSelectModule,
+    FileUploadModule,
   ]
 })
 export class SharedModule {}

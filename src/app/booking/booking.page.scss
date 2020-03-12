@@ -6,3 +6,49 @@
 [name=information-circle-outline] {
   margin-bottom: -3px;
 }
+
+.confirmation-block {
+
+  ion-col {
+    min-height: 25px;
+    line-height: 25px;
+  }
+
+  ion-chip {
+    margin: 0 0 0 10px;
+    padding: 0 10px 0 10px;
+    height: 25px;
+
+    ion-label {
+      font-size: 12px;
+    }
+
+    ion-icon {
+      font-size: 18px;
+      margin: 0 10px 0 0;
+
+      --color: #e8e65a !important;
+      --ion-color-base: #e8e65a !important;
+      //--ion-color-base-rgb: var(--ion-color-tertiary-rgb, 112, 68, 255) !important;
+      --ion-color-contrast: #e8e65a !important;
+      --ion-color-contrast-rgb: #e8e65a !important;
+      --ion-color-shade: #e8e65a !important;
+      --ion-color-tint: #e8e65a !important;
+    }
+  }
+
+  ion-icon {
+    font-size: 22px;
+    margin-bottom: -6px;
+  }
+
+  .brand-image {
+    width: 50px;
+    display: inline-block;
+    margin: -5px 5px 0 5px;
+  }
+
+  .surge-price-img {
+    width: 20px;
+  }
+}

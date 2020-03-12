@@ -1,8 +1,14 @@
 ion-fab-button {
+  --ion-color-tint: #ff5252 !important;
+  --color: #ff5252;
+  --color-activated: #ff5252;
+  --color-focused: #ff5252;
+  --ion-color-contrast: #fff !important;
+  --background: #ff5252;
   --border-radius: 15px;
   --box-shadow: none;
-  --ion-color-light-shade: #EFEFEF;
-  --ion-color-base: #cfcfcf !important;
+  --ion-color-light-shade: #ff5252;
+  --ion-color-base: #ff5252 !important;
   height: 30px;
   width: 125px;
   overflow: visible;

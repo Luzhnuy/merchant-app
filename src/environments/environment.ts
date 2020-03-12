@@ -3,7 +3,19 @@
 // The list of file replacements can be found in `angular.json`.
 
 export const environment = {
-  production: false
+  production: false,
+
+  apiUrlV2: 'http://localhost:3000/',
+  wsUrl: 'ws://localhost:3001',
+  imageHost: 'http://localhost:3000/',
+  trackingUrlBaseUrl: 'http://localhost:4200/track/',
+
+  // apiUrlV2: 'http://sg-swift-dev.snapgrabdelivery.com:3000/',
+  // wsUrl: 'ws://sg-swift-dev.snapgrabdelivery.com:3001',
+  // imageHost: 'http://sg-swift-dev.snapgrabdelivery.com:3000/',
+  // trackingUrlBaseUrl: 'http://sg-swift-dev.snapgrabdelivery.com/track/',
+
+  wsSource: 'merchant',
 };
 
 /*

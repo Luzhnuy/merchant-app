@@ -1,0 +1,86 @@
+<ion-content padding class="transparent">
+
+  <ion-card padding class="full-page-card">
+    <h1 no-margin margin-horizontal class="text-align-center position-relative">
+      <app-back-button></app-back-button>
+      &nbsp;
+    </h1>
+
+    <div margin margin-vertical>
+      <h3 no-margin>
+        Download report
+      </h3>
+      <span>
+        Select the time period and type of report you want to download
+      </span>
+    </div>
+
+    <ion-grid>
+      <ion-row>
+        <ion-col size="5">
+          <input
+              class="form-control"
+              name="reports-date-range"
+              placeholder="Range"
+              autocomplete="off"
+              [(bsValue)]="dateRange"
+              [maxDate]="maxDate"
+              (bsValueChange)="onDateRangeChanged()"
+              bsDaterangepicker
+          >
+        </ion-col>
+
+        <ion-col size="3">
+          <select
+              class="form-control"
+              [(ngModel)]="selectedType"
+              name="status-select"
+          >
+            <option
+                *ngFor="let type of reportTypes"
+                [value]="type"
+            >
+              {{ type}}
+            </option>
+          </select>
+        </ion-col>
+
+        <ion-col size="2">
+          <button
+              class="btn btn-primary"
+              [disabled]="invalid"
+              (click)="download()"
+          >
+            Download
+          </button>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+<!--    <div class="row mb-3 mt-2">-->
+<!--      <div class="col col-4">-->
+<!--        <input-->
+<!--            class="form-control"-->
+<!--            name="reports-date-range"-->
+<!--            placeholder="Range"-->
+<!--            autocomplete="off"-->
+<!--            [(bsValue)]="dateRange"-->
+<!--            [maxDate]="maxDate"-->
+<!--            (bsValueChange)="onDateRangeChanged()"-->
+<!--            bsDaterangepicker-->
+<!--        >-->
+<!--      </div>-->
+<!--      <div class="col col-2">-->
+<!--        <button-->
+<!--            class="btn btn-primary"-->
+<!--            [disabled]="invalid"-->
+<!--            (click)="download()"-->
+<!--        >-->
+<!--          Download-->
+<!--        </button>-->
+<!--      </div>-->
+<!--    </div>-->
+
+  </ion-card>
+
+</ion-content>
+

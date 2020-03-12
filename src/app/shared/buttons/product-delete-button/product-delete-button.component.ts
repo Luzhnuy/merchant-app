@@ -1,7 +1,7 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { MenuService } from '../../menu.service';
-import { ProductsService } from '../../products.service';
 import { AlertController } from '@ionic/angular';
+import { ItemsV2Service } from '../../items-v2.service';
+import { CategoriesV2Service } from '../../categories-v2.service';
 
 @Component({
   selector: 'app-product-delete-button',
@@ -14,9 +14,9 @@ export class ProductDeleteButtonComponent implements OnInit {
   @Input() productId: string;
 
   constructor(
-    private productsService: ProductsService,
-    private menuService: MenuService,
     private alertController: AlertController,
+    private itemsService: ItemsV2Service,
+    private categoriesV2Service: CategoriesV2Service,
   ) { }
 
   ngOnInit() {}
@@ -32,10 +32,10 @@ export class ProductDeleteButtonComponent implements OnInit {
         }, {
           text: 'Yes',
           handler: () => {
-            this.productsService
-              .deleteProduct(this.accountId, this.productId)
+            this.itemsService
+              .remove(this.productId)
               .subscribe(() => {
-                this.menuService.loadMenu();
+                this.categoriesV2Service.loadCategories();
               });
           }
         }

@@ -1,4 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
+import { OrderStatus } from '../order-v2';
 
 @Component({
   selector: 'app-status-badge',
@@ -7,7 +8,11 @@ import { Component, Input, OnInit } from '@angular/core';
 })
 export class StatusBadgeComponent implements OnInit {
 
-  @Input() status: 'Accepted' | 'Received' | 'Cancelled' | 'PickedUp' | 'Completed';
+  // @Input() status: 'Accepted' | 'Received' | 'Cancelled' | 'PickedUp' | 'Completed';
+
+  @Input() status: OrderStatus;
+
+  orderStatuses = OrderStatus;
 
   constructor() { }
 

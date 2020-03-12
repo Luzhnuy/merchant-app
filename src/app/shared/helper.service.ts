@@ -14,8 +14,8 @@ export class HelperService {
     private modalController: ModalController,
   ) { }
 
-  async showLoading(message = 'Loading...', duration = 2000) {
-    this.stopLoading();
+  async showLoading(message = 'Loading...', duration = 3000) {
+    await this.stopLoading();
     this.loading = await this.loadingController.create({
       message: message,
       duration: duration
@@ -31,11 +31,11 @@ export class HelperService {
     }
   }
 
-  async showError(message, color = 'danger', position: 'top' | 'middle' | 'bottom' = 'top', duration = 2500) {
+  async showError(message, color = 'danger', position: 'top' | 'middle' | 'bottom' = 'top', duration = 5000) {
     return await this.showToast(message, color, position, duration);
   }
 
-  async showToast(message, color = 'success', position: 'top' | 'middle' | 'bottom' = 'top', duration = 2500) {
+  async showToast(message, color = 'success', position: 'top' | 'middle' | 'bottom' = 'top', duration = 3000) {
     const toast = await this.toastController.create({
       message: message,
       duration: duration,
@@ -47,8 +47,16 @@ export class HelperService {
   }
 
   fixDateStrFormatForSafari(datestr, addZeroTimezone = true) {
-    datestr += addZeroTimezone ? '+00:00' : '';
-    return datestr.replace(' ', 'T');
+    if (datestr) {
+      datestr += addZeroTimezone ? '+00:00' : '';
+      return datestr.replace(' ', 'T');
+    } else {
+      return datestr;
+    }
+  }
+
+  leadWithZero(number) {
+    return ('0' + number).slice(-2);
   }
 
 }

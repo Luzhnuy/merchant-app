@@ -5,26 +5,29 @@
         <p>
           <ion-icon name="pin" class="green"></ion-icon>
         </p>
-        <p><b>{{order.pickupLocation.name}}</b></p>
-        <p><b>Address: </b>{{order.pickupLocation.address}}</p>
-        <p><b>Phone: </b>{{order.pickupLocation.phone}}</p>
+        <p><b>{{order.metadata.pickUpTitle}}</b></p>
+        <p><b>Address: </b>{{order.metadata.pickUpAddress}}</p>
+        <p><b>Phone: </b>{{order.metadata.pickUpPhone}}</p>
       </ion-col>
       <ion-col size="12" size-sm>
         <p>
           <ion-icon name="pin" class="red"></ion-icon>
         </p>
-        <p><b>{{order.dropoffLocation.name}}</b></p>
-        <p><b>Address: </b>{{order.dropoffLocation.address}}</p>
-        <p><b>Phone: </b>{{order.dropoffLocation.phone}}</p>
+        <p><b>{{order.metadata.dropOffTitle}}</b></p>
+        <p><b>Address: </b>{{order.metadata.dropOffAddress}}</p>
+        <p><b>Phone: </b>{{order.metadata.dropOffPhone}}</p>
       </ion-col>
       <ion-col size="12" size-sm>
         <p>
           <ion-icon name="briefcase"></ion-icon>
         </p>
-        <p><b>Reference ID: </b>{{order.reference}}</p>
-        <p><b>Created: </b>{{order.created | date:'short'}}</p>
-        <p><b>Distance: </b>{{order.estimatedDistance.kilometres}}km</p>
-        <p *ngIf="order.pickupTime"><b>PickupTime: </b>{{order.pickupTime | date:'short'}}</p>
+        <p><b>Reference ID: </b>{{order.merchantId}}</p>
+        <p><b>Created: </b>{{order.createdAt | date:'short'}}</p>
+        <p><b>Distance: </b>{{(order.metadata.distance / 1000) | number:'1.2-2'}}km</p>
+        <p *ngIf="order.scheduledAt">
+          <b>PickupTime: </b>
+          {{order.scheduledAt | date:'short'}}
+        </p>
       </ion-col>
     </ion-row>
     <ion-row>
@@ -33,15 +36,21 @@
           <ion-icon name="car"></ion-icon>
         </p>
         <p><b>Driver</b></p>
-        <p *ngIf="order.driver && order.driver.name"><b>Name: </b>{{order.driver.name}}</p>
-        <p *ngIf="!order.driver || !order.driver.name">No associated driver</p>
+        <p *ngIf="order.driverProfile && order.driverProfile.lastName">
+          <b>Name: </b>
+          {{ order.driverProfile.firstName }}
+          {{ order.driverProfile.lastName }}
+        </p>
+        <p *ngIf="!order.driverProfile || !order.driverProfile.lastName">
+          No associated driver
+        </p>
       </ion-col>
       <ion-col size="12" size-sm>
         <p>
           <ion-icon name="list"></ion-icon>
         </p>
         <p><b>Instructions: </b></p>
-        <p>{{order.deliveryInstructions}}</p>
+        <p>{{order.metadata.description}}</p>
       </ion-col>
       <ion-col size="12" size-sm>
         <p>
@@ -50,20 +59,20 @@
       </ion-col>
     </ion-row>
   </ion-grid>
-  <ion-list *ngIf="order.items.length">
+  <ion-list *ngIf="order.orderItems && order.orderItems.length">
     <ion-list-header>
       <h1>
         <i class="fa fa-product-hunt bag-color fa-2x"></i>
         Products
       </h1>
     </ion-list-header>
-    <ion-item *ngFor="let item of order.items">
+    <ion-item *ngFor="let item of order.orderItems">
       <p>
         {{item.quantity}}x {{item.description}} ${{item.price | number:'1.2-2' }}
       </p>
     </ion-item>
   </ion-list>
-  <ion-button color="light" [href]="order.trackingUrls.www" target="_blank">
+  <ion-button color="light" [href]="getTrackingUrl(order)" target="_blank">
     <ion-icon name="link"></ion-icon>
     Tracking Link
   </ion-button>

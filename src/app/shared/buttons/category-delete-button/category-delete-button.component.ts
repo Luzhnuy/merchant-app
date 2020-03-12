@@ -1,7 +1,7 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { CategoriesService } from '../../categories.service';
-import { MenuService } from '../../menu.service';
 import { AlertController } from '@ionic/angular';
+import { CategoriesV2Service } from '../../categories-v2.service';
+import { MerchantsService } from '../../merchants.service';
 
 @Component({
   selector: 'app-category-delete-button',
@@ -11,12 +11,11 @@ import { AlertController } from '@ionic/angular';
 export class CategoryDeleteButtonComponent implements OnInit {
 
   @Input() accountId: string;
-  @Input() categoryId: string;
+  @Input() categoryId: number;
 
   constructor(
-    private categoriesService: CategoriesService,
-    private menuService: MenuService,
     private alertController: AlertController,
+    private categoriesV2Service: CategoriesV2Service,
   ) { }
 
   ngOnInit() {}
@@ -32,10 +31,10 @@ export class CategoryDeleteButtonComponent implements OnInit {
         }, {
           text: 'Yes',
           handler: () => {
-            this.categoriesService
-              .deleteCategory(this.accountId, this.categoryId)
+            this.categoriesV2Service
+              .remove(this.categoryId)
               .subscribe(() => {
-                this.menuService.loadMenu();
+                this.categoriesV2Service.loadCategories();
               });
           }
         }

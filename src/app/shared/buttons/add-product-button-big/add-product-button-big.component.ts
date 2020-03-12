@@ -9,7 +9,7 @@ import { ProductModalComponent } from '../../product-modal/product-modal.compone
 })
 export class AddProductButtonBigComponent implements OnInit {
 
-  @Input() accountId: string;
+  @Input() accountId: number;
 
   constructor(
     private modalController: ModalController,

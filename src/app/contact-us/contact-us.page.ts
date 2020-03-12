@@ -1,9 +1,8 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { UserService } from '../shared/user.service';
-import { ApiService } from '../shared/api.service';
-import { HttpClient } from '@angular/common/http';
-import { ToastController } from '@ionic/angular';
 import { NgForm } from '@angular/forms';
+import { MerchantsService } from '../shared/merchants.service';
+import { HelperService } from '../shared/helper.service';
+import { ErrorHandlerService } from '../shared/error-handler.service';
 
 @Component({
   selector: 'app-contact-us',
@@ -12,7 +11,7 @@ import { NgForm } from '@angular/forms';
 })
 export class ContactUsPage implements OnInit {
 
-  @ViewChild('form') form: NgForm;
+  @ViewChild('form', { static: true }) form: NgForm;
 
   invalid = false;
 
@@ -35,18 +34,21 @@ export class ContactUsPage implements OnInit {
   ];
 
   constructor(
-    private userService: UserService,
-    private http: HttpClient,
-    private apiService: ApiService,
-    private toastController: ToastController,
+    private merchantsService: MerchantsService,
+    private helperService: HelperService,
+    private errorHandlerService: ErrorHandlerService,
   ) { }
 
   ngOnInit() {}
 
   ionViewWillEnter() {
     this.form.reset();
-    this.name = this.userService.user.name;
-    this.email = this.userService.user.username;
+    this.merchantsService
+      .$merchant
+      .subscribe(merchant => {
+        this.name = merchant.name;
+        this.email = merchant.email;
+      });
   }
 
   sendEmail() {
@@ -54,39 +56,20 @@ export class ContactUsPage implements OnInit {
       this.invalid = true;
     } else {
       this.invalid = false;
-      const showMessage = () => {
-        this.message = ' ';
-        this.subject = '0';
-        this.toastController.create({
-            message: 'Email sent! Thanks',
-            duration: 2000,
-            color: 'success',
-            position: 'top',
-          })
-          .then(t => {
-            t.present();
-          });
+      const data = {
+        name: this.name,
+        email: this.email,
+        message: this.message,
       };
-      const payload = new FormData();
-
-      payload.append('name', this.name);
-      payload.append('email', this.email);
-      payload.append('message', this.message);
-
-      this.http
-        .post(
-          this.apiService.getUrl('marchands/email'),
-          payload
-        )
-        .subscribe(
-          () => {
-            showMessage();
-          },
-          err => {
-            if (err.statusText === 'OK') {
-              showMessage();
-            }
-          });
+      this.merchantsService
+        .contactUs(data)
+        .subscribe(() => {
+          this.helperService.showToast('Email has been sent');
+        }, e => {
+          this.helperService.showToast(
+            this.errorHandlerService.handleError(e),
+          );
+        });
     }
   }
 

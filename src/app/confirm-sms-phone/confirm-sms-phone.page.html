@@ -1,0 +1,37 @@
+<ion-content padding class="transparent auth-page">
+  <ion-card>
+    <h1 class="text-align-center">
+      <img src="./assets/img/logo.png" />
+    </h1>
+
+    <form (submit)="confirm()" #form="ngForm">
+      <ion-input
+          type="text"
+          placeholder="Code"
+          id="code"
+          required
+          pattern="[0-9]{4}"
+          name="code"
+          #codeEl="ngModel"
+          [(ngModel)]="code"
+      ></ion-input>
+      <div *ngIf="codeEl.invalid && (codeEl.dirty || codeEl.touched)">
+        <small class="error">
+          Password should contain 4 digits
+        </small>
+      </div>
+      <ion-button
+          type="submit"
+          [disabled]="form.invalid"
+      >
+        Confirm code
+      </ion-button>
+      <div margin-top></div>
+      <ion-button
+          (click)="resendSms()"
+      >
+        Resend SMS
+      </ion-button>
+    </form>
+  </ion-card>
+</ion-content>

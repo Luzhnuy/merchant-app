@@ -6,13 +6,13 @@
       <ion-item
           [routerLink]="['/home']"
           (click)="onOrderClick(order)"
-          *ngFor="let order of ordersService.orders | async"
+          *ngFor="let order of orders"
       >
         <!--<ion-icon slot="start" [name]="p.icon"></ion-icon>-->
         <ion-label>
-          <h1>{{order.dropoffLocation.name}}</h1>
-          <p>{{order.created | date:'short'}}</p>
-          <app-status-badge [status]="order.currentStatus"></app-status-badge>
+          <h1>{{order.metadata.dropOffTitle || 'No Name'}}</h1>
+          <p>{{order.createdAt | date:'short'}}</p>
+          <app-status-badge [status]="order.status"></app-status-badge>
         </ion-label>
       </ion-item>
     </ion-list>

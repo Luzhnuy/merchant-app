@@ -1,43 +1,62 @@
-import { Component, OnInit } from '@angular/core';
-import { MenuService } from '../../shared/menu.service';
-import { BehaviorSubject } from 'rxjs';
-import { Product } from '../../shared/product';
-import { UserService } from '../../shared/user.service';
+import { Component, EventEmitter, OnDestroy, OnInit } from '@angular/core';
 import { ProductModalComponent } from '../../shared/product-modal/product-modal.component';
 import { ModalController } from '@ionic/angular';
+import { MenuItem } from '../../shared/menu-item';
+import { MerchantsService } from '../../shared/merchants.service';
+import { MerchantV2 } from '../../shared/merchant-v2';
+import { MenuCategory } from '../../shared/menu-category';
+import { CategoriesV2Service } from '../../shared/categories-v2.service';
+import { takeUntil } from 'rxjs/operators';
 
 @Component({
   selector: 'app-products',
   templateUrl: './products.page.html',
   styleUrls: ['./products.page.scss'],
 })
-export class ProductsPage implements OnInit {
+export class ProductsPage implements OnInit, OnDestroy {
 
-  products$ = new BehaviorSubject<Product[]>([]);
+  merchant: MerchantV2;
+  items: MenuItem[];
+  categories: MenuCategory[];
+
+  $destroyed = new EventEmitter<any>();
 
   constructor(
-    public menuService: MenuService,
-    public userService: UserService,
     private modalController: ModalController,
+    private merchantsService: MerchantsService,
+    private categoriesService: CategoriesV2Service,
   ) { }
 
-  ngOnInit() {
-    this.menuService
-      .menus$
-      .subscribe(
-        menus => this.products$.next(menus.reduce((res, menu) => [...res, ...menu.products], []))
-      );
+  async ngOnInit() {
+    this.categoriesService
+      .$categories
+      .pipe(takeUntil(this.$destroyed))
+      .subscribe(categories => {
+        this.items = categories.reduce( (res, cat) => {
+          return res.concat(cat.items);
+        }, []);
+      });
+    this.merchantsService
+      .$merchant
+      .pipe(takeUntil(this.$destroyed))
+      .subscribe(merchant => {
+        this.merchant = merchant;
+      });
   }
 
-  async showProductModal(accountId: string, data: Product = null) {
+  async ngOnDestroy() {
+    this.$destroyed.emit();
+  }
+
+  async showProductModal(item: MenuItem = null) {
     const modal = await this.modalController.create({
       component: ProductModalComponent,
       componentProps: {
-        accountId,
-        data
+        accountId: this.merchant.id,
+        data: item,
       }
     });
-    return await modal.present();
+    await modal.present();
   }
 
 }

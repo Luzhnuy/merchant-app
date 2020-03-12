@@ -1,0 +1,39 @@
+<ion-content padding class="transparent">
+
+  <ion-card padding class="full-page-card">
+    <h1 class="text-align-center position-relative">
+      <app-back-button></app-back-button>
+      &nbsp;
+    </h1>
+
+    <div margin-vertical padding-vertical>
+      <ng-container *ngIf="card; else noCardContainer">
+        <h3>Payment Card on File</h3>
+        <div padding>
+          <b>Primary</b>
+          <hr/>
+          <div class="card-info-item">
+            <img [src]="'./assets/img/' + imageName"/>
+            <span>{{ card.brand  }} ending in {{ card.last4 }}</span>
+          </div>
+        </div>
+      </ng-container>
+      <ng-template #noCardContainer>
+        <h3>
+          You didn't set card yet. Please set up credit card.
+        </h3>
+      </ng-template>
+    </div>
+
+    <div class="input-group ion-text-center" padding>
+      <ion-button
+          class="submit-button centered"
+          (click)="openEditCardModal()"
+      >
+        Change/Add
+      </ion-button>
+    </div>
+  </ion-card>
+
+</ion-content>
+

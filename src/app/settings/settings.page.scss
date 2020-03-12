@@ -7,6 +7,16 @@
   background-repeat: no-repeat;
   background-position: center;
   color: #ffffff;
+  position: relative;
+
+  > img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    object-fit: cover;
+  }
 
   &:before {
     content: '';
@@ -14,10 +24,18 @@
     padding-top: 55%;
   }
 
-  > div {
+  > .merchant-data {
     flex-direction: column;
     align-items: center;
     justify-content: center;
+    position: relative;
+    z-index: 10;
+
+    > ion-button {
+      position: absolute;
+      top: -30px;
+      right: -10px;
+    }
 
     h2 {
       margin-top: 0;
@@ -34,4 +52,9 @@ ion-button {
   display: block;
   max-width: 400px;
   margin: 10px auto;
+}
+
+.toggle-button {
+  max-width: 400px;
+  margin: 0 auto;
 }

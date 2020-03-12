@@ -1,6 +1,6 @@
 import { Component, EventEmitter, OnDestroy, OnInit } from '@angular/core';
-import { OrdersHistoryService } from '../shared/orders-history.service';
-import { Order } from '../shared/order';
+import { OrderV2 } from '../shared/order-v2';
+import { OrdersService } from '../shared/orders.service';
 import { takeUntil } from 'rxjs/operators';
 
 declare var google: any;
@@ -12,19 +12,16 @@ declare var google: any;
 })
 export class HomePage implements OnInit, OnDestroy {
 
-  curOrder: Order;
-
+  curOrder: OrderV2;
   private detroyed$: EventEmitter<boolean> = new EventEmitter();
 
   constructor(
-    public ordersService: OrdersHistoryService,
-  ) {
-
-  }
+    public ordersService: OrdersService,
+  ) {}
 
   ngOnInit() {
     this.ordersService
-      .currentOrder
+      .$currentOrder
       .pipe(
         takeUntil(this.detroyed$)
       )
@@ -46,20 +43,15 @@ export class HomePage implements OnInit, OnDestroy {
         center: new google.maps.LatLng(51.508742, -0.120850),
         zoom: 9,
       };
-
       const map = new google.maps.Map(document.getElementById('googleMap'), mapProp);
-
       const directionsService = new google.maps.DirectionsService();
       const directionsDisplay = new google.maps.DirectionsRenderer();
-
       directionsDisplay.setMap(map);
-
       const request = {
-        origin: this.curOrder.pickupLocation.address,
-        destination: this.curOrder.dropoffLocation.address,
+        origin: this.curOrder.metadata.pickUpAddress,
+        destination: this.curOrder.metadata.dropOffAddress,
         travelMode: google.maps.DirectionsTravelMode.DRIVING
       };
-
       directionsService.route(request, function(response, status) {
         if (status == google.maps.DirectionsStatus.OK) {
           directionsDisplay.setDirections(response);

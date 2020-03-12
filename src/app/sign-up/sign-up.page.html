@@ -1,95 +1,159 @@
 <ion-content padding class="transparent auth-page">
   <ion-card>
+
     <h1 class="text-align-center">
       <img src="./assets/img/logo.png" />
     </h1>
 
-    <form (submit)="register()" #form="ngForm">
-      <div class="input-group">
-        <div class="input-group-prepend">
-          <span class="input-group-text" id="firstnamePrepend">
-            <ion-icon name="person"></ion-icon>
-          </span>
-        </div>
-        <input type="text"
-               class="form-control"
-               id="firstname"
-               placeholder="First name"
-               aria-describedby="firstnamePrepend"
-               matInput
-               required
-               name="firstname"
-               [(ngModel)]="firstname"
-        >
-      </div>
-      <div class="input-group">
-        <div class="input-group-prepend">
-          <span class="input-group-text" id="lastnamePrepend">
-            <ion-icon name="person"></ion-icon>
-          </span>
-        </div>
-        <input type="text"
-               class="form-control"
-               id="lastname"
-               placeholder="Last name"
-               aria-describedby="lastnamePrepend"
-               matInput
-               required
-               name="lastname"
-               [(ngModel)]="lastname"
-        >
-      </div>
-      <div class="input-group">
-        <div class="input-group-prepend">
-          <span class="input-group-text" id="emailPrepend">
-            <ion-icon name="mail"></ion-icon>
-          </span>
-        </div>
-        <input type="email"
-               class="form-control"
-               id="email"
-               placeholder="Email"
-               aria-describedby="emailPrepend"
-               matInput
-               required
-               email
-               name="email"
-               [(ngModel)]="email"
-        >
-      </div>
-      <div class="input-group">
-        <div class="input-group-prepend">
-          <span class="input-group-text" id="passwordPrepend">
-            <ion-icon name="lock"></ion-icon>
-          </span>
-        </div>
-        <input type="password"
-               class="form-control"
-               id="password"
-               placeholder="Password"
-               aria-describedby="passwordPrepend"
-               matInput
-               required
-               minlength="5"
-               name="password"
-               [(ngModel)]="password"
-        >
-      </div>
-      <div class="input-group">
-        <ion-button type="submit" class="submit-button" [disabled]="form.invalid">
-          <ion-icon slot="start" name="add-circle-outline"></ion-icon>
-          Register
-        </ion-button>
-      </div>
+    <ion-card-title
+        margin-horizontal
+        padding-horizontal
+    >
+      Create a Merchant Account
+    </ion-card-title>
+    <ion-card-subtitle
+        margin-horizontal
+        padding-horizontal
+        padding-top
+    >
+      Fill out the information about your business below to get started with on-demand deliveries. No sign-up fees or credit card required.
+    </ion-card-subtitle>
 
-      <div class="text-align-center ion-margin-bottom">
+    <form (submit)="register(form.invalid || addressInvalid)" #form="ngForm">
+      <div>
+        <ion-icon name="contact"></ion-icon>
+        <ion-input
+            type="text"
+            placeholder="Name"
+            id="name"
+            required
+            minlength="5"
+            pattern="\w+[\w\s]+.*"
+            name="name"
+            #nameEl="ngModel"
+            [(ngModel)]="name"
+        ></ion-input>
+      </div>
+<!--      <div *ngIf="nameEl.invalid && (nameEl.dirty || nameEl.touched)">-->
+      <div *ngIf="nameEl.invalid && showErrors">
+        <small class="error">
+          Name should contain at least 5 symbols
+        </small>
+      </div>
+      <div>
+        <ion-icon name="mail"></ion-icon>
+        <ion-input
+            type="email"
+            placeholder="E-mail"
+            id="email"
+            required
+            email
+            name="email"
+            #emailEl="ngModel"
+            [(ngModel)]="email"
+        ></ion-input>
+      </div>
+<!--      <div *ngIf="emailEl.invalid && (emailEl.dirty || emailEl.touched)">-->
+      <div *ngIf="emailEl.invalid && showErrors">
+        <small class="error">
+          E-mail is invalid
+        </small>
+      </div>
+      <div>
+        <ion-icon name="lock"></ion-icon>
+        <ion-input
+            type="password"
+            id="password"
+            placeholder="Password"
+            required
+            minlength="5"
+            name="password"
+            #passEl="ngModel"
+            [(ngModel)]="password"
+        ></ion-input>
+      </div>
+<!--      <div *ngIf="passEl.invalid && (passEl.dirty || passEl.touched)">-->
+      <div *ngIf="passEl.invalid && showErrors">
+        <small class="error">
+          Password should contain at least 5 symbols
+        </small>
+      </div>
+      <div>
+        <ion-icon name="call"></ion-icon>
+        <ion-input
+            type="tel"
+            placeholder="Phone"
+            id="phone"
+            required
+            pattern="(\+\d{2}[ -]?)?((\d{3}-\d{3}-\d{4})|(\d{10})|(\d{3} \d{3} \d{4}))"
+            name="phone"
+            #phoneEl="ngModel"
+            [(ngModel)]="phone"
+        ></ion-input>
+      </div>
+<!--      <div *ngIf="phoneEl.invalid && (phoneEl.dirty || phoneEl.touched)">-->
+      <div *ngIf="phoneEl.invalid && showErrors">
+        <small class="error">Please enter phone number in format:
+          000-000-0000 or 000 000 0000 or 0000000000 or +00 000 000 0000, etc</small>
+      </div>
+      <div>
+        <ion-icon name="desktop"></ion-icon>
+        <ion-input
+            type="text"
+            id="website"
+            placeholder="Website"
+            name="website"
+            #websiteEl="ngModel"
+            [(ngModel)]="website"
+        ></ion-input>
+      </div>
+      <div>
+        <ion-icon name="list-box"></ion-icon>
+        <ion-input
+            type="text"
+            id="description"
+            placeholder="Description"
+            name="description"
+            #descriptionEl="ngModel"
+            [(ngModel)]="description"
+        ></ion-input>
+      </div>
+      <div>
+        <ion-icon name="pin"></ion-icon>
+        <ion-input
+            type="text"
+            id="address"
+            placeholder="Address"
+            name="address"
+            required
+            autocomplete="NoAutocompleteAddress"
+            appAddressAutocomplete
+            selector="input"
+            #addressEl="ngModel"
+            [options]="placesOptions"
+            (onAddressChange)="handleAddressChange($event)"
+            [(ngModel)]="formatted_address"
+        ></ion-input>
+      </div>
+<!--      <div *ngIf="addressInvalid && (addressEl.dirty || addressEl.touched)">-->
+      <div *ngIf="addressInvalid && showErrors">
+        <small class="error">
+          SnapGrab does not yet service this destination. We will let you know when we expand into this area.
+        </small>
+      </div>
+<!--      <ion-button-->
+<!--          type="submit"-->
+<!--          [disabled]="form.invalid || addressInvalid"-->
+<!--      >-->
+      <ion-button type="submit">
+        Register
+      </ion-button>
+      <div margin-top></div>
+      <div class="link-wrapper" text-center>
         <a [routerLink]="['/login']">
-          <ion-icon name="log-in" class="small-button"></ion-icon>
-          |
-          Log in
+          Login
         </a>
       </div>
-
     </form>
 
   </ion-card>

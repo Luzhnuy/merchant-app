@@ -4,17 +4,28 @@
     <img src="./assets/img/Bookings.png">
   </div>
 
-  <form (submit)="createOrder()" #form="ngForm" class="transparent">
+  <form
+      (submit)="createOrder()"
+      #form="ngForm"
+      class="transparent"
+  >
 
     <ion-card padding>
 
       <h1>Drop-off Details</h1>
 
+      <div *ngIf="apiError">
+        <small class="error">
+          {{ apiError }}
+        </small>
+      </div>
+
       <div class="form-group">
         <label for="name">Dropoff Name:</label>
-        <div class="input-group">
+        <div class="input-group has-icon">
+          <ion-icon name="person"></ion-icon>
           <input type="text"
-                 class="form-control"
+                 class="form-control has-icon"
                  id="name"
                  placeholder="Name"
                  matInput
@@ -23,6 +34,7 @@
                  #nameEl="ngModel"
                  autocomplete="NoAutocomplete"
                  [(ngModel)]="name"
+                 [disabled]="!enabledBooking"
           >
         </div>
       </div>
@@ -33,20 +45,23 @@
 
       <div class="form-group">
         <label for="address">Dropoff Address:</label>
-        <div class="input-group">
-          <input type="text"
-                 class="form-control"
-                 id="address"
-                 placeholder="Address"
-                 matInput
-                 required
-                 name="address"
-                 autocomplete="NoAutocompleteAddress"
-                 ngx-google-places-autocomplete
-                 #addressEl="ngModel"
-                 [options]="placesOptions"
-                 (onAddressChange)="handleAddressChange($event)"
-                 [(ngModel)]="address"
+        <div class="input-group has-icon">
+          <ion-icon name="pin"></ion-icon>
+          <input
+              type="text"
+              class="form-control has-icon"
+              id="address"
+              placeholder="Address"
+              matInput
+              required
+              name="address"
+              autocomplete="NoAutocompleteAddress"
+              ngx-google-places-autocomplete
+              #addressEl="ngModel"
+              [options]="placesOptions"
+              (onAddressChange)="handleAddressChange($event)"
+              [(ngModel)]="address"
+              [disabled]="!enabledBooking"
           >
         </div>
       </div>
@@ -58,9 +73,9 @@
 
       <div class="form-group">
         <label for="zipcode">Dropoff Postal Code:</label>
-        <div class="input-group">
+        <div class="input-group has-icon">
           <input type="text"
-                 class="form-control"
+                 class="form-control has-icon"
                  id="zipcode"
                  placeholder="Postal Code"
                  matInput
@@ -74,9 +89,10 @@
 
       <div class="form-group">
         <label for="phone">Mobile Phone:</label>
-        <div class="input-group">
+        <div class="input-group has-icon">
+          <ion-icon name="call"></ion-icon>
           <input type="tel"
-                 class="form-control"
+                 class="form-control has-icon"
                  id="phone"
                  placeholder=""
                  matInput
@@ -86,6 +102,7 @@
                  autocomplete="NoAutocomplete"
                  #phoneEl="ngModel"
                  [(ngModel)]="phone"
+                 [disabled]="!enabledBooking"
           >
         </div>
       </div>
@@ -102,14 +119,16 @@
 
       <div class="form-group ion-margin-top">
         <label for="instruction">Instruction:</label>
-        <div class="input-group">
+        <div class="input-group has-icon">
+          <ion-icon name="list-box"></ion-icon>
           <input type="text"
-                 class="form-control"
+                 class="form-control has-icon"
                  id="instruction"
                  placeholder="Instruction eg. leave with doorman or suite 200 or app 2"
                  matInput
                  name="instruction"
                  [(ngModel)]="instruction"
+                 [disabled]="!enabledBooking"
           >
         </div>
       </div>
@@ -126,8 +145,14 @@
               event="click"
           ></ion-icon>
         </ion-label>
-        <ion-toggle slot="end" name="bringBack" mode="ios" color="success"
-                    [(ngModel)]="bringBack" (ionChange)="calculateTotalFee()"
+        <ion-toggle
+            slot="end"
+            name="bringBack"
+            mode="ios"
+            color="success"
+            [(ngModel)]="bringBack"
+            (ionChange)="recalculatePrices()"
+            [disabled]="!enabledBooking"
         ></ion-toggle>
       </ion-item>
 
@@ -142,30 +167,26 @@
               event="click"
           ></ion-icon>
         </ion-label>
-        <ion-toggle slot="end" name="largeOrder" mode="ios" color="success"
-                    [(ngModel)]="largeOrder" (ionChange)="calculateTotalFee()"
+        <ion-toggle
+            slot="end"
+            name="largeOrder"
+            mode="ios"
+            color="success"
+            [(ngModel)]="largeOrder"
+            (ionChange)="recalculatePrices()"
+            [disabled]="!enabledBooking"
         ></ion-toggle>
       </ion-item>
 
     </ion-card>
     <ion-card padding>
 
-      <h1>Delivery Time</h1>
+      <h1>Pick up Scheduler</h1>
 
       <p><b>Pick Up Time  (Please allow up to 60 minutes from scheduled pick up for completed delivery): </b></p>
 
       <ion-item>
         <ion-label>Date</ion-label>
-        <!--<ion-datetime-->
-            <!--displayFormat="YYYY-MM-DD"-->
-            <!--picker-format="YYYY MM DD"-->
-            <!--[min]="minYear"-->
-            <!--[max]="maxYear"-->
-            <!--(ionChange)="dateChanged($event)"-->
-            <!--[(ngModel)]="date"-->
-            <!--[ngClass]="{'sg-invalid': dateInvalid}"-->
-            <!--name="date"-->
-        <!--&gt;</ion-datetime>-->
         <ion-datetime
             displayFormat="YYYY-MM-DD"
             picker-format="YYYY MM DD"
@@ -175,19 +196,12 @@
             [value]="date"
             [ngClass]="{'sg-invalid': dateInvalid}"
             name="date"
+            [disabled]="!enabledBooking"
         ></ion-datetime>
       </ion-item>
 
       <ion-item>
         <ion-label>Time</ion-label>
-        <!--<ion-datetime-->
-            <!--display-format="HH:mm"-->
-            <!--picker-format="HH mm"-->
-            <!--hourValues="10,11,12,13,14,15,16,17,18,19,20,21,22"-->
-            <!--(ionChange)="timeChanged($event)"-->
-            <!--[(ngModel)]="time"-->
-            <!--name="time"-->
-        <!--&gt;</ion-datetime>-->
         <ion-datetime
             display-format="HH:mm"
             picker-format="HH mm"
@@ -195,6 +209,7 @@
             (ionChange)="timeChanged($event)"
             [value]="time"
             name="time"
+            [disabled]="!enabledBooking"
         ></ion-datetime>
       </ion-item>
       <div>&nbsp;
@@ -204,42 +219,104 @@
       </div>
 
     </ion-card>
-    <ion-card padding>
 
-      <h1>Confirm</h1>
+    <ion-card
+        padding
+        class="confirmation-block"
+    >
 
-      <div class="form-group">
-        <label for="fee">Delivery Fee Calculator:</label>
-        <div class="input-group">
-          <div class="input-group-prepend">
-            <span class="input-group-text" id="fee1Prepend">
-              <ion-icon name="logo-usd"></ion-icon>
-            </span>
-          </div>
-          <input type="text"
-                 class="form-control"
-                 id="fee"
-                 placeholder="Delivery Fee"
-                 aria-describedby="fee1Prepend"
-                 matInput
-                 required
-                 disabled
-                 name="fee"
-                 [(ngModel)]="fee"
-          >
-          <div class="input-group-append">
-            <span class="input-group-text">
-              <ion-icon name="car"></ion-icon>
-            </span>
-          </div>
-        </div>
-      </div>
+      <h1>Confirm and Book</h1>
+      <p>
+        A detailed confirmation receipt will be sent to your e-mail
+      </p>
+
+      <ion-grid
+          no-padding
+          margin-vertical
+          *ngIf="extras"
+      >
+        <ion-row no-padding>
+          <ion-col no-padding sizeXs="9" sizeMd="7" sizeLg="5" sizeXl="3">
+            Base Fare
+            <ion-chip
+                *ngIf="extras.surgeTime"
+                color="tertiary"
+                tooltip="Prices are slightly higher for your scheduled delivery time du to high demand or difficult driving conditions."
+                positionV="bottom"
+                positionH="left"
+                event="click"
+            >
+<!--              <ion-icon name="flash-outline"></ion-icon>-->
+              <img src="assets/icon/flash-outline.svg" class="surge-price-img">
+              <ion-label color="dark">Surge Time</ion-label>
+            </ion-chip>
+          </ion-col>
+          <ion-col no-padding size="2" sizeXs="3">
+            CA${{ extras.baseFare | number:'1.2-2' }}
+          </ion-col>
+        </ion-row>
+        <ion-row no-padding>
+          <ion-col no-padding sizeXs="9" sizeMd="7" sizeLg="5" sizeXl="3">
+            Distance
+            <ion-icon
+                name="information-circle"
+                color="medium"
+                tooltip="Your base fare includes delivery up to 3km away from your pick-up location. Each additional km is billed CA$1.50 per KM up to a maximum of 20km."
+                positionV="bottom"
+                positionH="left"
+                event="click"
+            ></ion-icon>
+          </ion-col>
+          <ion-col no-padding size="2" sizeXs="3">
+            CA${{ extras.distanceFare | number:'1.2-2' }}
+          </ion-col>
+        </ion-row>
+        <ion-row no-padding *ngIf="extras && extras.largeOrderFare">
+          <ion-col no-padding sizeXs="9" sizeMd="7" sizeLg="5" sizeXl="3">
+            Large Order Fare
+          </ion-col>
+          <ion-col no-padding size="2" sizeXs="3">
+            CA${{ extras.largeOrderFare | number:'1.2-2' }}
+          </ion-col>
+        </ion-row>
+        <ion-row no-padding>
+          <ion-col no-padding sizeXs="9" sizeMd="7" sizeLg="5" sizeXl="3">
+            TPS
+          </ion-col>
+          <ion-col no-padding size="2" sizeXs="3">
+            CA${{ order.metadata.tps | number:'1.2-2' }}
+          </ion-col>
+        </ion-row>
+        <ion-row no-padding>
+          <ion-col no-padding sizeXs="9" sizeMd="7" sizeLg="5" sizeXl="3">
+            TVQ
+          </ion-col>
+          <ion-col no-padding size="2" sizeXs="3">
+            CA${{ order.metadata.tvq | number:'1.2-2' }}
+          </ion-col>
+        </ion-row>
+        <ion-row no-padding>
+          <ion-col no-padding sizeXs="9" sizeMd="7" sizeLg="5" sizeXl="3">
+            <b>
+              Total charged
+              <span *ngIf="card">
+                to
+                <img [src]="'./assets/img/' + getSrc()" class="brand-image"/>
+                {{ card.last4 }}
+              </span>
+            </b>
+          </ion-col>
+          <ion-col no-padding size="2" sizeXs="3">
+            CA${{ order.metadata.totalAmount | number:'1.2-2' }}
+          </ion-col>
+        </ion-row>
+      </ion-grid>
 
       <div class="input-group">
         <ion-button
             type="submit"
             class="submit-button"
-            [disabled]="form.invalid || addressInvalid || timeInvalid || dateInvalid"
+            [disabled]="!enabledBooking || form.invalid || addressInvalid || timeInvalid || dateInvalid"
         >
           <ion-icon slot="start" name="send"></ion-icon>
           Place delivery

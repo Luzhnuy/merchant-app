@@ -1,29 +1,44 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { AlertController, ToastController } from '@ionic/angular';
-import { HttpClient } from '@angular/common/http';
-import { ApiService } from '../shared/api.service';
-import { UserService } from '../shared/user.service';
-import { Booking } from '../shared/booking';
-import { BookingService } from '../shared/booking.service';
-import { isSuccess } from '@angular/http/src/http_utils';
-import { OrdersHistoryService } from '../shared/orders-history.service';
+import { AlertController, ModalController, ToastController } from '@ionic/angular';
 import { NgForm } from '@angular/forms';
-import { BookingExtra } from '../shared/booking-extra';
 import { Address } from 'ngx-google-places-autocomplete/objects/address';
+import { AskCreditCardModalComponent } from '../shared/ask-credit-card-modal/ask-credit-card-modal.component';
+import { DatePipe } from '@angular/common';
+import { HelperService } from '../shared/helper.service';
+import { ConfirmOrderModalComponent } from '../shared/confirm-order-modal/confirm-order-modal.component';
+import { OrderPrepareRequestData } from '../shared/order-interfaces';
+import { OrderType, OrderV2 } from '../shared/order-v2';
+import { MerchantsService } from '../shared/merchants.service';
+import { MerchantV2 } from '../shared/merchant-v2';
+import { OrdersService } from '../shared/orders.service';
+import { ErrorHandlerService } from '../shared/error-handler.service';
+import { PaymentCardsService } from '../shared/payment-cards.service';
+import { PaymentCard } from '../shared/payment-card';
+
+interface OrderExtras {
+  baseFare: number;
+  distanceFare: number;
+  largeOrderFare: number;
+  surgeTime: boolean;
+}
 
 @Component({
   selector: 'app-booking',
   templateUrl: './booking.page.html',
   styleUrls: ['./booking.page.scss'],
+  providers: [DatePipe],
 })
 export class BookingPage implements OnInit {
 
-  @ViewChild('form') form: NgForm
+  @ViewChild('form', { static: false }) form: NgForm;
+
+  enabledBooking: boolean;
+
+  apiError: string = null;
 
   name: string;
   address: string;
   zipcode: string;
-  fee: string;
   date: string;             // format 2019-01-01 or 2019-01-01 00:00:00 (be careful)
   time: string;             // format 00:00
   instruction: string;
@@ -37,6 +52,8 @@ export class BookingPage implements OnInit {
 
   minYear: number;
   maxYear: number;
+
+  extras: OrderExtras;
 
   private formatted_address: string;
   private distance: string;
@@ -58,104 +75,104 @@ export class BookingPage implements OnInit {
 
   private zipcodeszone = ['H2G', 'H3J', 'H3Z', 'H3Y', 'H3H', 'H3V', 'H3T', 'H2V', 'H3G', 'H3A',
     'H3B', 'H2Z', 'H2Y', 'H2X', 'H2W', 'H2T', 'H2J', 'H2L', 'H2H', 'H5B', 'H4Z', 'H5A', 'H3C',
-    'H4C', 'H1Y', 'H1V', 'H1W', 'H1X', 'H3C', 'H4B', 'H2K', 'H3P', 'H4V', 'H3R', 'H2S', 'H3K', 'H3S', 'H3X', 'H3Y', 'H4G', 'H4A', 'H4E',
-    'H3W',
+    'H4C', 'H1Y', 'H1V', 'H1W', 'H1X', 'H3C', 'H4B', 'H2K', 'H3P', 'H4V', 'H3R', 'H2S', 'H3K',
+    'H3S', 'H3X', 'H3Y', 'H4G', 'H4A', 'H4E', 'H3W',
   ];
 
   private zipcodeszone1 = ['J4H', 'J4G', 'J4R', 'J4S', 'J4W', 'J4X', 'J4P', 'H2N', 'H2P', 'H2R',
     'H1A', 'H1B', 'H1C', 'H1E', 'H1G', 'H1H', 'H1J', 'H1K', 'H1M', 'H1L', 'H1N', 'H1P', 'H1R',
-    'H1S', 'H1T', 'H1Z', 'H2A', 'H2B', 'H2C', 'H2E', 'H2M',
-    'H3E', 'H3L', 'H3M', 'H3N', 'H4H', 'H4J', 'H4K', 'H4L', 'H4M', 'H4N', 'H4P', 'H4R',
-    'H4S', 'H4T', 'H4W', 'H4X', 'H4Y',
+    'H1S', 'H1T', 'H1Z', 'H2A', 'H2B', 'H2C', 'H2E', 'H2M', 'H3E', 'H3L', 'H3M', 'H3N', 'H4H',
+    'H4J', 'H4K', 'H4L', 'H4M', 'H4N', 'H4P', 'H4R', 'H4S', 'H4T', 'H4W', 'H4X', 'H4Y',
     'H8N', 'H8P', 'H8R', 'H8S', 'H8T', 'H8Y', 'H8Z', 'H9A', 'H9B', 'H9C', 'H9E', 'H9G', 'H9H',
     'H9J', 'H9K', 'H9P', 'H9R', 'H9S', 'H9W', 'H9X'
   ];
 
-  private initialFee = 0;
+  // new
+  private merchant: MerchantV2;
+  public order: OrderV2;
+  public card: PaymentCard;
 
   constructor(
     public alertController: AlertController,
-    private http: HttpClient,
-    private apiSerivce: ApiService,
-    private userService: UserService,
-    private bookingService: BookingService,
     private toastController: ToastController,
-    private ordersService: OrdersHistoryService,
+    private ordersService: OrdersService,
+    private modalController: ModalController,
+    private datePipe: DatePipe,
+    private helper: HelperService,
+    private merchantsService: MerchantsService,
+    private errorHandlerService: ErrorHandlerService,
+    private paymentCardsService: PaymentCardsService,
   ) { }
 
   ngOnInit() {
   }
 
   ionViewWillEnter() {
+    this.order = new OrderV2();
+    this.merchantsService
+      .$merchant
+      .subscribe(merchant => {
+        this.merchant = merchant;
+        this.enabledBooking = this.merchant.enableBooking;
+        if (!this.enabledBooking) {
+          this.helper
+            .showError(
+              'Your Bookings service is disabled. Contact SnapGrab for more information.',
+              undefined,
+              undefined,
+              10000,
+            );
+        }
+      });
+    this.paymentCardsService
+      .getAll()
+      .subscribe(cards => {
+        if (cards.length) {
+          this.card = new PaymentCard(cards[0]);
+        }
+      });
     this.initData();
   }
 
-  createOrder() {
-
-    // Check time, because it can be in the past
+  async createOrder() {
+    if (!this.card) {
+      await this.askCreditCard();
+    }
+    if (!this.card) {
+      return;
+    }
+    const confirm = await this.askConfirmation();
+    if (!confirm) {
+      return;
+    }
     this.timeChanged({detail: {value: this.shortTime.substring(0, 5)}});
-
     if (this.timeInvalid || this.dateInvalid) {
       return;
     }
-
-    const data = {
-      customerFee: this.fee,
-      deliveryInstructions: `Booking Form Instruction: ${this.instruction}`,
-      dropoffDetail: {
-        address: this.formatted_address,
-        description: '',
-        email: '',
-        name: this.name,
-        phone: this.phone,
-        zipcode: this.zipcode,
-      },
-      pickupDetail: { // from user
-        address: this.userService.user.address,
-        description: '',
-        email: this.userService.user.username,
-        name: this.userService.user.name,
-        phone: this.userService.user.phone,
-      },
-      pickupTime: this.getFormatDateString(`${this.shortDate}T${this.shortTime}`, 60),
-      reference: this.userService.user.token,
-    };
-    const extra: BookingExtra = {
-      distance: this.distance,
-      largeorder: this.largeOrder ? 1 : 0,
-      bringback: this.bringBack ? 1 : 0,
-    };
-    const booking = new Booking(data);
-    this.bookingService
-      .book(booking, extra)
-      .subscribe(sucess => {
-        if (sucess) {
-          this.toastController.create({
-              message: 'Order was created successfully!',
-              duration: 3000,
-              color: 'success',
-              position: 'top',
-            })
-            .then(t => {
-              t.present();
-            });
-          this.initData();
-          this.ordersService.startLoadingCurrentOrders();
-        } else {
-          this.showAlert(
-            'Oops, There seems to be an issue placing delivery. Please contact us at <a href="tel:438-927-7627">438-927-7627</a>',
-            'Error'
-          );
-        }
-      }, err => {
-        this.showAlert(
-          'Oops, There seems to be an issue placing delivery. Please contact us at <a href="tel:438-927-7627">438-927-7627</a>',
-          'Error'
-        );
-      });
+    try {
+      await this.helper.showLoading('Creating order. Please wait...', 10000);
+      this.applyFormDataToOrder();
+      await this.ordersService
+        .create(this.order)
+        .toPromise();
+      this.toastController.create({
+        message: 'Order was created successfully!',
+        duration: 3000,
+        color: 'success',
+        position: 'top',
+      })
+        .then(t => {
+          t.present();
+        });
+      this.initData();
+    } catch (e) {
+      this.apiError = this.errorHandlerService.handleError(e);
+    } finally {
+      await this.helper.stopLoading();
+    }
   }
 
-  handleAddressChange($event) {
+  async handleAddressChange($event) {
     this.addressInvalid = false;
     const longZipcode = $event.address_components.find(cmp => {
       return cmp.types.indexOf('postal_code') > -1;
@@ -164,42 +181,29 @@ export class BookingPage implements OnInit {
     this.zipcode = shortZipcode;
     this.formatted_address = $event.formatted_address;
     this.googlePlaceAddress = $event;
+    this.order.metadata.distance = null;
+    this.timeChanged({detail: {value: this.shortTime.substring(0, 5)}});
+  }
 
-    if (this.zipcodeszone.indexOf(shortZipcode) > -1) {
-      this.initialFee = 12.99;
-      this.calculateTotalFee();
-    } else if (this.zipcodeszone1.indexOf(shortZipcode) > -1) {
-      this.http
-        .get(this.apiSerivce.getUrl('marchands/getdistancePhp7Comp/'
-          + this.userService.user.address
-          + '/'
-          + $event.formatted_address
-        ))
-        .subscribe((resp: any) => {
-          if (resp.status === 'OK' && resp.rows.length > 0) {
-            const dist = resp.rows[0].elements[0].distance.value / 1000;
-            this.distance = dist.toFixed(2);
-            const fee = 9 + (dist * 0.90);
-            if (fee <= 25.99) {
-              this.initialFee = parseFloat(fee.toFixed(2));
-            } else {
-              this.initialFee = 25.99;
-            }
-          } else {
-            this.initialFee = 0;
-            this.showAlert('Problems with calculating distance. Please try another address', 'Error');
-          }
-          this.calculateTotalFee();
-        }, err => {
-          this.initialFee = 0;
-          this.calculateTotalFee();
-          this.showAlert('Problems with calculating distance. Please try another address', 'Error');
-        });
+  async recalculatePrices() {
+    this.addressInvalid = false;
+    if (this.zipcodeszone.indexOf(this.zipcode) > -1 || this.zipcodeszone1.indexOf(this.zipcode) > -1) {
+      const data = this.getPreparePriceRequestData();
+      try {
+        const preparedOrder = await this.ordersService
+          .prepareOrder(data)
+          .toPromise();
+        this.extras = (preparedOrder as any).extras;
+        (preparedOrder as any).extras = null;
+        delete (preparedOrder as any).extras;
+        Object.assign(this.order.metadata, preparedOrder);
+        this.distance = (this.order.metadata.distance / 1000).toFixed(2);
+      } catch (e) {
+        this.apiError = this.errorHandlerService.handleError(e);
+      }
     } else {
       this.addressInvalid = true;
     }
-
-    this.timeChanged({detail: {value: this.shortTime.substring(0, 5)}});
   }
 
   dateChanged({detail: {value}}) {
@@ -213,7 +217,7 @@ export class BookingPage implements OnInit {
     }
   }
 
-  timeChanged({detail: {value}}) {
+  async timeChanged({detail: {value}}) {
     this.shortTime = value + ':00';
     const timeCmps = value.split(':').map(v => +v);
     const timeHM = {
@@ -225,42 +229,39 @@ export class BookingPage implements OnInit {
     if (timeHM.m) {
       maxH = 21;
     }
-    if (timeHM.h >= minH && timeHM.h <= maxH) {
-      this.timeInvalid = false;
-    } else {
-      this.timeInvalid = true;
-    }
+    this.timeInvalid = !(timeHM.h >= minH && timeHM.h <= maxH);
 
     if (!this.timeInvalid && this.date) {
       const date = this.getSelectDateTime();
       const now = this.getNow();
-      if (now.getTime() >= date.getTime()) {
-        this.dateInvalid = true;
-      } else {
-        this.dateInvalid = false;
-      }
+      this.dateInvalid = now.getTime() >= date.getTime();
+    }
+
+    if (!this.timeInvalid) {
+      await this.recalculatePrices();
     }
   }
 
-  calculateTotalFee() {
-    let fee = this.initialFee;
-    if (this.bringBack) {
-      fee += this.initialFee * .55;
+  public getSrc() {
+    switch (this.card.brand) {
+      case 'Visa':
+        return 'visa.png';
+      case 'MasterCard':
+        return 'mastercard.png';
+      case 'American Express':
+        return 'amex.png';
+      default:
+        return 'card_pay.png';
     }
-    if (this.largeOrder) {
-      fee += this.initialFee * .1;
-    }
-    this.fee = fee.toFixed(2);
   }
 
   private initData() {
     this.form.reset();
 
+    this.order = new OrderV2();
     this.name = '';
     this.address = '';
     this.zipcode = '';
-    this.initialFee = 0;
-    this.fee = '';
     this.date = '';
     this.time = '';
     this.instruction = '';
@@ -279,6 +280,7 @@ export class BookingPage implements OnInit {
 
     this.shortDate = this.date.substring(0, 10);
     this.shortTime = this.time + ':00';
+    this.extras = null;
   }
 
   private getDefDeliveryTime() {
@@ -311,16 +313,6 @@ export class BookingPage implements OnInit {
       + '00:00:00';
   }
 
-  private getUTCDateString(dateStr) {
-    const d = new Date(dateStr);
-    return d.getUTCFullYear() + '-'
-      + this.leadWithZero(d.getUTCMonth() + 1) + '-'
-      + this.leadWithZero(d.getUTCDate()) + ' '
-      + this.leadWithZero(d.getUTCHours()) + ':'
-      + this.leadWithZero(d.getUTCMinutes()) + ':00'
-      + '+00:00';
-  }
-
   private getSelectDateTime(): Date {
     const dateStr = `${this.shortDate}T${this.shortTime}`;
     let date: Date;
@@ -339,15 +331,7 @@ export class BookingPage implements OnInit {
    * @param dateStr string format 2019-06-06T11:45:22
    */
   private getFormatDateString(dateStr, additionalOffset = 0): string {
-    dateStr += this.getTimezoneOffsetString(additionalOffset, true);
-    const d = new Date(dateStr);
-    const formattedDate = d.getFullYear() + '-'
-      + this.leadWithZero(d.getMonth() + 1) + '-'
-      + this.leadWithZero(d.getDate()) + ' '
-      + this.leadWithZero(d.getHours()) + ':'
-      + this.leadWithZero(d.getMinutes()) + ':00'
-      + this.getTimezoneOffsetString(additionalOffset);
-    return formattedDate;
+    return dateStr + this.getTimezoneOffsetString(additionalOffset);
   }
 
   private getTimezoneOffsetString(additionalOffset = 0, inverse = false) {
@@ -378,15 +362,86 @@ export class BookingPage implements OnInit {
     return now;
   }
 
-  async showAlert(message, title) {
-    const alert = await this.alertController.create({
-      header: title,
-      // subHeader: 'Subtitle',
-      message: message,
-      buttons: ['OK']
-    });
+  private async askCreditCard() {
+    try {
+      const modal = await this.modalController.create({
+        component: AskCreditCardModalComponent,
+        componentProps: {
+          card: this.card,
+        }
+      });
+      await modal.present();
+      const { data } = await modal.onDidDismiss();
+      this.card = data;
+    } catch (e) {
+      console.error(e);
+      return;
+    }
+  }
 
-    await alert.present();
+  private async askConfirmation() {
+    const startDate = new Date(`${this.shortDate}T${this.shortTime}+00:00`);
+    const endDate = new Date();
+    endDate.setTime(startDate.getTime() + 60 * 60 * 1000);
+    const modal = await this.modalController.create({
+      component: ConfirmOrderModalComponent,
+      componentProps: {
+        startTime: startDate,
+        endTime: endDate,
+        address: this.formatted_address,
+      }
+    });
+    await modal.present();
+    const { data } = await modal.onDidDismiss();
+    return !!data;
+  }
+
+
+  private getPreparePriceRequestData() {
+    const scheduledTime = this.shortTime.split(':').reduce((res, val, i) => {
+      switch (i) {
+        case 0:
+          res += parseInt(val, 10) * 60;
+          break;
+        case 1:
+          res += parseInt(val, 10);
+          break;
+      }
+      return res;
+    }, 0);
+    const data: OrderPrepareRequestData = {
+      // distance: this.order.metadata.distance || null,
+      origin: {
+        lat: this.merchant.departments[0].latitude,
+        lon: this.merchant.departments[0].longitude,
+      },
+      destination: {
+        lat: this.googlePlaceAddress.geometry.location.toJSON().lat,
+        lon: this.googlePlaceAddress.geometry.location.toJSON().lng,
+      },
+      type: OrderType.Booking,
+      discount: 0,
+      largeOrder: this.largeOrder,
+      bringBack: this.bringBack,
+      scheduledTime,
+    };
+    return data;
+  }
+
+  private applyFormDataToOrder() {
+    this.order.scheduledAt = this.getFormatDateString(`${this.shortDate}T${this.shortTime}`);
+    this.order.metadata.description = `Booking Form Instruction: ${this.instruction}`;
+    this.order.metadata.pickUpLat = this.merchant.departments[0].latitude;
+    this.order.metadata.pickUpLon = this.merchant.departments[0].longitude;
+    this.order.metadata.pickUpTitle = this.merchant.name;
+    this.order.metadata.pickUpAddress = this.merchant.departments[0].address;
+    this.order.metadata.pickUpPhone = this.merchant.phone;
+    this.order.metadata.pickUpEmail = this.merchant.email;
+    this.order.metadata.dropOffLat = this.googlePlaceAddress.geometry.location.toJSON().lat;
+    this.order.metadata.dropOffLon = this.googlePlaceAddress.geometry.location.toJSON().lng;
+    this.order.metadata.dropOffTitle = this.name;
+    this.order.metadata.dropOffAddress = this.formatted_address;
+    this.order.metadata.dropOffPhone = this.phone;
+    this.order.metadata.utcOffset = this.googlePlaceAddress.utc_offset;
   }
 }
-

@@ -1,29 +1,33 @@
 <ion-content>
-  <app-add-product-button-big [accountId]="userService.user.id"></app-add-product-button-big>
-  <div padding>
+  <app-add-product-button-big *ngIf="merchant" [accountId]="merchant.id"></app-add-product-button-big>
+  <div padding *ngIf="merchant">
     <table class="table table-striped table-with-actions">
       <thead>
         <tr>
           <th scope="col">Name</th>
-          <th scope="col">Description</th>
+          <th class="hide-md hide-xs" scope="col">Description</th>
           <th scope="col" class="ion-text-right small-cell">Price</th>
+          <th class="hide-xs" scope="col" >Image</th>
           <th scope="col" class="small-cell"></th>
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let product of products$ | async">
-          <th scope="row">{{product.nameeng}}</th>
-          <td>{{product.shortdescriptioneng}}</td>
+        <tr *ngFor="let item of items">
+          <th scope="row">{{item.name}}</th>
+          <td class="hide-md hide-xs">{{item.description}}</td>
           <td class="ion-text-right">
-            ${{product.price | number:'1.2-2'}}
+            ${{item.price | number:'1.2-2'}}
+          </td>
+          <td class="ion-text-right hide-xs">
+            <ion-img *ngIf="item.image" [src]="item.image"></ion-img>
           </td>
           <td>
             <ion-buttons>
-              <app-product-eye-button [accountId]="userService.user.id" [product]="product"></app-product-eye-button>
-              <ion-button (click)="showProductModal(userService.user.id, product)">
+              <app-product-eye-button [item]="item"></app-product-eye-button>
+              <ion-button (click)="showProductModal(item)">
                 <ion-icon name="create"></ion-icon>
               </ion-button>
-              <app-product-delete-button [accountId]="userService.user.id" [productId]="product.id"></app-product-delete-button>
+              <app-product-delete-button [accountId]="merchant.id" [productId]="item.id"></app-product-delete-button>
             </ion-buttons>
           </td>
         </tr>

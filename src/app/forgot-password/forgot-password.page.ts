@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { UserService } from '../shared/user.service';
 import { HelperService } from '../shared/helper.service';
+import { UserServiceV2 } from '../shared/user-v2.service';
 
 @Component({
   selector: 'app-forgot-password',
@@ -12,7 +12,7 @@ export class ForgotPasswordPage implements OnInit {
   email = '';
 
   constructor(
-    private userService: UserService,
+    private userService: UserServiceV2,
     private helper: HelperService,
   ) { }
 
@@ -21,7 +21,7 @@ export class ForgotPasswordPage implements OnInit {
 
   restorePassword() {
     this.userService
-      .restorePassword(this.email)
+      .resetPassword(this.email)
       .subscribe(res => {
         if (res) {
           this.helper.showToast('Please check you email to get your password');
