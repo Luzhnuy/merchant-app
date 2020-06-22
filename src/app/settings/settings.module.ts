@@ -1,5 +1,5 @@
 import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Routes, RouterModule } from '@angular/router';
 
@@ -7,6 +7,8 @@ import { IonicModule } from '@ionic/angular';
 
 import { SettingsPage } from './settings.page';
 import { SharedModule } from '../shared/shared.module';
+// import { FileTransfer } from '@ionic-native/file-transfer/ngx';
+// import { File } from '@ionic-native/file/ngx';
 
 const routes: Routes = [
   {
@@ -23,6 +25,11 @@ const routes: Routes = [
     RouterModule.forChild(routes),
     SharedModule,
   ],
-  declarations: [SettingsPage]
+  declarations: [SettingsPage],
+  providers: [
+    DatePipe,
+    // FileTransfer,
+    // File,
+  ]
 })
 export class SettingsPageModule {}

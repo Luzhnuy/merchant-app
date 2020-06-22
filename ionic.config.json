@@ -1,5 +1,7 @@
 {
-  "name": "merchants-portal",
-  "integrations": {},
+  "name": "SnapGrab Merchant Portal",
+  "integrations": {
+    "cordova": {}
+  },
   "type": "angular"
 }

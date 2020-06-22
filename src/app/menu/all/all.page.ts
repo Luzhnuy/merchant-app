@@ -1,7 +1,7 @@
 import { Component, EventEmitter, OnDestroy, OnInit } from '@angular/core';
-import { ProductModalComponent } from '../../shared/product-modal/product-modal.component';
+import { ProductModalComponent } from '../../shared/components/modals/product-modal/product-modal.component';
 import { ModalController } from '@ionic/angular';
-import { CategoryModalComponent } from '../../shared/category-modal/category-modal.component';
+import { CategoryModalComponent } from '../../shared/components/modals/category-modal/category-modal.component';
 import { MerchantV2 } from '../../shared/merchant-v2';
 import { MenuCategory } from '../../shared/menu-category';
 import { MerchantsService } from '../../shared/merchants.service';

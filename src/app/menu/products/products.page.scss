@@ -2,7 +2,17 @@
   top: 0;
 }
 
+:host::ng-deep {
+  ion-button {
+    --color: #000;
+  }
+}
+
 ion-img {
   height: 30px;
   max-width: 60px;
+}
+
+ion-buttons {
+  justify-content: flex-end;
 }

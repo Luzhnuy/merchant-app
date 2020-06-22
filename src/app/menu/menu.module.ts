@@ -13,9 +13,20 @@ const routes: Routes = [
     path: '',
     component: MenuPage,
     children: [
-      { path: 'all', loadChildren: './all/all.module#AllPageModule' },
-      { path: 'categories', loadChildren: './categories/categories.module#CategoriesPageModule' },
-      { path: 'products', loadChildren: './products/products.module#ProductsPageModule' },
+      {
+        path: 'all',
+        loadChildren: () => import('./all/all.module').then( m => m.AllPageModule),
+      }, {
+        path: 'categories',
+        loadChildren: () => import('./categories/categories.module').then( m => m.CategoriesPageModule),
+
+      }, {
+        path: 'products',
+        loadChildren: () => import('./products/products.module').then( m => m.ProductsPageModule),
+      }, {
+        path: 'options',
+        loadChildren: () => import('./options/options.module').then( m => m.OptionsPageModule),
+      },
     ],
   }
 ];

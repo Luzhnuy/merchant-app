@@ -1,0 +1,19 @@
+.checkbox-container {
+  padding-left: 20px;
+}
+
+.item-image {
+  width: 35%;
+  margin-top: var(--ion-margin);
+  margin-bottom: var(--ion-margin);
+}
+
+#browser-file-image {
+  position: absolute;
+  z-index: 1;
+  width: 92%;
+  margin-top: 2px;
+  margin-left: 1px;
+  opacity: 0;
+  height: 40px;
+}

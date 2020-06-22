@@ -1,60 +1,123 @@
-.image-container {
-  max-width: 400px;
-  margin: 30px auto;
-  background-color: #afafaf;
-  padding: 30px;
-  background-size: cover;
-  background-repeat: no-repeat;
-  background-position: center;
-  color: #ffffff;
-  position: relative;
+ion-card {
 
-  > img {
-    position: absolute;
-    top: 0;
-    left: 0;
-    height: 100%;
-    width: 100%;
-    object-fit: cover;
-  }
+  ion-item {
 
-  &:before {
-    content: '';
-    display: block;
-    padding-top: 55%;
-  }
+    &.sg-card-profile {
 
-  > .merchant-data {
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    position: relative;
-    z-index: 10;
+      h3 {
+        font-size: 14px;
+        font-weight: 500;
+        margin: 0;
+      }
 
-    > ion-button {
-      position: absolute;
-      top: -30px;
-      right: -10px;
+      h4 {
+        font-size: 14px;
+        font-weight: 400;
+        margin: 0;
+
+        &:last-child {
+          margin-bottom: 8px;
+        }
+      }
+
+      .merchant-logo-upload-button {
+        width: 95%;
+        height: 90%;
+
+        ion-icon {
+          width: 35%;
+          height: 35%;
+          color: #686d73;
+        }
+      }
+
+      .merchant-logo-uploader {
+        width: 95%;
+        height: 90%;
+        background: #7f90a9;
+        opacity: 0;
+        position: absolute;
+        z-index: 1;
+      }
     }
 
-    h2 {
-      margin-top: 0;
+    &.sg-card-snapgrab {
+
+      --inner-padding-end: 0;
+
+      .status-circle {
+        display: inline-block;
+        width: 16px;
+        border-radius: 50%;
+        overflow: hidden;
+        height: 16px;
+        margin-right: 16px;
+
+        &.status-active {
+          background: #0ec254;
+        }
+
+        &.status-inactive {
+          background: #8d8d8d;
+        }
+      }
     }
 
-    h4 {
-      margin: 0;
-      text-align: center;
+    &.open-time {
+      --background: #efefef;
+    }
+
+    &.close-time {
+      --background: #dfdfdf;
+    }
+
+    &.open-time,
+    &.close-time {
+      --border-width: 0;
+      --inner-padding-end: var(--ion-safe-area-right, 0px);
+      background: var(--background);
+      border-width: 0 0 1px 0;
+      border-color: var(--border-color);
+      border-style: solid;
+    }
+
+    ion-datetime {
+      --padding-top: 0px;
+      --padding-bottom: 0px;
+    }
+
+    &.sg-card-receipts {
+
+      --padding-end: 0;
+      --inner-padding-end: 0;
+    }
+
+    &.sg-card-payments {
+
+      .card-image {
+        height: 18px;
+        width: auto;
+        margin-right: 16px;
+      }
+    }
+
+    ion-toggle {
+      --background: #54B0FF;
+      --background-checked: #54B0FF;
+
+      --handle-background: #aaa;
+      --handle-background-checked: #54B0FF;
     }
   }
-}
 
-ion-button {
-  display: block;
-  max-width: 400px;
-  margin: 10px auto;
-}
+  .sg-card-reports-phone {
 
-.toggle-button {
-  max-width: 400px;
-  margin: 0 auto;
+    ion-item {
+      font-size: 14px;
+
+      ion-label {
+        margin: 4px 0;
+      }
+    }
+  }
 }

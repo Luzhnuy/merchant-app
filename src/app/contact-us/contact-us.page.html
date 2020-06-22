@@ -1,12 +1,11 @@
-<ion-content padding class="transparent">
+<ion-content class="transparent ion-padding">
 
-  <ion-card padding class="full-page-card">
+  <ion-card class="full-page-card ion-padding">
     <h1 class="text-align-center position-relative">
-      <app-back-button></app-back-button>
-      <ion-icon name="mail"></ion-icon>
+      <ion-icon name="mail-outline"></ion-icon>
       Contact us
     </h1>
-    <p padding>
+    <p class="ion-padding">
       SnapGrab wants to be the best delivery app in Montreal, and your feedback helps us reach our goal. Do you have questions, comments, suggestions, ideas, complaints or compliments? SnapGrab believes that all information is good information. So, let us know what you think ! When contacting us about an order, please have your order number on hand.
     </p>
     <ion-grid>
@@ -36,7 +35,7 @@
                     <div class="input-group">
                       <div class="input-group-prepend">
                         <span class="input-group-text" id="emailPrepend">
-                          <ion-icon name="mail"></ion-icon>
+                          <ion-icon name="mail-outline"></ion-icon>
                         </span>
                       </div>
                       <input type="email"
@@ -54,17 +53,17 @@
                   <div class="form-group">
                     <label for="subject">&nbsp;</label>
                     <div class="input-group">
-                      <select
+                      <ion-select
                           class="form-control"
                           id="subject"
                           name="subject"
                           [(ngModel)]="subject"
                       >
-                        <option selected value="0" disabled>Choose one:</option>
-                        <option *ngFor="let subj of subjects" [value]="subj.value">
+                        <ion-select-option selected value="0" disabled>Choose one:</ion-select-option>
+                        <ion-select-option *ngFor="let subj of subjects" [value]="subj.value">
                           {{subj.title}}
-                        </option>
-                      </select>
+                        </ion-select-option>
+                      </ion-select>
                     </div>
                   </div>
                 </ion-col>
@@ -91,17 +90,15 @@
             <div *ngIf="messageEl.invalid && (messageEl.dirty || messageEl.touched)">
               <small>Please, enter a message (min 5 characters)</small>
             </div>
-            <ion-item class="background-transparent">
-              <ion-button slot="end" (click)="sendEmail()" [disabled]="form.invalid">
-                <ion-icon slot="start" name="send"></ion-icon>
-                Send Message
-              </ion-button>
-            </ion-item>
+            <ion-button (click)="sendEmail()" [disabled]="form.invalid">
+              <ion-icon slot="start" name="send"></ion-icon>
+              Send Message
+            </ion-button>
           </form>
         </ion-col>
         <ion-col sizeSm="12" sizeXs="12" sizeXl="4" sizeMd="4" sizeLg="4">
           <p>
-            <ion-button color="success" href="tel:438-927-7627">
+            <ion-button color="success" href="tel:“18559277627”">
               <ion-icon slot="start" name="call"></ion-icon>
               Call us
             </ion-button>

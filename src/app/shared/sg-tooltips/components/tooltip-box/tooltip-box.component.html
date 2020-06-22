@@ -1,0 +1,7 @@
+<div class="tooltip-box"
+     [attr.aria-role]="role"
+     [ngStyle]="tooltipStyles">
+  <div *ngIf="tooltipHtml; else txt" [innerHTML]="tooltipHtml"></div>
+
+  <ng-template #txt><div [innerHtml]="text"></div></ng-template>
+</div>

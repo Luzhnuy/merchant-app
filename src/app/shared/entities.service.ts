@@ -76,7 +76,7 @@ export abstract class EntitiesService<T extends { id: number }> {
     return subj.asObservable();
   }
 
-  update(entity: T) {
+  update(entity: Partial<T>) {
     const subj = new Subject<T>();
     this.apiClient.put(
       `${this.endpoint}/${entity.id}`,

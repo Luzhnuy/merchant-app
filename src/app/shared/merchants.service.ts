@@ -6,6 +6,7 @@ import { EntitiesService } from './entities.service';
 import { HelperService } from './helper.service';
 import { ErrorHandlerService } from './error-handler.service';
 import { MerchantV2 } from './merchant-v2';
+import { OneSignalService } from './one-signal.service';
 
 @Injectable({
   providedIn: 'root',
@@ -25,6 +26,7 @@ export class MerchantsService extends EntitiesService<MerchantV2> {
     private userService: UserServiceV2,
     public helper: HelperService,
     public errorHandler: ErrorHandlerService,
+    public oneSignalService: OneSignalService,
   ) {
     super(helper, errorHandler);
     this.init();

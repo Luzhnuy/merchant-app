@@ -5,6 +5,7 @@ import { UserV2 as User } from './user-v2';
 import { StorageVariableV2Service as StorageVariableService } from './storage-variable-v2.service';
 import { StorageVariablesV2Enum as StorageVariables } from './storage-variables-v2.enum';
 import { Merchant } from './merchant';
+import { OneSignalService } from './one-signal.service';
 
 declare var google: any;
 
@@ -28,6 +29,7 @@ export class UserServiceV2 {
     private ngZone: NgZone,
     private storageVariable: StorageVariableService,
     private apiClient: ApiV2Service,
+    private oneSignalService: OneSignalService,
   ) {
     this.init();
   }
@@ -38,15 +40,24 @@ export class UserServiceV2 {
       .subscribe(async (userData) => {
         let user = new User(userData);
         if (user.isLogged()) {
+          const oldToken = (user as any).token;
+          if (oldToken) {
+            this.loginFromOldToken((user as any).token);
+            return;
+          }
           this.apiClient.setAuth(user.authToken);
           userData = await this.checkAuth().toPromise();
           user = new User(userData);
           if (!user.isLogged()) {
             this.apiClient.clearAuth();
+          } else if (!this.oneSignalService.subscribed) {
+            await this.oneSignalService
+              .subscribe(user.id);
           }
         } else {
           this.apiClient.clearAuth();
         }
+
         this.$$user.next(user);
       });
   }
@@ -78,13 +89,25 @@ export class UserServiceV2 {
       .subscribe(
         (data: User) => {
           if (!data.roles.find(role => role.name === this.merchantRoleName)) {
+            if (!this.oneSignalService.subscribed) {
+              this.oneSignalService
+                .subscribe(null);
+            }
             subj.error(new Error('User is not a Merchant'));
           } else {
+            if (!this.oneSignalService.subscribed) {
+              this.oneSignalService
+                .subscribe(data.id);
+            }
             this.storageVariable.set(StorageVariables.userInfo, data);
             subj.next(true);
           }
           subj.complete();
         }, err => {
+          if (!this.oneSignalService.subscribed) {
+            this.oneSignalService
+              .subscribe(null);
+          }
           subj.error(err);
           subj.complete();
         },
@@ -141,6 +164,10 @@ export class UserServiceV2 {
           if (!data.roles.find(role => role.name === this.merchantRoleName)) {
             subj.error(new Error('User is not Merchant'));
           } else {
+            if (!this.oneSignalService.subscribed) {
+              this.oneSignalService
+                .subscribe(data.id);
+            }
             this.storageVariable.set(StorageVariables.userInfo, data);
             subj.next(data);
           }
@@ -249,14 +276,21 @@ export class UserServiceV2 {
     )
       .subscribe(
         (data: User) => {
+          if (!this.oneSignalService.subscribed) {
+            this.oneSignalService
+              .subscribe(null);
+          }
           subj.next(data);
           subj.complete();
           this.storageVariable.remove(StorageVariables.userInfo);
         }, err => {
+          if (!this.oneSignalService.subscribed) {
+            this.oneSignalService
+              .subscribe(null);
+          }
           subj.error(err);
           subj.complete();
           this.storageVariable.remove(StorageVariables.userInfo);
-
         },
       );
     return subj.asObservable();
@@ -292,6 +326,32 @@ export class UserServiceV2 {
           subj.complete();
         }, err => {
           subj.error(err);
+          subj.complete();
+        },
+      );
+    return subj.asObservable();
+  }
+
+  loginFromOldToken(token: string) {
+    const subj = new Subject<User>();
+    this.apiClient
+      .post(
+        // `${this.endpoint}/login-from-old-token`,
+        `customers/login-from-old-token`, // dirty hack, but it's no matter, because of old version compatibility
+        { token },
+      )
+      .subscribe(
+        (data: User) => {
+          if (!this.oneSignalService.subscribed) {
+            this.oneSignalService
+              .subscribe(data.id);
+          }
+          this.storageVariable.set(StorageVariables.userInfo, data);
+          const user = new User(data);
+          subj.next(user);
+        }, err => {
+          subj.error(err);
+        }, () => {
           subj.complete();
         },
       );

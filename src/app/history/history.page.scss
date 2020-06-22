@@ -18,5 +18,15 @@ ion-grid {
 .receipt-button {
   margin: 0;
   margin-top: -16px;
-  font-size: 10px;
+}
+
+@media (max-width: 768px) {
+
+  .receipt-button {
+    font-size: 10px;
+  }
+
+  strong {
+    font-size: 13px;
+  }
 }

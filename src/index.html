@@ -2,12 +2,11 @@
 <html lang="en">
 
 <head>
-  <meta charset="utf-8" />
-  <title>SnapGrab Portal</title>
+  <title>Snapgrab Merchants</title>
 
-<!--  <base href="/" />-->
-  <base href="/app/webroot/merchants-portal-new/">
+  <base href="/" />
 
+  <meta name="color-scheme" content="light dark" />
   <meta name="viewport" content="viewport-fit=cover, width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <meta name="format-detection" content="telephone=no" />
   <meta name="msapplication-tap-highlight" content="no" />
@@ -24,10 +23,20 @@
   <!-- Google -->
   <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBr0e9KuRDYIGyHaIsMSW3Eq69aG87i80U&libraries=places&sensor=false"></script>
   <script src="https://www.google.com/cloudprint/client/cpgadget.js"></script>
+<!--   OneSignal-->
+  <script src="https://cdn.onesignal.com/sdks/OneSignalSDK.js" async=""></script>
+  <script>
+      window.OneSignal = window.OneSignal || [];
+  </script>
 </head>
 
 <body>
   <app-root></app-root>
+  <audio
+      id="new-menu-order-sound"
+      src="./assets/mp3/done-for-you.mp3"
+      loop="true"
+  ></audio>
 </body>
 
 </html>

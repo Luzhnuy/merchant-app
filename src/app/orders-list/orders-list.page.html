@@ -1,20 +1,40 @@
-<ion-content padding class="transparent">
-
+<ion-content class="transparent ion-padding">
   <ion-card class="full-page-card">
-    <h1 class="text-align-center">Active Orders List</h1>
+    <h1 class="text-align-center"><ion-icon name="calendar"></ion-icon>Active orders</h1>
     <ion-list>
       <ion-item
-          [routerLink]="['/home']"
-          (click)="onOrderClick(order)"
           *ngFor="let order of orders"
+          class="ion-activatable ripple-parent"
+          [routerLink]="['/order', order.id]"
       >
-        <!--<ion-icon slot="start" [name]="p.icon"></ion-icon>-->
-        <ion-label>
-          <h1>{{order.metadata.dropOffTitle || 'No Name'}}</h1>
-          <p>{{order.createdAt | date:'short'}}</p>
-          <app-status-badge [status]="order.status"></app-status-badge>
-        </ion-label>
+        <ion-ripple-effect></ion-ripple-effect>
+        <ion-grid class="display-flex">
+          <ion-col sizeXs="9" sizeSm="10" sizeXl="6" sizeMd="6" sizeLg="4">
+            <ion-label>
+              <div *ngIf="order.isNew" class="new-menu-point"></div>
+              <strong>
+                {{ order.metadata.dropOffTitle }}
+              </strong>
+              <small class="hide-tablet">
+                {{ order.createdAt | date:'medium' }}
+              </small>
+            </ion-label>
+          </ion-col>
+          <ion-col size="4" class="text-align-center hide-xs hide-sm">
+            <ion-label>
+              <span class="flex-1 text-align-center">
+                {{ order.createdAt | date:'medium' }}
+              </span>
+            </ion-label>
+          </ion-col>
+          <ion-col class="text-align-center badge-col" sizeXs="3" sizeSm="2" sizeXl="2" sizeMd="2" sizeLg="2">
+            <app-status-badge [status]="order.status"></app-status-badge>
+          </ion-col>
+        </ion-grid>
       </ion-item>
     </ion-list>
+    <div *ngIf="orders.length === 0" class="ion-text-center ion-margin-vertical">
+      No Active Orders
+    </div>
   </ion-card>
 </ion-content>

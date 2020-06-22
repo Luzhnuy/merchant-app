@@ -1,0 +1,104 @@
+<ion-toolbar color="light">
+  <ion-title class="ion-text-center">
+    {{ option.id ? 'Edit' : 'Add'}} Category
+  </ion-title>
+</ion-toolbar>
+<ion-content>
+  <form #form="ngForm" class="ion-padding">
+    <ion-grid *ngIf="!showLoading">
+      <ion-row *ngFor="let item of items">
+        <ng-container *ngIf="getItemOption(item) as itemOption">
+          <ion-col>
+            {{ item.name }}
+            <small *ngIf="itemOption.count > -1">
+              <ng-container *ngIf="itemOption.count === 0; else requiredText">
+                (Optional)
+              </ng-container>
+              <ng-template #requiredText>
+                (Required:{{ itemOption.count }})
+              </ng-template>
+            </small>
+          </ion-col>
+          <ion-col *ngIf="itemOption.count > 0"  size="auto">
+            <div class="btn-group" btnRadioGroup>
+              <label
+                  class="btn btn-light"
+                  btnRadio="Left"
+                  uncheckable
+                  tabindex="0"
+                  role="button"
+                  (click)="setCount(item, itemOption.count === 1 ? itemOption.count : itemOption.count - 1)"
+              >
+                -
+              </label>
+              <ion-input type="number" [value]="itemOption.count" class="count-input"></ion-input>
+              <label
+                  class="btn btn-light"
+                  btnRadio="Right"
+                  uncheckable
+                  tabindex="0"
+                  role="button"
+                  (click)="setCount(item, itemOption.count === option.subOptions.length ? itemOption.count : itemOption.count + 1)"
+              >
+                +
+              </label>
+            </div>
+          </ion-col>
+          <ion-col size="auto">
+            <ion-buttons>
+              <ion-button
+                  class="hide-phone"
+                  size="small"
+                  fill="solid"
+                  [color]="itemOption.count > 0 ? 'dark' : 'light'"
+                  (click)="setCount(item, itemOption.count > 0 ? -1 : 1)"
+              >
+                Required
+              </ion-button>
+              <ion-button
+                  class="hide-phone"
+                  size="small"
+                  fill="solid"
+                  [color]="itemOption.count === 0 ? 'dark' : 'light'"
+                  (click)="setCount(item, itemOption.count === 0 ? -1 : 0)"
+              >
+                Optional
+              </ion-button>
+              <ion-fab-button
+                  [color]="itemOption.count > 0 ? 'dark' : 'light'"
+                  (click)="setCount(item, itemOption.count > 0 ? -1 : 1)"
+                  class="hide-tablet toggle-item-option"
+              >
+                <ion-icon name="checkmark-outline"></ion-icon>
+              </ion-fab-button>
+              <ion-fab-button
+                  class="hide-tablet toggle-item-option"
+                  [color]="itemOption.count === 0 ? 'dark' : 'light'"
+                  (click)="setCount(item, itemOption.count === 0 ? -1 : 0)"
+              >
+                <ion-icon name="ellipse-outline"></ion-icon>
+              </ion-fab-button>
+            </ion-buttons>
+          </ion-col>
+        </ng-container>
+      </ion-row>
+    </ion-grid>
+
+    <div class="input-group ion-text-center display-flex">
+      <ion-button
+          class="cancel-button"
+          (click)="cancel()"
+      >
+        Cancel
+      </ion-button>
+      <ion-button
+          type="submit"
+          class="submit-button"
+          [disabled]="form.invalid"
+          (click)="save()"
+      >
+        Save
+      </ion-button>
+    </div>
+  </form>
+</ion-content>

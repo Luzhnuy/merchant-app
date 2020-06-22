@@ -1,3 +1,11 @@
+ion-card {
+  margin-bottom: 16px !important;
+
+  &:last-child {
+    margin-bottom: 0 !important;
+  }
+}
+
 .booking-header {
   width: 276px;
   margin: 0 auto;
@@ -5,6 +13,10 @@
 
 [name=information-circle-outline] {
   margin-bottom: -3px;
+}
+
+.z-index-10 {
+  z-index: 10;
 }
 
 .confirmation-block {

@@ -52,6 +52,8 @@ export class OrderV2 extends Entity {
   merchant: MerchantV2;
   merchantId: number = null;
 
+  isNew = false;
+
   get ReceiptImage() {
     return `${environment.apiUrlV2}${this.metadata.driverPhoto}`;
   }

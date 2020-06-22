@@ -1,0 +1,208 @@
+<ion-content class="transparent ion-padding">
+  <ion-card
+      class="new-card-ui full-page-card ios-margin-bottom ios-padding-bottom"
+      *ngIf="order"
+  >
+    <ion-item
+        class="sg-card-header ion-margin-horizontal ion-padding-horizontal"
+    >
+      <h3>
+        Order #{{ order.id }}
+      </h3>
+      <app-status-badge [status]="order.status"></app-status-badge>
+      <a href="javascript:void(0);" class="sg-card-header-link" (click)="print()" color="primary">
+        <span class="hide-phone">
+            Print Order Details
+        </span>
+        <span class="hide-tablet">
+            Print
+        </span>
+      </a>
+    </ion-item>
+    <ion-item
+        class="sg-card-pick-up ion-margin-right ion-padding-horizontal ion-margin-top"
+    >
+      <ion-grid>
+        <ion-row>
+          <ion-col sizeXs="2" sizeSm="1" sizeMd="2" sizeLg="auto" sizeXl="auto">
+            <ion-avatar>
+              <ion-img src="./assets/img/pick-up-img.png"></ion-img>
+            </ion-avatar>
+          </ion-col>
+          <ion-col>
+            <h3>
+              Pick At {{ order.metadata.pickUpTitle }}
+            </h3>
+            <p>
+              {{ order.metadata.pickUpAddress }}
+            </p>
+            <p>
+              Start Time: {{ order.scheduledAt | date:'medium'}}
+            </p>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+    </ion-item>
+    <ion-item
+        class="sg-card-drop-off ion-margin-right ion-padding-horizontal ion-margin-top"
+    >
+      <ion-grid>
+        <ion-row>
+          <ion-col sizeXs="2" sizeSm="1" sizeMd="2" sizeLg="auto" sizeXl="auto">
+            <ion-avatar>
+              <ion-img src="./assets/img/drop-off-img.png"></ion-img>
+            </ion-avatar>
+          </ion-col>
+          <ion-col>
+            <h3>
+              Drop Off {{ order.metadata.pickUpTitle }}
+            </h3>
+            <p>
+              {{ order.metadata.dropOffTitle }}
+            </p>
+            <p>
+              {{ order.metadata.dropOffAddress }}
+            </p>
+            <p>
+              {{ order.metadata.dropOffPhone }}
+            </p>
+
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+    </ion-item>
+    <ion-item
+        *ngIf="order.metadata.deliveryInstructions"
+        class="sg-card-instruction ion-margin-horizontal ion-padding-horizontal"
+    >
+      <p>
+        <b>Instructions: </b>
+        {{ order.metadata.deliveryInstructions }}
+      </p>
+    </ion-item>
+    <ion-item
+        class="sg-card-instruction ion-margin-horizontal ion-padding-horizontal ion-margin-bottom"
+    >
+      <ion-button
+          color="light"
+          *ngIf="order.status === OrderStatus.Completed"
+          (click)="sendReceipt(order)"
+      >
+        Send Receipt
+      </ion-button>
+    </ion-item>
+  </ion-card>
+
+  <ion-card
+      class="new-card-ui full-page-card ios-margin-bottom ios-padding-bottom"
+      *ngIf="order && order.type === OrderType.Menu"
+  >
+    <ion-item
+        class="sg-card-header ion-margin-horizontal ion-padding-horizontal"
+    >
+      <h3>
+        Products
+      </h3>
+    </ion-item>
+    <ion-list
+        class="menu-items-list ion-margin-horizontal ion-padding-horizontal"
+        *ngIf="order.orderItems && order.orderItems.length"
+    >
+      <ion-item *ngFor="let item of order.orderItems" class="ion-margin-horizontal">
+        <ion-grid>
+          <ion-row>
+            <ion-col>
+              <span class="quantity-container">
+                {{ item.quantity }}
+              </span>
+              <span>
+                {{ item.description }}
+              </span>
+            </ion-col>
+            <ion-col size="auto" class="ion-text-right">
+              CA$ {{ item.price | number:'1.2-2' }}
+            </ion-col>
+          </ion-row>
+          <ion-row *ngFor="let subOption of item.subOptions" class="padding-left-30">
+            <ion-col>
+              <small>
+                {{ subOption.title }}
+              </small>
+            </ion-col>
+            <ion-col *ngIf="subOption.price" size="auto" class="ion-text-right">
+              <small>
+                CA$ {{ subOption.price | number:'1.2-2' }}
+              </small>
+            </ion-col>
+          </ion-row>
+        </ion-grid>
+      </ion-item>
+    </ion-list>
+  </ion-card>
+
+  <ion-card
+      class="new-card-ui full-page-card ios-margin-bottom ios-padding-bottom"
+      *ngIf="order && order.type === OrderType.Booking"
+  >
+    <ion-item
+        class="sg-card-header ion-margin-horizontal ion-padding-horizontal"
+    >
+      <h3>
+        Order Description
+      </h3>
+    </ion-item>
+    <ion-item
+        class="ion-margin-horizontal ion-padding-horizontal ion-margin-vertical"
+    >
+      {{ order.metadata.description }}
+    </ion-item>
+  </ion-card>
+
+  <ion-card
+      class="new-card-ui full-page-card ios-margin-bottom ios-padding-bottom"
+      *ngIf="order"
+  >
+    <ion-item
+        class="sg-card-header ion-margin-horizontal ion-padding-horizontal"
+    >
+      <h3>
+        Driver
+      </h3>
+    </ion-item>
+    <ion-item
+        class="sg-card-pick-up ion-margin-horizontal ion-padding-horizontal ion-margin-top"
+    >
+      <ion-grid>
+        <ion-row>
+          <ion-col>
+            <ng-container *ngIf="order.driverProfileId; else noDriverTmp">
+              <p>
+                {{ order.driverProfile.firstName }}
+                {{ order.driverProfile.lastName }}
+              </p>
+              <p>
+                {{ order.driverProfile.phone }}
+              </p>
+            </ng-container>
+            <ng-template #noDriverTmp>
+              <p>
+                no driver assigned
+              </p>
+            </ng-template>
+          </ion-col>
+          <ion-col size="auto" class="ion-text-right">
+            <ion-button
+                color="light"
+                *ngIf="isActive"
+                [href]="trackUrl"
+                target="_blank"
+            >
+              Track
+            </ion-button>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+    </ion-item>
+  </ion-card>
+
+</ion-content>

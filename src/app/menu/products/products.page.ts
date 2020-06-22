@@ -1,5 +1,5 @@
 import { Component, EventEmitter, OnDestroy, OnInit } from '@angular/core';
-import { ProductModalComponent } from '../../shared/product-modal/product-modal.component';
+import { ProductModalComponent } from '../../shared/components/modals/product-modal/product-modal.component';
 import { ModalController } from '@ionic/angular';
 import { MenuItem } from '../../shared/menu-item';
 import { MerchantsService } from '../../shared/merchants.service';

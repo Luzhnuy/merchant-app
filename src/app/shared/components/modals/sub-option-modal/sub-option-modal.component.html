@@ -1,0 +1,100 @@
+<ion-toolbar color="light">
+  <ion-title class="ion-text-center">
+    {{ subOption.id ? 'Edit' : 'Add'}} Option
+  </ion-title>
+</ion-toolbar>
+<ion-content>
+  <form (submit)="save()" #form="ngForm" class="ion-padding">
+    <div class="form-group">
+      <label for="name">Option Title:</label>
+      <div class="input-group">
+        <input type="text"
+               class="form-control"
+               id="name"
+               placeholder="Category Name"
+               matInput
+               required
+               minlength="3"
+               name="name"
+               #nameEl="ngModel"
+               autocomplete="NoAutocomplete"
+               [(ngModel)]="subOption.title"
+        >
+      </div>
+    </div>
+
+    <div *ngIf="nameEl.invalid && (nameEl.dirty || nameEl.touched)" class="ion-margin-bottom">
+      <small class="error">Please enter category name</small>
+    </div>
+
+    <div class="form-group">
+      <label for="category">Category:</label>
+      <div class="input-group">
+        <ion-select
+            class="form-control"
+            id="category"
+            required
+            #categoryEl="ngModel"
+            name="category"
+            [(ngModel)]="subOption.optionId"
+        >
+          <ion-select-option *ngFor="let option of options" [value]="option.id">
+            {{option.title}}
+          </ion-select-option>
+        </ion-select>
+      </div>
+    </div>
+
+    <div *ngIf="categoryEl.invalid && (categoryEl.dirty || categoryEl.touched)" class="ion-margin-bottom">
+      <small class="error">Please select the category</small>
+    </div>
+
+    <div class="form-group">
+      <label for="price">Price:</label>
+      <div class="input-group">
+        <input type="number"
+               class="form-control"
+               id="price"
+               pattern="\d+(\.\d+)?"
+               matInput
+               required
+               name="price"
+               #priceEl="ngModel"
+               autocomplete="NoAutocomplete"
+               [(ngModel)]="subOption.price"
+        >
+      </div>
+    </div>
+
+    <div *ngIf="priceEl.invalid && (priceEl.dirty || priceEl.touched)" class="ion-margin-bottom">
+      <small class="error">Please type the price</small>
+    </div>
+
+    <div class="form-group">
+      <label for="enabled">Enabled:</label>
+      <input type="checkbox"
+             id="enabled"
+             class="enabled-checkbox"
+             name="enabled"
+             #enabledEl="ngModel"
+             [(ngModel)]="subOption.enabled"
+      >
+    </div>
+
+    <div class="input-group ion-text-center display-flex">
+      <ion-button
+          class="cancel-button"
+          (click)="cancel()"
+      >
+        Cancel
+      </ion-button>
+      <ion-button
+          type="submit"
+          class="submit-button"
+          [disabled]="form.invalid || form.pristine"
+      >
+        Save
+      </ion-button>
+    </div>
+  </form>
+</ion-content>

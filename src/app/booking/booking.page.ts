@@ -1,11 +1,11 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, EventEmitter, OnInit, ViewChild } from '@angular/core';
 import { AlertController, ModalController, ToastController } from '@ionic/angular';
 import { NgForm } from '@angular/forms';
 import { Address } from 'ngx-google-places-autocomplete/objects/address';
-import { AskCreditCardModalComponent } from '../shared/ask-credit-card-modal/ask-credit-card-modal.component';
+import { AskCreditCardModalComponent } from '../shared/components/modals/ask-credit-card-modal/ask-credit-card-modal.component';
 import { DatePipe } from '@angular/common';
 import { HelperService } from '../shared/helper.service';
-import { ConfirmOrderModalComponent } from '../shared/confirm-order-modal/confirm-order-modal.component';
+import { ConfirmOrderModalComponent } from '../shared/components/modals/confirm-order-modal/confirm-order-modal.component';
 import { OrderPrepareRequestData } from '../shared/order-interfaces';
 import { OrderType, OrderV2 } from '../shared/order-v2';
 import { MerchantsService } from '../shared/merchants.service';
@@ -14,6 +14,9 @@ import { OrdersService } from '../shared/orders.service';
 import { ErrorHandlerService } from '../shared/error-handler.service';
 import { PaymentCardsService } from '../shared/payment-cards.service';
 import { PaymentCard } from '../shared/payment-card';
+import { ApiV2Service } from '../shared/api-v2.service';
+import { ZipcodesLists } from '../sign-up/sign-up.page';
+import { skipWhile, takeUntil } from 'rxjs/operators';
 
 interface OrderExtras {
   baseFare: number;
@@ -73,24 +76,15 @@ export class BookingPage implements OnInit {
     }
   };
 
-  private zipcodeszone = ['H2G', 'H3J', 'H3Z', 'H3Y', 'H3H', 'H3V', 'H3T', 'H2V', 'H3G', 'H3A',
-    'H3B', 'H2Z', 'H2Y', 'H2X', 'H2W', 'H2T', 'H2J', 'H2L', 'H2H', 'H5B', 'H4Z', 'H5A', 'H3C',
-    'H4C', 'H1Y', 'H1V', 'H1W', 'H1X', 'H3C', 'H4B', 'H2K', 'H3P', 'H4V', 'H3R', 'H2S', 'H3K',
-    'H3S', 'H3X', 'H3Y', 'H4G', 'H4A', 'H4E', 'H3W',
-  ];
-
-  private zipcodeszone1 = ['J4H', 'J4G', 'J4R', 'J4S', 'J4W', 'J4X', 'J4P', 'H2N', 'H2P', 'H2R',
-    'H1A', 'H1B', 'H1C', 'H1E', 'H1G', 'H1H', 'H1J', 'H1K', 'H1M', 'H1L', 'H1N', 'H1P', 'H1R',
-    'H1S', 'H1T', 'H1Z', 'H2A', 'H2B', 'H2C', 'H2E', 'H2M', 'H3E', 'H3L', 'H3M', 'H3N', 'H4H',
-    'H4J', 'H4K', 'H4L', 'H4M', 'H4N', 'H4P', 'H4R', 'H4S', 'H4T', 'H4W', 'H4X', 'H4Y',
-    'H8N', 'H8P', 'H8R', 'H8S', 'H8T', 'H8Y', 'H8Z', 'H9A', 'H9B', 'H9C', 'H9E', 'H9G', 'H9H',
-    'H9J', 'H9K', 'H9P', 'H9R', 'H9S', 'H9W', 'H9X'
-  ];
+  private availableZipcodes: string[];
+  private readonly endpointZipcodes = 'zipcodes';
 
   // new
   private merchant: MerchantV2;
   public order: OrderV2;
   public card: PaymentCard;
+
+  private destroyed$ = new EventEmitter();
 
   constructor(
     public alertController: AlertController,
@@ -102,18 +96,38 @@ export class BookingPage implements OnInit {
     private merchantsService: MerchantsService,
     private errorHandlerService: ErrorHandlerService,
     private paymentCardsService: PaymentCardsService,
+    private apiClientService: ApiV2Service,
   ) { }
 
   ngOnInit() {
+    this.apiClientService
+      .get(`${this.endpointZipcodes}/lists`)
+      .subscribe((lists: { [key: string ]: { zipcode: string }[]; }) => {
+        this.availableZipcodes = lists[ZipcodesLists.Merchants].map(zipcode => zipcode.zipcode);
+      });
+  }
+
+  ionViewWillLeave() {
+    this.destroyed$
+      .emit();
   }
 
   ionViewWillEnter() {
+    console.log('ionViewWillEnter');
     this.order = new OrderV2();
     this.merchantsService
       .$merchant
+      .pipe(
+        takeUntil(this.destroyed$),
+        skipWhile(merchant => !merchant),
+      )
       .subscribe(merchant => {
         this.merchant = merchant;
-        this.enabledBooking = this.merchant.enableBooking;
+        if (this.merchant) {
+          this.enabledBooking = this.merchant.enableBooking;
+        } else {
+          this.enabledBooking = false;
+        }
         if (!this.enabledBooking) {
           this.helper
             .showError(
@@ -187,7 +201,7 @@ export class BookingPage implements OnInit {
 
   async recalculatePrices() {
     this.addressInvalid = false;
-    if (this.zipcodeszone.indexOf(this.zipcode) > -1 || this.zipcodeszone1.indexOf(this.zipcode) > -1) {
+    if (this.availableZipcodes.indexOf(this.zipcode) > -1) {
       const data = this.getPreparePriceRequestData();
       try {
         const preparedOrder = await this.ordersService
@@ -213,8 +227,14 @@ export class BookingPage implements OnInit {
     if (now.getTime() > date.getTime()) {
       this.dateInvalid = true;
     } else {
-      this.dateInvalid = false;
+      this.dateInvalid = !this.validate7Days(date);
     }
+  }
+
+  private validate7Days(date: Date) {
+    const date7 = new Date();
+    date7.setDate(date7.getDate() + 7);
+    return date7.getTime() > date.getTime();
   }
 
   async timeChanged({detail: {value}}) {
@@ -335,7 +355,7 @@ export class BookingPage implements OnInit {
   }
 
   private getTimezoneOffsetString(additionalOffset = 0, inverse = false) {
-    const timeOffset = this.googlePlaceAddress.utc_offset + additionalOffset;
+    const timeOffset = (this.googlePlaceAddress as any).utc_offset_minutes + additionalOffset;
     const hoursOffset = Math.abs(Math.floor(timeOffset / 60));
     const minutesOffset = Math.abs(timeOffset % 60);
     if (!inverse) {
@@ -345,8 +365,8 @@ export class BookingPage implements OnInit {
     }
   }
 
-  private leadWithZero(number) {
-    return ('0' + number).slice(-2);
+  private leadWithZero(num) {
+    return ('0' + num).slice(-2);
   }
 
   private getNow(clearTime = false): Date {
@@ -442,6 +462,6 @@ export class BookingPage implements OnInit {
     this.order.metadata.dropOffTitle = this.name;
     this.order.metadata.dropOffAddress = this.formatted_address;
     this.order.metadata.dropOffPhone = this.phone;
-    this.order.metadata.utcOffset = this.googlePlaceAddress.utc_offset;
+    this.order.metadata.utcOffset = (this.googlePlaceAddress as any).utc_offset_minutes;
   }
 }

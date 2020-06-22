@@ -1,4 +1,4 @@
-<ion-content padding class="transparent auth-page">
+<ion-content class="ion-padding" class="transparent auth-page">
   <ion-card>
 
     <h1 class="text-align-center">
@@ -6,25 +6,22 @@
     </h1>
 
     <ion-card-title
-        margin-horizontal
-        padding-horizontal
+        class="ion-margin-horizontal ion-padding-horizontal"
     >
       Create a Merchant Account
     </ion-card-title>
     <ion-card-subtitle
-        margin-horizontal
-        padding-horizontal
-        padding-top
+        class="ion-margin-horizontal ion-padding-horizontal ion-padding-top"
     >
       Fill out the information about your business below to get started with on-demand deliveries. No sign-up fees or credit card required.
     </ion-card-subtitle>
 
     <form (submit)="register(form.invalid || addressInvalid)" #form="ngForm">
       <div>
-        <ion-icon name="contact"></ion-icon>
+        <ion-icon name="person-outline"></ion-icon>
         <ion-input
             type="text"
-            placeholder="Name"
+            placeholder="Full Name"
             id="name"
             required
             minlength="5"
@@ -41,10 +38,10 @@
         </small>
       </div>
       <div>
-        <ion-icon name="mail"></ion-icon>
+        <ion-icon name="mail-outline"></ion-icon>
         <ion-input
             type="email"
-            placeholder="E-mail"
+            placeholder="Email"
             id="email"
             required
             email
@@ -60,7 +57,7 @@
         </small>
       </div>
       <div>
-        <ion-icon name="lock"></ion-icon>
+        <ion-icon name="lock-closed-outline"></ion-icon>
         <ion-input
             type="password"
             id="password"
@@ -79,10 +76,10 @@
         </small>
       </div>
       <div>
-        <ion-icon name="call"></ion-icon>
+        <ion-icon name="call-outline"></ion-icon>
         <ion-input
             type="tel"
-            placeholder="Phone"
+            placeholder="Contact Phone"
             id="phone"
             required
             pattern="(\+\d{2}[ -]?)?((\d{3}-\d{3}-\d{4})|(\d{10})|(\d{3} \d{3} \d{4}))"
@@ -97,7 +94,7 @@
           000-000-0000 or 000 000 0000 or 0000000000 or +00 000 000 0000, etc</small>
       </div>
       <div>
-        <ion-icon name="desktop"></ion-icon>
+        <ion-icon name="laptop-outline"></ion-icon>
         <ion-input
             type="text"
             id="website"
@@ -108,18 +105,18 @@
         ></ion-input>
       </div>
       <div>
-        <ion-icon name="list-box"></ion-icon>
+        <ion-icon name="reader-outline"></ion-icon>
         <ion-input
             type="text"
             id="description"
-            placeholder="Description"
+            placeholder="Business Description"
             name="description"
             #descriptionEl="ngModel"
             [(ngModel)]="description"
         ></ion-input>
       </div>
       <div>
-        <ion-icon name="pin"></ion-icon>
+        <ion-icon name="pin-outline"></ion-icon>
         <ion-input
             type="text"
             id="address"
@@ -148,8 +145,8 @@
       <ion-button type="submit">
         Register
       </ion-button>
-      <div margin-top></div>
-      <div class="link-wrapper" text-center>
+      <div class="ion-margin-top"></div>
+      <div class="link-wrapper ion-text-center">
         <a [routerLink]="['/login']">
           Login
         </a>

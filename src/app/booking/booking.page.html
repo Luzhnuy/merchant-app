@@ -1,4 +1,4 @@
-<ion-content padding class="transparent">
+<ion-content class="transparent ion-padding">
 
   <div class="booking-header">
     <img src="./assets/img/Bookings.png">
@@ -10,7 +10,7 @@
       class="transparent"
   >
 
-    <ion-card padding>
+    <ion-card class="ion-padding">
 
       <h1>Drop-off Details</h1>
 
@@ -21,13 +21,13 @@
       </div>
 
       <div class="form-group">
-        <label for="name">Dropoff Name:</label>
+<!--        <label for="name">Dropoff Name:</label>-->
         <div class="input-group has-icon">
           <ion-icon name="person"></ion-icon>
           <input type="text"
                  class="form-control has-icon"
                  id="name"
-                 placeholder="Name"
+                 placeholder="Recipient Name"
                  matInput
                  required
                  name="name"
@@ -44,19 +44,19 @@
       </div>
 
       <div class="form-group">
-        <label for="address">Dropoff Address:</label>
+<!--        <label for="address">Dropoff Address:</label>-->
         <div class="input-group has-icon">
           <ion-icon name="pin"></ion-icon>
           <input
               type="text"
               class="form-control has-icon"
               id="address"
-              placeholder="Address"
+              placeholder="Recipient Adress"
               matInput
               required
               name="address"
               autocomplete="NoAutocompleteAddress"
-              ngx-google-places-autocomplete
+              appAddressAutocomplete
               #addressEl="ngModel"
               [options]="placesOptions"
               (onAddressChange)="handleAddressChange($event)"
@@ -71,30 +71,31 @@
           expand into this area.</small>
       </div>
 
-      <div class="form-group">
-        <label for="zipcode">Dropoff Postal Code:</label>
-        <div class="input-group has-icon">
-          <input type="text"
-                 class="form-control has-icon"
-                 id="zipcode"
-                 placeholder="Postal Code"
-                 matInput
-                 required
-                 disabled
-                 name="zipcode"
-                 [(ngModel)]="zipcode"
-          >
-        </div>
-      </div>
+<!--      <div class="form-group" style="display: none;">-->
+<!--        <label for="zipcode">Dropoff Postal Code:</label>-->
+<!--        <div class="input-group has-icon">-->
+<!--          <ion-icon name="map-outline"></ion-icon>-->
+<!--          <input type="text"-->
+<!--                 class="form-control has-icon"-->
+<!--                 id="zipcode"-->
+<!--                 placeholder="Postal Code"-->
+<!--                 matInput-->
+<!--                 required-->
+<!--                 disabled-->
+<!--                 name="zipcode"-->
+<!--                 [(ngModel)]="zipcode"-->
+<!--          >-->
+<!--        </div>-->
+<!--      </div>-->
 
       <div class="form-group">
-        <label for="phone">Mobile Phone:</label>
+<!--        <label for="phone">Mobile Phone:</label>-->
         <div class="input-group has-icon">
           <ion-icon name="call"></ion-icon>
           <input type="tel"
                  class="form-control has-icon"
                  id="phone"
-                 placeholder=""
+                 placeholder="Recipient’s Mobile Phone Number"
                  matInput
                  required
                  pattern="(\+\d{2}[ -]?)?((\d{3}-\d{3}-\d{4})|(\d{10})|(\d{3} \d{3} \d{4}))"
@@ -113,14 +114,14 @@
       </div>
 
     </ion-card>
-    <ion-card padding>
+    <ion-card class="ion-padding">
 
       <h1>Additional Information</h1>
 
       <div class="form-group ion-margin-top">
-        <label for="instruction">Instruction:</label>
+<!--        <label for="instruction">Instruction:</label>-->
         <div class="input-group has-icon">
-          <ion-icon name="list-box"></ion-icon>
+          <ion-icon name="reader-outline"></ion-icon>
           <input type="text"
                  class="form-control has-icon"
                  id="instruction"
@@ -133,14 +134,13 @@
         </div>
       </div>
 
-      <ion-item>
-        <!--<ion-label>Bring item back to shop (Add a reverse delivery from the dropoff location back to the shop)</ion-label>-->
+      <ion-item class="z-index-10">
         <ion-label>
           Bring item back to shop
           <ion-icon
               name="information-circle-outline"
               tooltip="Add a reverse delivery from the dropoff location back to the shop"
-              positionV="bottom"
+              positionV="top"
               positionH="left"
               event="click"
           ></ion-icon>
@@ -179,7 +179,7 @@
       </ion-item>
 
     </ion-card>
-    <ion-card padding>
+    <ion-card class="ion-padding">
 
       <h1>Pick up Scheduler</h1>
 
@@ -213,7 +213,7 @@
         ></ion-datetime>
       </ion-item>
       <div>&nbsp;
-        <small class="error" *ngIf="dateInvalid">Please, choose delivery date and time in the future</small>
+        <small class="error" *ngIf="dateInvalid">Please, choose delivery date and time in the next 7 days</small>
         <br *ngIf="dateInvalid && timeInvalid"/>
         <small class="error" *ngIf="timeInvalid">Please, choose delivery time between 10:00 and 22:00</small>
       </div>
@@ -221,8 +221,7 @@
     </ion-card>
 
     <ion-card
-        padding
-        class="confirmation-block"
+        class="confirmation-block ion-padding"
     >
 
       <h1>Confirm and Book</h1>
@@ -231,12 +230,11 @@
       </p>
 
       <ion-grid
-          no-padding
-          margin-vertical
+          class="ion-no-padding ion-margin-vertical"
           *ngIf="extras"
       >
-        <ion-row no-padding>
-          <ion-col no-padding sizeXs="9" sizeMd="7" sizeLg="5" sizeXl="3">
+        <ion-row class="ion-no-padding">
+          <ion-col class="ion-no-padding" sizeXs="9" sizeMd="7" sizeLg="5" sizeXl="3">
             Base Fare
             <ion-chip
                 *ngIf="extras.surgeTime"
@@ -246,17 +244,16 @@
                 positionH="left"
                 event="click"
             >
-<!--              <ion-icon name="flash-outline"></ion-icon>-->
               <img src="assets/icon/flash-outline.svg" class="surge-price-img">
               <ion-label color="dark">Surge Time</ion-label>
             </ion-chip>
           </ion-col>
-          <ion-col no-padding size="2" sizeXs="3">
+          <ion-col class="ion-no-padding" size="2" sizeXs="3">
             CA${{ extras.baseFare | number:'1.2-2' }}
           </ion-col>
         </ion-row>
-        <ion-row no-padding>
-          <ion-col no-padding sizeXs="9" sizeMd="7" sizeLg="5" sizeXl="3">
+        <ion-row class="ion-no-padding">
+          <ion-col class="ion-no-padding" sizeXs="9" sizeMd="7" sizeLg="5" sizeXl="3">
             Distance
             <ion-icon
                 name="information-circle"
@@ -267,36 +264,36 @@
                 event="click"
             ></ion-icon>
           </ion-col>
-          <ion-col no-padding size="2" sizeXs="3">
+          <ion-col class="ion-no-padding" size="2" sizeXs="3">
             CA${{ extras.distanceFare | number:'1.2-2' }}
           </ion-col>
         </ion-row>
-        <ion-row no-padding *ngIf="extras && extras.largeOrderFare">
-          <ion-col no-padding sizeXs="9" sizeMd="7" sizeLg="5" sizeXl="3">
+        <ion-row class="ion-no-padding" *ngIf="extras && extras.largeOrderFare">
+          <ion-col class="ion-no-padding" sizeXs="9" sizeMd="7" sizeLg="5" sizeXl="3">
             Large Order Fare
           </ion-col>
-          <ion-col no-padding size="2" sizeXs="3">
+          <ion-col class="ion-no-padding" size="2" sizeXs="3">
             CA${{ extras.largeOrderFare | number:'1.2-2' }}
           </ion-col>
         </ion-row>
-        <ion-row no-padding>
-          <ion-col no-padding sizeXs="9" sizeMd="7" sizeLg="5" sizeXl="3">
+        <ion-row class="ion-no-padding">
+          <ion-col class="ion-no-padding" sizeXs="9" sizeMd="7" sizeLg="5" sizeXl="3">
             TPS
           </ion-col>
-          <ion-col no-padding size="2" sizeXs="3">
+          <ion-col class="ion-no-padding" size="2" sizeXs="3">
             CA${{ order.metadata.tps | number:'1.2-2' }}
           </ion-col>
         </ion-row>
-        <ion-row no-padding>
-          <ion-col no-padding sizeXs="9" sizeMd="7" sizeLg="5" sizeXl="3">
+        <ion-row class="ion-no-padding">
+          <ion-col class="ion-no-padding" sizeXs="9" sizeMd="7" sizeLg="5" sizeXl="3">
             TVQ
           </ion-col>
-          <ion-col no-padding size="2" sizeXs="3">
+          <ion-col class="ion-no-padding" size="2" sizeXs="3">
             CA${{ order.metadata.tvq | number:'1.2-2' }}
           </ion-col>
         </ion-row>
-        <ion-row no-padding>
-          <ion-col no-padding sizeXs="9" sizeMd="7" sizeLg="5" sizeXl="3">
+        <ion-row class="ion-no-padding">
+          <ion-col class="ion-no-padding" sizeXs="9" sizeMd="7" sizeLg="5" sizeXl="3">
             <b>
               Total charged
               <span *ngIf="card">
@@ -306,23 +303,20 @@
               </span>
             </b>
           </ion-col>
-          <ion-col no-padding size="2" sizeXs="3">
+          <ion-col class="ion-no-padding" size="2" sizeXs="3">
             CA${{ order.metadata.totalAmount | number:'1.2-2' }}
           </ion-col>
         </ion-row>
       </ion-grid>
-
-      <div class="input-group">
-        <ion-button
-            type="submit"
-            class="submit-button"
-            [disabled]="!enabledBooking || form.invalid || addressInvalid || timeInvalid || dateInvalid"
-        >
-          <ion-icon slot="start" name="send"></ion-icon>
-          Place delivery
-        </ion-button>
-      </div>
-
+      <ion-button
+          type="submit"
+          color="primary"
+          [disabled]="!enabledBooking || form.invalid || addressInvalid || timeInvalid || dateInvalid"
+      >
+<!--        class="submit-button"-->
+        <!--        <ion-icon slot="start" name="send"></ion-icon>-->
+        Place delivery
+      </ion-button>
     </ion-card>
 
   </form>

@@ -1,0 +1,41 @@
+.expand-wrapper {
+  transition: 0.2s linear;
+}
+
+.collapsed {
+  height: 0 !important;
+}
+
+.badge-col {
+  padding: 0;
+  margin-top: 7px;
+}
+
+ion-grid {
+  max-width: 100%;
+}
+
+.receipt-button {
+  margin: 0;
+  margin-top: -16px;
+}
+
+.new-menu-point {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  background: #ea4c4e;
+  border-radius: 50%;
+  margin-bottom: -3px;
+}
+
+@media (max-width: 768px) {
+
+  .receipt-button {
+    font-size: 10px;
+  }
+
+  strong {
+    font-size: 13px;
+  }
+}

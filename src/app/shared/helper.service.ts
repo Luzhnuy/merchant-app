@@ -37,10 +37,10 @@ export class HelperService {
 
   async showToast(message, color = 'success', position: 'top' | 'middle' | 'bottom' = 'top', duration = 3000) {
     const toast = await this.toastController.create({
-      message: message,
-      duration: duration,
-      color: color,
-      position: position,
+      message,
+      duration,
+      color,
+      position,
     });
     toast.present();
     return toast;

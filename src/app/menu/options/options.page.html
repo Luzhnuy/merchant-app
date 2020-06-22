@@ -1,0 +1,56 @@
+<ion-content>
+  <app-add-option-button
+      *ngIf="merchant"
+      [merchant]="merchant"
+      (save)="onSave()"
+  ></app-add-option-button>
+  <ng-container *ngIf="merchant">
+    <div *ngFor="let option of options" class="menu-grid-container ion-padding">
+      <ion-item color="light" class="category-title-wrapper">
+        <ion-label>
+          <span class="category-title">
+            <b>
+              {{ option.title }}:
+            </b>
+          </span>
+        </ion-label>
+        <ion-buttons slot="end">
+          <app-add-option-item-button
+              [merchant]="merchant"
+              [categories]="categories"
+              [option]="option"
+          ></app-add-option-item-button>
+          <app-add-sub-option-button
+              [merchant]="merchant"
+              [options]="options"
+              [optionId]="option.id"
+              (save)="onSave()"
+          ></app-add-sub-option-button>
+          <app-option-eye-button [option]="option"></app-option-eye-button>
+          <ion-button (click)="showOptionModal(option)">
+            <ion-icon name="create"></ion-icon>
+          </ion-button>
+          <app-delete-option-button [option]="option" (delete)="onDelete()"></app-delete-option-button>
+        </ion-buttons>
+      </ion-item>
+      <ion-item *ngFor="let subOption of option.subOptions">
+        <ion-label class="app-padding-right-45">
+          <span class="product-inner-label">
+            {{ subOption.title }}
+          </span>
+          <b class="product-price">
+            $ {{ subOption.price | number:'1.2-2'}}
+          </b>
+        </ion-label>
+        <ion-buttons slot="end">
+          <app-sub-option-eye-button [subOption]="subOption"></app-sub-option-eye-button>
+          <ion-button (click)="showSubOptionModal(subOption)">
+            <ion-icon name="create"></ion-icon>
+          </ion-button>
+          <app-delete-sub-option-button [subOption]="subOption" (delete)="onDelete()"></app-delete-sub-option-button>
+        </ion-buttons>
+      </ion-item>
+    </div>
+  </ng-container>
+
+</ion-content>

@@ -1,0 +1,59 @@
+<ion-toolbar color="light">
+  <ion-title class="ion-text-center">
+    {{ option.id ? 'Edit' : 'Add'}} Category
+  </ion-title>
+</ion-toolbar>
+<ion-content>
+  <form (submit)="save()" #form="ngForm" class="ion-padding">
+    <div class="form-group">
+      <label for="name">Category Title:</label>
+      <div class="input-group">
+        <input type="text"
+               class="form-control"
+               id="name"
+               placeholder="Category Name"
+               matInput
+               required
+               minlength="3"
+               name="name"
+               #nameEl="ngModel"
+               autocomplete="NoAutocomplete"
+               [(ngModel)]="option.title"
+        >
+      </div>
+    </div>
+
+    <div *ngIf="nameEl.invalid && (nameEl.dirty || nameEl.touched)" class="ion-margin-bottom">
+      <small class="error">Please enter category name</small>
+    </div>
+
+    <div class="form-group">
+      <label for="enabled">
+        Enabled:
+      </label>
+      <input type="checkbox"
+             id="enabled"
+             class="enabled-checkbox"
+             name="enabled"
+             #enabledEl="ngModel"
+             [(ngModel)]="option.enabled"
+      >
+    </div>
+
+    <div class="input-group ion-text-center display-flex">
+      <ion-button
+          class="cancel-button"
+          (click)="cancel()"
+      >
+        Cancel
+      </ion-button>
+      <ion-button
+          type="submit"
+          class="submit-button"
+          [disabled]="form.invalid || form.pristine"
+      >
+        Save
+      </ion-button>
+    </div>
+  </form>
+</ion-content>

@@ -31,6 +31,11 @@ export class StorageCollectionService {
     return subj.asObservable();
   }
 
+  has(key: string, id: string, primaryField = 'id'): boolean {
+    const subscrKey = this.getSubscrRecordKey(key, id);
+    return this.subscriptionsRecords.has(subscrKey);
+  }
+
   all<T>(key: string): Observable<any[]> {
     let subj = this.subscriptionsAll.get(key);
     if (!subj) {

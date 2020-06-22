@@ -1,10 +1,16 @@
 ion-title {
-  min-width: 150px !important;
-  max-width: 200px !important;
+  //min-width: 150px !important;
+  //max-width: 200px !important;
 
   img {
-    height: 40px;
+    height: 25px;
+    //margin-top: -5px;
   }
+}
+
+ion-menu-toggle {
+  font-size: 24px;
+  line-height: 24px;
 }
 
 ion-toolbar ion-button {
@@ -21,9 +27,79 @@ ion-button.bold {
   font-weight: bold;
 }
 
-ion-split-pane.split-pane > ion-menu {
-  min-width: 180px;
-  max-width: 200px;
+ion-split-pane {
+  --side-max-width: calc(100% - 220px);
+  --side-min-width: calc(100% - 220px);
+  --side-width: 100%;
+
+  //&.split-pane {
+  //
+  //  ion-menu {
+  //    min-width: 180px;
+  //    max-width: 200px;
+  //  }
+  //}
+
+  > ion-menu {
+    --border: 0px;
+    min-width: 220px !important;;
+    width: 220px;
+
+    > ion-content {
+      --background: #ECF0F5;
+      --ion-item-background: #ECF0F5;
+
+      .menu-orders-list {
+
+        ion-item {
+          --inner-border-width: 0px;
+          background: #fff;
+          padding: 0 16px;
+          border-radius: 3px;
+          --ion-item-background: #fff;
+          --inner-padding-end: 0px;
+
+          ion-label {
+
+            h2 {
+              font-weight: 600;
+            }
+
+            p {
+              color: #000;
+            }
+          }
+        }
+      }
+
+      .menu-links-list {
+        margin-top: 44px;
+
+        ion-item {
+          --inner-border-width: 0px;
+          --border-width: 0 0 1px 0;
+          font-weight: 500;
+
+          a {
+            --ion-color-primary: #323232;
+          }
+        }
+      }
+    }
+  }
+}
+
+ion-menu-button {
+  --border-radius: 0;
+  width: 100% !important;
+  font-size: 16px;
+  font-weight: 400;
+
+  ion-label {
+    width: 100%;
+    height: 30px;
+    line-height: 30px;
+  }
 }
 
 ion-router-outlet.menu-content {
@@ -35,7 +111,7 @@ ion-item.active-order {
 }
 
 ion-split-pane {
-  padding-top: 52px;
+  padding-top: 40px;
 }
 
 .history-icon {
@@ -43,7 +119,7 @@ ion-split-pane {
 }
 
 .auth-pages-wrapper {
-  background-image: url('/assets/img/alexfirst.png');
+  background-color: #fff;
   width: 100%;
   height: 100%;
   background-position: 50%;
@@ -52,5 +128,40 @@ ion-split-pane {
 
   &.imageless {
     background-image: none;
+  }
+
+  &.imagefull {
+    background-image: url('/assets/img/alexfirst.png');
+  }
+
+}
+.has-new-menu-point {
+  padding-right: 16px;
+
+  .new-menu-point {
+    position: absolute;
+    width: 16px;
+    height: 16px;
+    background: #ea4c4e;
+    border-radius: 50%;
+    top: 14px;
+    right: 0;
+  }
+}
+
+@media (max-width: 768px) {
+
+  ion-title {
+    margin: 0 auto;
+    text-align: center;
+  }
+
+  ion-split-pane {
+
+    > ion-menu {
+      min-width: unset !important;
+      width: unset !important;
+    }
+
   }
 }

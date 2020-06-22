@@ -3,12 +3,14 @@ import { Component, OnInit } from '@angular/core';
 import { Platform } from '@ionic/angular';
 import { SplashScreen } from '@ionic-native/splash-screen/ngx';
 import { StatusBar } from '@ionic-native/status-bar/ngx';
-import { OrderV2 } from './shared/order-v2';
 import { UserServiceV2 } from './shared/user-v2.service';
 import { HelperService } from './shared/helper.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { OrdersService } from './shared/orders.service';
 import { MerchantsService } from './shared/merchants.service';
+import { OrderStatus, OrderV2 } from './shared/order-v2';
+import { OneSignalService } from './shared/one-signal.service';
+import { environment } from '../environments/environment';
 
 @Component({
   selector: 'app-root',
@@ -16,9 +18,8 @@ import { MerchantsService } from './shared/merchants.service';
   styleUrls: ['app.component.scss']
 })
 export class AppComponent implements OnInit {
-
   curOrder: OrderV2;
-  isLogged = false;
+  isLogged: boolean;
   orders: OrderV2[] = [];
 
   private authUrls = ['/login', '/forgot-password', '/sign-up', '/confirm-sms-phone'];
@@ -33,6 +34,8 @@ export class AppComponent implements OnInit {
     private activatedRoute: ActivatedRoute,
     private ordersService: OrdersService,
     private merchantsService: MerchantsService,
+    private helperService: HelperService,
+    private oneSignalService: OneSignalService,
   ) {
     this.initializeApp();
   }
@@ -67,34 +70,27 @@ export class AppComponent implements OnInit {
 
   initializeApp() {
     this.platform.ready().then(() => {
-      this.statusBar.styleDefault();
+      this.oneSignalService.init(
+        environment.oneSignal.appId,
+        environment.oneSignal.googleProjectNumber,
+        environment.oneSignal.safariWebId,
+      );
+      this.oneSignalService
+        .$eventsOpenedThread
+        .subscribe(event => {
+          console.log('Opened Events Thread');
+          if (event.notification.isAppInFocus === false) {
+            if (event.notification.payload.additionalData.type === 'OrderStatusChanged') {
+              this.router.navigate(['/order', event.notification.payload.additionalData.orderId]);
+            }
+          }
+        });
+      if (this.platform.is('ios')) {
+        this.statusBar.styleDefault();
+      } else {
+        this.statusBar.styleBlackOpaque();
+      }
       this.splashScreen.hide();
     });
   }
-
-  setCurrentOrder(order: OrderV2) {
-    this.ordersService.setCurrentOrder(order);
-  }
-
-  logout() {
-    this.userService
-      .logout()
-      .subscribe(() => {
-        window.location.reload();
-      });
-  }
-  // constructor(
-  //   private platform: Platform,
-  //   private splashScreen: SplashScreen,
-  //   private statusBar: StatusBar
-  // ) {
-  //   this.initializeApp();
-  // }
-  //
-  // initializeApp() {
-  //   this.platform.ready().then(() => {
-  //     this.statusBar.styleDefault();
-  //     this.splashScreen.hide();
-  //   });
-  // }
 }

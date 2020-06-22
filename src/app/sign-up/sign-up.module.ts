@@ -7,8 +7,6 @@ import { IonicModule } from '@ionic/angular';
 
 import { SignUpPage } from './sign-up.page';
 import { SharedModule } from '../shared/shared.module';
-import { GooglePlaceModule } from 'ngx-google-places-autocomplete';
-import { AddressAutocompleteDirective } from './address-autocomplete.directive';
 
 const routes: Routes = [
   {
@@ -24,8 +22,7 @@ const routes: Routes = [
     IonicModule,
     RouterModule.forChild(routes),
     SharedModule,
-    // GooglePlaceModule,
   ],
-  declarations: [ SignUpPage, AddressAutocompleteDirective, ]
+  declarations: [ SignUpPage, ]
 })
 export class SignUpPageModule {}

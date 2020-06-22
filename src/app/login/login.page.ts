@@ -29,7 +29,6 @@ export class LoginPage implements OnInit {
           this.router.navigate(['/']);
         },
           err => {
-        console.log('ERROR ::: ', err);
         this.toastController
           .create({
             message: 'Invalid email or password! Please try again',

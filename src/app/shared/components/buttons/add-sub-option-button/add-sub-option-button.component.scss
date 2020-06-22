@@ -1,0 +1,21 @@
+ion-fab-button {
+  --border-radius: 15px;
+  --box-shadow: none;
+  height: 30px;
+  width: 125px;
+  overflow: visible;
+  display: inline-block;
+  margin: 2px 5px 0;
+}
+
+@media (max-width: 1024px) {
+
+  ion-fab-button {
+    width: 30px;
+
+    span {
+      display: none;
+    }
+  }
+
+}

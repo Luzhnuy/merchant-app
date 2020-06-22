@@ -1,0 +1,141 @@
+<ion-toolbar color="light">
+  <ion-title class="ion-text-center">
+    {{data && data.id ? 'Edit' : 'Add'}} Product
+  </ion-title>
+</ion-toolbar>
+<ion-content>
+  <form (submit)="submit()" #form="ngForm" class="ion-padding">
+    <div class="form-group">
+      <label for="name">Product Name:</label>
+      <div class="input-group">
+        <input type="text"
+               class="form-control"
+               id="name"
+               placeholder="Product Name"
+               matInput
+               required
+               minlength="3"
+               name="name"
+               #nameEl="ngModel"
+               autocomplete="NoAutocomplete"
+               [(ngModel)]="name"
+        >
+      </div>
+    </div>
+
+    <div *ngIf="nameEl.invalid && (nameEl.dirty || nameEl.touched)" class="ion-margin-bottom">
+      <small class="error">Please enter product name</small>
+    </div>
+
+    <div class="form-group">
+      <label for="description">Product Description:</label>
+      <div class="input-group">
+        <input type="text"
+               class="form-control"
+               id="description"
+               placeholder="Product Description"
+               name="description"
+               #descriptionEl="ngModel"
+               autocomplete="NoAutocomplete"
+               [(ngModel)]="description"
+        >
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="price">Price:</label>
+      <div class="input-group">
+        <input type="number"
+               class="form-control"
+               id="price"
+               matInput
+               required
+               name="price"
+               #priceEl="ngModel"
+               autocomplete="NoAutocomplete"
+               [(ngModel)]="price"
+        >
+      </div>
+    </div>
+
+    <div *ngIf="priceEl.invalid && (priceEl.dirty || priceEl.touched)" class="ion-margin-bottom">
+      <small class="error">Please type the price</small>
+    </div>
+
+    <div class="form-group">
+      <label for="category">Category:</label>
+      <div class="input-group">
+        <ion-select
+            class="form-control"
+            id="category"
+            required
+            #categoryEl="ngModel"
+            name="category"
+            [(ngModel)]="categoryId"
+        >
+          <ion-select-option *ngFor="let category of categories" [value]="category.id">{{category.name}}</ion-select-option>
+        </ion-select>
+      </div>
+    </div>
+
+    <div *ngIf="categoryEl.invalid && (categoryEl.dirty || categoryEl.touched)" class="ion-margin-bottom">
+      <small class="error">Please select the category</small>
+    </div>
+
+    <div class="form-group">
+      <label>Image:</label>
+      <div class="input-group">
+        <ion-grid>
+          <ion-row>
+            <ion-col size="auto">
+              <input
+                  *ngIf="!isApp"
+                  id="browser-file-image"
+                  name="name"
+                  type="file"
+                  ng2FileSelect
+                  [uploader]="uploader"
+                  (onFileSelected)="fileProgress($event)"
+              />
+              <ion-button
+                  color="light"
+                  (click)="selectImageMobile()"
+              >
+                Choose Image
+              </ion-button>
+            </ion-col>
+            <ion-col size="auto">
+              <ion-button
+                  color="secondary"
+                  *ngIf="image"
+                  (click)="removeImage()"
+              >
+                Remove Image
+              </ion-button>
+            </ion-col>
+          </ion-row>
+        </ion-grid>
+      </div>
+      <img
+          class="item-image"
+          *ngIf="image"
+          [src]="image"
+      >
+    </div>
+    <div class="input-group ion-text-center display-flex">
+      <ion-button
+          class="cancel-button"
+          (click)="cancel()"
+      >
+        Cancel
+      </ion-button>
+      <ion-button
+          type="submit"
+          class="submit-button"
+          [disabled]="form.invalid"
+      >
+        Save
+      </ion-button>
+    </div>
+  </form>
+</ion-content>

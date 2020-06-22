@@ -2,12 +2,24 @@
   top: 0;
 }
 
-ion-title {
+:host::ng-deep {
+  ion-button {
+    --color: #000;
+  }
+}
+
+.category-title-wrapper {
+  --background: #ccc;
+  --min-height: 48px;
+  height: 48px;
+  --inner-border-width: 0;
+}
+
+ion-label {
   .category-title {
     display: inline-block;
     text-overflow: ellipsis;
     overflow: hidden;
-    padding-right: 140px;
     max-width: 100%;
   }
 }
@@ -17,7 +29,6 @@ ion-item {
   --padding-start: 15px;
 
   ion-label {
-    padding-right: 70px;
     position: relative;
 
   .product-inner-label {
@@ -50,7 +61,6 @@ app-add-product-button {
   float: right;
 }
 
-@media (max-width: 768px) {
-
-
+ion-buttons {
+  margin-inline-start: 0;
 }

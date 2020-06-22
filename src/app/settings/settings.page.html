@@ -1,36 +1,289 @@
-<ion-content padding class="transparent">
-
-  <ion-card padding class="full-page-card" *ngIf="merchant">
-    <h1 class="text-align-center">
-      <ion-icon name="settings"></ion-icon>
-      More
-    </h1>
-    <div class="image-container display-flex"
+<ion-content class="transparent ion-padding">
+  <ion-card
+      class="new-card-ui full-page-card ios-margin-bottom ios-padding-bottom"
+      *ngIf="merchant"
+  >
+    <ion-item
+        class="sg-card-header ion-padding-horizontal"
     >
-      <img *ngIf="logo" [src]="logo" />
-      <div class="merchant-data display-flex flex-1">
-        <input *ngIf="!logo" type="file" ng2FileSelect [uploader]="uploader" (onFileSelected)="fileProgress($event)" />
-        <ion-button *ngIf="logoChanged" (click)="saveImage()" size="small">Save Image</ion-button>
-        <h2>{{ merchant.name }}</h2>
-        <h4>{{ merchant.phone }}</h4>
-        <h4>{{ merchant.departments[0].address }}</h4>
-      </div>
+      <h3>
+        Profile
+      </h3>
+      <a class="sg-card-header-link" (click)="logout()" [routerLink]="['/login']" color="primary">
+        Sign Out
+      </a>
+    </ion-item>
+    <ion-item
+        class="sg-card-profile ion-padding-horizontal"
+    >
+      <ion-grid>
+        <ion-row>
+          <ion-col size="3" sizeSm="3" sizeMd="2" sizeXl="1">
+            <ion-avatar *ngIf="logo">
+              <img [src]="logo"/>
+            </ion-avatar>
+            <ng-container *ngIf="!logo">
+              <input
+                  class="merchant-logo-uploader"
+                  *ngIf="!isApp"
+                  type="file"
+                  ng2FileSelect
+                  [uploader]="uploader"
+                  (onFileSelected)="fileProgress($event)"
+              />
+              <ion-button
+                  *ngIf="!logoChanged"
+                  class="merchant-logo-upload-button"
+                  color="light"
+                  (click)="selectImageMobile()"
+              >
+                <ion-icon name="image-outline"></ion-icon>
+              </ion-button>
+            </ng-container>
 
-    </div>
-
-    <div class="ion-text-center">
-      <ion-button [routerLink]="['/change-password']">Change Password</ion-button>
-      <ion-button [routerLink]="['/opening-time']">Opening Time</ion-button>
-      <ion-button [routerLink]="['/menu', 'all']">Menu</ion-button>
-      <ion-button [routerLink]="['/contact-us']">Contact Us</ion-button>
-      <ion-button [routerLink]="['/credit-card']">Payment</ion-button>
-      <ion-button [routerLink]="['/reports']">Reports</ion-button>
-      <ion-item class="toggle-button">
-        <ion-toggle [(ngModel)]="merchant.subscribedOnReceipt" (ngModelChange)="changeReceiptSubscription($event)"></ion-toggle>
-        <ion-label>Allow to send receipt to e-mail</ion-label>
-      </ion-item>
-    </div>
-
+            <ion-button *ngIf="logoChanged" (click)="saveImage()" size="small">Save</ion-button>
+          </ion-col>
+          <ion-col>
+            <h3>{{ merchant.name }}</h3>
+            <h4>{{ merchant.departments[0].address }}</h4>
+            <h4>{{ merchant.phone }}</h4>
+            <ion-button class="ion-margin-top" color="light" [routerLink]="['/change-password']">
+              Change Password
+            </ion-button>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+    </ion-item>
+  </ion-card>
+  <ion-card class="new-card-ui full-page-card ion-margin-bottom" *ngIf="merchant">
+    <ion-item
+        class="sg-card-header ion-padding-horizontal"
+    >
+      <h3>
+        Menu in SnapGrab Ordering App
+      </h3>
+      <a
+          class="sg-card-header-link"
+          [routerLink]="['/menu', 'all']"
+          color="primary"
+      >
+        Add / Edit Menu
+      </a>
+    </ion-item>
+    <ion-item
+        class="sg-card-snapgrab ion-padding-horizontal"
+    >
+      <span
+          class="status-circle"
+          [ngClass]="{ 'status-active': merchant.enableMenu, 'status-inactive': !merchant.enableMenu }"
+      >
+      </span>
+      <span>
+        {{ merchant.enableMenu ? 'Active' : 'Inactive' }}
+      </span>
+      <ion-toggle
+          slot="end"
+          mode="md"
+          [disabled]="!logo"
+          [(ngModel)]="merchant.enableMenu"
+          (ngModelChange)="toggleMenuActive($event);"
+      ></ion-toggle>
+    </ion-item>
+    <ion-item class="open-time ion-padding-horizontal">
+      <ion-grid class="ion-margin-horizontal">
+        <ion-row>
+          <ion-col>
+            <ion-label for="open-time">
+              Open Time
+            </ion-label>
+          </ion-col>
+          <ion-col class="ion-text-right" size="8">
+            <ion-datetime
+                #openTimeDatePicker
+                id="open-time"
+                display-format="HH:mm"
+                picker-format="HH mm"
+                (ionChange)="timeChanged()"
+                [(ngModel)]="openHour"
+                hourValues="10,11,12,13,14,15,16,17,18,19,20,21,22"
+                minuteValues="0"
+                name="openHour"
+            ></ion-datetime>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+    </ion-item>
+    <ion-item class="close-time ion-padding-horizontal">
+      <ion-grid class="ion-margin-horizontal">
+        <ion-row>
+          <ion-col>
+            <ion-label for="close-time">
+              Close Time
+            </ion-label>
+          </ion-col>
+          <ion-col class="ion-text-right" size="8">
+            <ion-datetime
+                id="close-time"
+                display-format="HH:mm"
+                picker-format="HH mm"
+                (ionChange)="timeChanged()"
+                [(ngModel)]="closeHour"
+                hourValues="10,11,12,13,14,15,16,17,18,19,20,21,22"
+                minuteValues="0"
+                name="closeHour"
+            ></ion-datetime>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+    </ion-item>
+    <ion-item *ngIf="invalidDate">
+      <small>Open Time should be less that Close Time</small>
+    </ion-item>
+  </ion-card>
+  <ion-card  class="new-card-ui full-page-card ion-margin-bottom" *ngIf="merchant" >
+    <ion-item
+        class="sg-card-header ion-padding-horizontal"
+    >
+      <h3>
+        Receipts
+      </h3>
+    </ion-item>
+    <ion-item
+        class="sg-card-receipts ion-padding-horizontal"
+    >
+      <ion-grid>
+        <ion-row>
+          <ion-col class="vertical-center">
+            Allow to send receipt to e-mail
+          </ion-col>
+          <ion-col class="ion-text-right" size="3">
+            <ion-toggle
+                mode="md"
+                [(ngModel)]="merchant.subscribedOnReceipt"
+                (ngModelChange)="changeReceiptSubscription($event)"
+            ></ion-toggle>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+    </ion-item>
+  </ion-card>
+  <ion-card  class="new-card-ui full-page-card ion-margin-bottom ion-padding-bottom" *ngIf="merchant">
+    <ion-item
+        class="sg-card-header ion-padding-horizontal"
+    >
+      <h3>
+        Payment
+      </h3>
+      <a class="sg-card-header-link" color="primary" (click)="openEditCardModal()" href="javascript:void(0);">
+        Add / Edit Card
+      </a>
+    </ion-item>
+    <ion-item
+        class="sg-card-payments ion-padding-horizontal"
+    >
+      <ng-container *ngIf="card; else noCardContainer">
+        <img [src]="'./assets/img/' + imageName" class="card-image" />
+        <span>{{ card.last4 }}</span>
+      </ng-container>
+      <ng-template #noCardContainer>
+        <small>
+          You didn't set card yet. Please set up credit card.
+        </small>
+      </ng-template>
+    </ion-item>
   </ion-card>
 
+  <ion-card  class="new-card-ui full-page-card ion-padding-bottom" *ngIf="merchant" >
+    <ion-item
+        class="sg-card-header ion-padding-horizontal"
+    >
+      <h3>
+        Reports
+      </h3>
+    </ion-item>
+    <ion-item
+        class="sg-card-reports-tablet hide-phone ion-padding-horizontal"
+    >
+      <ion-grid>
+        <ion-row>
+          <ion-col>
+            <small>
+              Select the date range and type of report you would like to download.
+            </small>
+          </ion-col>
+        </ion-row>
+        <ion-row>
+          <ion-col>
+            <input
+                class="form-control"
+                name="reports-date-range"
+                placeholder="Range"
+                autocomplete="off"
+                appSgDateRange
+                (rangeChange)="onDateRangeChanged($event)"
+                readonly
+            >
+          </ion-col>
+          <ion-col>
+            <ion-select
+                class="form-control"
+                [(ngModel)]="selectedType"
+                name="status-select"
+            >
+              <ion-select-option
+                  *ngFor="let type of reportTypes"
+                  [value]="type"
+              >
+                {{ type}}
+              </ion-select-option>
+            </ion-select>
+          </ion-col>
+          <ion-col class="ion-text-right">
+            <ion-button
+                color="light"
+                [disabled]="invalidReports"
+                (click)="download()"
+            >
+              Download
+            </ion-button>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+    </ion-item>
+    <ion-list class="hide-tablet sg-card-reports-phone">
+      <ion-item>
+        <ion-label>Period</ion-label>
+        <ion-input
+            class="ion-text-right"
+            name="reports-date-range-mobile"
+            placeholder="Range"
+            autocomplete="off"
+            readonly
+            appSgDateRange
+            (rangeChange)="onDateRangeChanged($event)"
+        ></ion-input>
+      </ion-item>
+      <ion-item>
+        <ion-label>Type</ion-label>
+        <ion-select placeholder="Select Type" [(ngModel)]="selectedType">
+          <ion-select-option
+              *ngFor="let type of reportTypes"
+              [value]="type"
+          >
+            {{ type}}
+          </ion-select-option>
+        </ion-select>
+      </ion-item>
+      <ion-item>
+        <ion-button color="light" class="ion-margin-top" (click)="download()">
+          Download
+        </ion-button>
+      </ion-item>
+      <ion-item *ngIf="invalidReports">
+        <small class="error">
+          Please, select correct date
+        </small>
+      </ion-item>
+    </ion-list>
+  </ion-card>
 </ion-content>

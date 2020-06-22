@@ -7,9 +7,7 @@ import { IonicModule } from '@ionic/angular';
 
 import { BookingPage } from './booking.page';
 import { SharedModule } from '../shared/shared.module';
-import { GooglePlaceModule } from 'ngx-google-places-autocomplete';
-import { TooltipsModule } from 'ionic4-tooltips';
-// import { TooltipsModule } from 'ionic-tooltips';
+import { TooltipsModule } from '../shared/sg-tooltips/tooltips.module';
 
 const routes: Routes = [
   {
@@ -18,8 +16,6 @@ const routes: Routes = [
   }
 ];
 
-// @ts-ignore
-// @ts-ignore
 @NgModule({
   imports: [
     CommonModule,
@@ -27,7 +23,6 @@ const routes: Routes = [
     IonicModule,
     RouterModule.forChild(routes),
     SharedModule,
-    GooglePlaceModule,
     TooltipsModule.forRoot(),
   ],
   declarations: [BookingPage]

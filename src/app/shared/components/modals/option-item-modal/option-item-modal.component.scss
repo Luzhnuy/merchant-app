@@ -1,0 +1,26 @@
+:host::ng-deep {
+  .count-input {
+    input {
+      width: 34px
+    }
+  }
+}
+
+.count-input {
+  border-width: 1px 0;
+  border-style: solid;
+  box-shadow: none;
+  border-color: #eee;
+  height: 38px;
+  width: 34px;
+  text-align: center;
+}
+
+.toggle-item-option {
+  width: 34px;
+  height: 34px;
+
+  ion-icon {
+    font-size: 44px;
+  }
+}

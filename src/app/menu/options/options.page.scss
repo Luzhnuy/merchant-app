@@ -1,0 +1,67 @@
+:host {
+  top: 0;
+}
+
+:host::ng-deep {
+  ion-button {
+    --color: #000;
+  }
+}
+
+.category-title-wrapper {
+  --background: #ccc;
+  --min-height: 48px;
+  height: 48px;
+  --inner-border-width: 0;
+}
+
+ion-label {
+  .category-title {
+    display: inline-block;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    max-width: 100%;
+  }
+}
+
+ion-item {
+  --inner-padding-end: 4px;
+  --padding-start: 15px;
+
+  ion-label {
+    position: relative;
+
+    .product-inner-label {
+      display: inline-block;
+      text-overflow: ellipsis;
+      overflow: hidden;
+      max-width: 100%;
+    }
+
+    .product-price {
+      position: absolute;
+      right: 0;
+    }
+  }
+
+  ::ng-deep {
+    .item-native {
+      border-width: var(--inner-border-width);
+      border-style: var(--border-style);
+      border-color: var(--border-color);
+
+      .item-inner {
+        border: 0;
+      }
+    }
+  }
+}
+
+app-add-sub-option-button,
+app-add-option-item-button {
+  float: right;
+}
+
+ion-buttons {
+  margin-inline-start: 0;
+}

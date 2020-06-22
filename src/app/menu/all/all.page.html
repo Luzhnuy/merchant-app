@@ -2,32 +2,34 @@
   <app-add-category-button *ngIf="merchant" [accountId]="merchant.id"></app-add-category-button>
 
   <ng-container *ngIf="merchant">
-    <div padding *ngFor="let category of categories" class="menu-grid-container">
-      <ion-toolbar color="light">
-        <ion-title>
-        <span class="category-title">
-          {{ category.name }}:
-          <small>
-            {{ category.description }}
-          </small>
-        </span>
-        <app-add-product-button [accountId]="merchant.id" [categoryId]="category.id"></app-add-product-button>
-        </ion-title>
+    <div *ngFor="let category of categories" class="menu-grid-container ion-padding">
+      <ion-item color="light" class="category-title-wrapper">
+        <ion-label>
+          <span class="category-title">
+            <b>
+              {{ category.name }}:
+            </b>
+            <small>
+              {{ category.description }}
+            </small>
+          </span>
+        </ion-label>
         <ion-buttons slot="end">
+          <app-add-product-button [accountId]="merchant.id" [categoryId]="category.id"></app-add-product-button>
           <app-category-eye-button [category]="category"></app-category-eye-button>
           <ion-button (click)="showCategoryModal(category)">
             <ion-icon name="create"></ion-icon>
           </ion-button>
           <app-category-delete-button [accountId]="merchant.id" [categoryId]="category.id"></app-category-delete-button>
         </ion-buttons>
-      </ion-toolbar>
+      </ion-item>
       <ion-item *ngFor="let item of category.items">
-        <ion-label>
-        <span class="product-inner-label">
-          {{ item.name }}: {{ item.description }}
-        </span>
+        <ion-label class="app-padding-right-45">
+          <span class="product-inner-label">
+            {{ item.name }}: {{ item.description }}
+          </span>
           <b class="product-price">
-            ${{ item.price | number:'1.2-2'}}
+            $ {{ item.price | number:'1.2-2'}}
           </b>
         </ion-label>
         <ion-buttons slot="end">

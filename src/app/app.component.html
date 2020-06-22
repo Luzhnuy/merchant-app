@@ -1,61 +1,104 @@
 <ion-app>
   <ion-header *ngIf="isLogged">
     <ion-toolbar class="header-horizontal-padding-phone">
-      <ion-title slot="start" class="hide-phone">
-        <img src="./assets/img/logo-menu-n.png"/>
-      </ion-title>
-      <ion-buttons slot="start">
-        <ion-button [routerLink]="['/home']" class="no-margin-phone hide-phone">
-          <ion-icon name="menu"></ion-icon>
-        </ion-button>
-        <ion-button [routerLink]="['/orders-list']" class="no-margin-phone hide-tablet">
-          <ion-icon name="menu"></ion-icon>
-        </ion-button>
+      <ion-buttons slot="start" color="primary" class="hide-tablet">
+        <ion-menu-toggle class="ion-no-margin">
+          <ion-icon name="menu" color="primary"></ion-icon>
+        </ion-menu-toggle>
       </ion-buttons>
-      <ion-buttons slot="end">
-        <ion-button [routerLink]="['/history']">
-          <ion-icon slot="start" name="calendar" class="no-margin-phone"></ion-icon>
-          <span class="hide-phone">History</span>
-        </ion-button>
-        <ion-button [routerLink]="['/booking']" class="bold">
-          <ion-icon slot="start" name="add-circle-outline" class="no-margin-phone"></ion-icon>
-          <span class="hide-phone">BOOKING</span>
-        </ion-button>
-        <ion-button [routerLink]="['/settings']">
-          <ion-icon slot="start" name="settings" class="no-margin-phone"></ion-icon>
-          <span class="hide-phone">More</span>
-        </ion-button>
-        <ion-button [routerLink]="['/login']" (click)="logout()">
-          <ion-icon slot="start" name="log-out" class="no-margin-phone"></ion-icon>
-          <span class="hide-phone">Logout</span>
-        </ion-button>
+      <ion-title>
+        <img src="./assets/img/logo-white.png"/>
+      </ion-title>
+      <ion-buttons slot="end" class="hide-phone" color="primary">
+        <a [routerLink]="['/history']" class="ion-margin-horizontal">
+          <span>History</span>
+        </a>
+        <a [routerLink]="['/booking']" class="ion-margin-horizontal">
+          <span>Add Delivery</span>
+        </a>
+        <a [routerLink]="['/contact-us']" class="ion-margin-horizontal">
+          <span>Contact Us</span>
+        </a>
+        <a [routerLink]="['/settings']" class="ion-margin-horizontal">
+          <span>Settings</span>
+        </a>
       </ion-buttons>
     </ion-toolbar>
   </ion-header>
-  <ion-split-pane *ngIf="isLogged" when="md">
-    <ion-menu  [hidden]="!isLogged">
+  <ion-split-pane *ngIf="isLogged" when="md" contentId="main">
+    <ion-menu contentId="main">
       <ion-content style="--offset-top: 52px;">
-        <ion-list>
+        <ion-list class="menu-orders-list hide-phone ion-padding-vertical ion-padding-start">
           <ion-menu-toggle auto-hide="false" *ngFor="let order of orders">
             <ion-item
+                class="ion-no-padding ion-margin-bottom"
                 [routerDirection]="'root'"
-                [routerLink]="['/home']"
-                (click)="setCurrentOrder(order)"
+                [routerLink]="['/order', order.id]"
                 [ngClass]="{'active-order': curOrder && curOrder.id === order.id}"
             >
               <ion-label>
-                <h1>{{order.metadata.dropOffTitle || 'No Name'}}</h1>
+                <h2
+                    [ngClass]="{ 'has-new-menu-point': order.isNew }"
+                >
+                  {{ order.metadata.dropOffTitle || 'No Name' }}
+                  <div *ngIf="order.isNew" class="new-menu-point"></div>
+                </h2>
                 <p>{{order.createdAt | date:'short'}}</p>
                 <app-status-badge [status]="order.status"></app-status-badge>
               </ion-label>
             </ion-item>
           </ion-menu-toggle>
+          <div *ngIf="orders.length === 0" class="ion-text-center ion-margin-vertical">
+            No Active Orders
+          </div>
+        </ion-list>
+        <ion-list class="menu-links-list hide-tablet ion-no-margin ion-no-padding">
+          <ion-item>
+            <ion-menu-button [routerLink]="['/orders-list']">
+              <ion-label class="ion-text-left">
+                Orders
+              </ion-label>
+            </ion-menu-button>
+            <ion-badge
+                *ngIf="orders && orders.length"
+                slot="end"
+                color="primary"
+            > {{ orders.length }} </ion-badge>
+          </ion-item>
+          <ion-item>
+            <ion-menu-button [routerLink]="['/history']">
+              <ion-label class="ion-text-left">
+                History
+              </ion-label>
+            </ion-menu-button>
+          </ion-item>
+          <ion-item>
+            <ion-menu-button [routerLink]="['/booking']">
+              <ion-label class="ion-text-left">
+                Add Delivery
+              </ion-label>
+            </ion-menu-button>
+          </ion-item>
+          <ion-item>
+            <ion-menu-button [routerLink]="['/settings']">
+              <ion-label class="ion-text-left">
+                Settings
+              </ion-label>
+            </ion-menu-button>
+          </ion-item>
+          <ion-item>
+            <ion-menu-button [routerLink]="['/contact-us']">
+              <ion-label class="ion-text-left">
+                Contact Us
+              </ion-label>
+            </ion-menu-button>
+          </ion-item>
         </ion-list>
       </ion-content>
     </ion-menu>
-    <ion-router-outlet main></ion-router-outlet>
+    <ion-router-outlet id="main"></ion-router-outlet>
   </ion-split-pane>
-  <div class="auth-pages-wrapper" [class.imageless]="isLogged">
+  <div class="auth-pages-wrapper" [class.imageless]="isLogged === true" [class.imagefull]="isLogged === false">
     <ion-router-outlet main *ngIf="!isLogged"></ion-router-outlet>
   </div>
 </ion-app>

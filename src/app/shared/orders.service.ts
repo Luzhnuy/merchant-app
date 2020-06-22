@@ -6,10 +6,11 @@ import { ApiV2Service } from './api-v2.service';
 import { EntitiesService } from './entities.service';
 import { HelperService } from './helper.service';
 import { ErrorHandlerService } from './error-handler.service';
-import { OrderStatus, OrderV2 } from './order-v2';
+import { OrderStatus, OrderType, OrderV2 } from './order-v2';
 import { OrderPrepareData, OrderPrepareRequestData } from './order-interfaces';
 import { WsClientService } from './ws-client.service';
 import { StorageCollectionService } from './storage-collection.service';
+import { NativeAudio } from '@ionic-native/native-audio/ngx';
 
 export class OrdersSearchParams {
   page?: number
@@ -39,13 +40,16 @@ export class OrdersService extends EntitiesService<OrderV2> {
   private $$currentOrder: BehaviorSubject<OrderV2> = new BehaviorSubject<OrderV2>(null);
   public $currentOrder: Observable<OrderV2> = this.$$currentOrder.asObservable();
 
+  private watchedOrderIds: number[];
+
   constructor(
     protected readonly apiClient: ApiV2Service,
     private userService: UserServiceV2,
     public helper: HelperService,
     public errorHandler: ErrorHandlerService,
-    public readonly wsClient: WsClientService,
+    public readonly wsClient: WsClientService<OrderV2>,
     private storageCollection: StorageCollectionService,
+    private nativeAudio: NativeAudio,
   ) {
     super(helper, errorHandler);
   }
@@ -123,6 +127,32 @@ export class OrdersService extends EntitiesService<OrderV2> {
     };
     try {
       this.orders = await this.load(searchParams).toPromise();
+      if (!this.watchedOrderIds) {
+        setTimeout(() => {
+          this.updateSoundState();
+        }, 6000);
+        this.watchedOrderIds = this.orders.map(order => order.id);
+      } else {
+        const newOrdersIds: number[] = this.orders.map(order => order.id);
+        this.watchedOrderIds
+          .forEach(oId => {
+            const idx = newOrdersIds.indexOf(oId);
+            if (idx > -1) {
+              newOrdersIds.splice(idx, 1);
+            }
+          });
+        if (newOrdersIds.length) {
+          this.orders
+            .forEach(order => {
+              if (newOrdersIds.indexOf(order.id) > -1) {
+                order.isNew = true;
+              }
+            });
+          setTimeout(() => {
+            this.updateSoundState();
+          }, 6000);
+        }
+      }
     } catch (e) {
       console.error(e);
       // TODO handle error correctly
@@ -137,6 +167,9 @@ export class OrdersService extends EntitiesService<OrderV2> {
   }
 
   getSingle(id): Observable<OrderV2> {
+    if (!this.storageCollection.has(this.SubEventName, id)) {
+      return super.getSingle(id);
+    }
     return this.storageCollection.get(this.SubEventName, id);
   }
 
@@ -157,6 +190,20 @@ export class OrdersService extends EntitiesService<OrderV2> {
         return 'success';
       case OrderStatus.Accepted:
         return 'secondary';
+    }
+  }
+
+  viewOrder(orderId: number) {
+    if (this.watchedOrderIds && this.watchedOrderIds.indexOf(orderId) === -1) {
+      this.watchedOrderIds.push(orderId);
+    }
+    if (this.orders) {
+      const order = this.orders.find(o => o.id === orderId);
+      if (order && order.isNew) {
+        order.isNew = false;
+        this.storageCollection.set(this.SubEventName, order);
+      }
+      this.updateSoundState();
     }
   }
 
@@ -201,12 +248,16 @@ export class OrdersService extends EntitiesService<OrderV2> {
         }
       });
     this.wsClient
-      .listen<OrderV2>(this.SubEventName)
+      .listen(this.SubEventName)
       .subscribe((orderData) => {
         let order = this.orders.find(o => o.id === orderData.id);
         if (!order) {
           order = new OrderV2(orderData);
+          if (order.type === OrderType.Menu) {
+            order.isNew = true;
+          }
           this.orders.push(order);
+          this.updateSoundState();
         } else {
           Object.assign(order, orderData);
         }
@@ -217,6 +268,37 @@ export class OrdersService extends EntitiesService<OrderV2> {
             this.orders = orders;
           });
         }
+      });
+  }
+
+  private updateSoundState() {
+    if (this.orders.find(o => o.isNew)) {
+      this.putSoundOn();
+    } else {
+      this.putSoundOff();
+    }
+  }
+
+  putSoundOn() {
+    this.nativeAudio.preloadSimple('newMenuOrder', 'assets/mp3/done-for-you.mp3').then(() => {
+      this.nativeAudio.loop('newMenuOrder')
+        .then(() => {
+        }, (e) => {
+          console.error(e);
+          (document.getElementById('new-menu-order-sound') as any).play();
+        });
+    }, (e) => {
+      console.error(e);
+      (document.getElementById('new-menu-order-sound') as any).play();
+    });
+  }
+
+  private putSoundOff() {
+    this.nativeAudio
+      .stop('newMenuOrder')
+      .then(() => {}, (e) => {
+        console.error(e);
+        (document.getElementById('new-menu-order-sound') as any).pause();
       });
   }
 

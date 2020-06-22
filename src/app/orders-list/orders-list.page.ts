@@ -1,6 +1,8 @@
-import { Component, OnInit } from '@angular/core';
-import { OrdersService } from '../shared/orders.service';
+import { Component, EventEmitter, OnInit } from '@angular/core';
+import { OrdersSearchParams, OrdersService } from '../shared/orders.service';
 import { OrderV2 } from '../shared/order-v2';
+import { HelperService } from '../shared/helper.service';
+import { takeUntil } from 'rxjs/operators';
 
 @Component({
   selector: 'app-orders-list',
@@ -9,20 +11,36 @@ import { OrderV2 } from '../shared/order-v2';
 })
 export class OrdersListPage implements OnInit {
 
-  public orders: OrderV2[] = [];
+  orders: OrderV2[] = [];
+
+  private params: OrdersSearchParams = new OrdersSearchParams();
+
+  leave$ = new EventEmitter();
 
   constructor(
-    public ordersService: OrdersService,
+    private helper: HelperService,
+    private ordersService: OrdersService
   ) { }
 
   ngOnInit() {
-    this.ordersService
-      .getAll()
-      .subscribe(orders => this.orders = orders);
+
   }
 
-  onOrderClick(order: OrderV2) {
-    this.ordersService.setCurrentOrder(order);
+  ionViewDidLeave() {
+    this.leave$.emit();
+  }
+
+  async ionViewDidEnter() {
+    await this.helper.showLoading();
+    this.ordersService
+      .getAll()
+      .pipe( takeUntil(this.leave$) )
+      .subscribe(orders => {
+        this.orders = orders;
+        this.helper.stopLoading();
+      }, error => {
+        this.helper.stopLoading();
+      });
   }
 
 }
