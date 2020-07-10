@@ -12,13 +12,21 @@
   <div class="confirm-order-image-wrapper">
     <img class="confirm-order-image" src="./assets/img/confirm-order.png"/>
   </div>
-  <p class="ion-padding-horizontal">
-    Order will be picked up between {{ startTime | date:'shortTime':'+0000' }} and {{ endTime | date:'shortTime':'+0000' }} and will be delivered by {{ endTime | date:'shortTime':'+0000' }}.
-    Your order must be ready for pick up by {{ startTime | date:'shortTime':'+0000' }}.
-  </p>
-  <p class="ion-padding-horizontal">
-    Delivery to: {{ address }}
-  </p>
+  <ng-container *ngIf="type === OrderType.Booking; else tripDescription">
+    <p class="ion-padding-horizontal">
+      Order will be picked up between {{ startTime | date:'shortTime':'+0000' }} and {{ endTime | date:'shortTime':'+0000' }} and will be delivered by {{ endTime | date:'shortTime':'+0000' }}.
+      Your order must be ready for pick up by {{ startTime | date:'shortTime':'+0000' }}.
+    </p>
+    <p class="ion-padding-horizontal">
+      Delivery to: {{ address }}
+    </p>
+  </ng-container>
+  <ng-template #tripDescription>
+    <p class="ion-padding-horizontal">
+      Orders will be picked up between {{ startTime | date:'shortTime':'+0000' }} and {{ endTime | date:'shortTime':'+0000' }} and will be delivered in an optimized sequence.
+      Your orders must be ready for pick up by {{ startTime | date:'shortTime':'+0000' }}.
+    </p>
+  </ng-template>
   <div class="input-group ion-text-center" padding>
     <ion-button
         type="submit"

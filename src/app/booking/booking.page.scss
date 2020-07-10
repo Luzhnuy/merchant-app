@@ -4,6 +4,66 @@ ion-card {
   &:last-child {
     margin-bottom: 0 !important;
   }
+
+  &.trip-description {
+
+    img {
+      width: 56px;
+      height: 56px;
+      float: left;
+    }
+  }
+
+  .padding-top-8 {
+    padding-top: 8px;
+  }
+
+  h1 {
+    font-size: 16px;
+    border-bottom: 1px solid #aaa;
+    padding: 0 16px 12px;
+    margin-top: 0;
+  }
+
+  .booking-data-container {
+    max-height: 35vh;
+    overflow-y: scroll;
+
+    .number-row {
+      max-width: 30px;
+      padding: 11px 0;
+      text-align: center;
+      font-size: 22px;
+    }
+
+    hr {
+      background-color: #999;
+      margin-top: 0;
+    }
+
+    >.form-group {
+      margin-right: 36px;
+      position: relative;
+
+      ion-fab-button {
+        width: 20px;
+        height: 20px;
+        --box-shadow: 0 1px 2px -1px rgba(0, 0, 0, 0.2), 0 3px 5px 0 rgba(0, 0, 0, 0.14), 0 1px 9px 0 rgba(0, 0, 0, 0.12);
+        position: absolute;
+        right: -26px;
+        top: 0;
+      }
+    }
+
+    ion-grid {
+
+      padding-top: 0;
+
+      .form-group {
+        margin-bottom: 0;
+      }
+    }
+  }
 }
 
 .booking-header {

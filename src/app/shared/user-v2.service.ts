@@ -50,14 +50,10 @@ export class UserServiceV2 {
           user = new User(userData);
           if (!user.isLogged()) {
             this.apiClient.clearAuth();
-          } else if (!this.oneSignalService.subscribed) {
-            await this.oneSignalService
-              .subscribe(user.id);
           }
         } else {
           this.apiClient.clearAuth();
         }
-
         this.$$user.next(user);
       });
   }

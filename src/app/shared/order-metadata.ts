@@ -40,6 +40,7 @@ export class OrderMetadata {
   tvq?: number;
   serviceFee?: number;
 
+  tripUuid: string;
 
   constructor(init?: Partial<OrderMetadata>) {
     if (init) {

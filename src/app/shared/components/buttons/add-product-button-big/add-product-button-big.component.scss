@@ -1,7 +1,10 @@
-ion-button {
+ion-fab-button {
+  --border-radius: 15px;
+  --box-shadow: none;
+  height: 32px;
   width: 200px;
-  margin: 20px auto 10px;
-  display: block;
+  overflow: visible;
+  margin: 20px 16px 0 auto;
 
   ion-icon {
     position: absolute;

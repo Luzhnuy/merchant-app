@@ -1,5 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { ModalController } from '@ionic/angular';
+import { OrderType } from '../../../order-v2';
 
 @Component({
   selector: 'app-confirm-order-modal',
@@ -8,9 +9,12 @@ import { ModalController } from '@ionic/angular';
 })
 export class ConfirmOrderModalComponent implements OnInit {
 
+  @Input() type: OrderType;
   @Input() startTime: Date;
   @Input() endTime: Date;
   @Input() address: string;
+
+  OrderType = OrderType;
 
   constructor(
     private modalController: ModalController,

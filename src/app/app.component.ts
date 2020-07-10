@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, EventEmitter, OnInit } from '@angular/core';
 
 import { Platform } from '@ionic/angular';
 import { SplashScreen } from '@ionic-native/splash-screen/ngx';
@@ -11,6 +11,8 @@ import { MerchantsService } from './shared/merchants.service';
 import { OrderStatus, OrderV2 } from './shared/order-v2';
 import { OneSignalService } from './shared/one-signal.service';
 import { environment } from '../environments/environment';
+import { pipe } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 
 @Component({
   selector: 'app-root',
@@ -69,20 +71,32 @@ export class AppComponent implements OnInit {
   }
 
   initializeApp() {
+    const logged = new EventEmitter();
     this.platform.ready().then(() => {
-      this.oneSignalService.init(
-        environment.oneSignal.appId,
-        environment.oneSignal.googleProjectNumber,
-        environment.oneSignal.safariWebId,
-      );
-      this.oneSignalService
-        .$eventsOpenedThread
-        .subscribe(event => {
-          console.log('Opened Events Thread');
-          if (event.notification.isAppInFocus === false) {
-            if (event.notification.payload.additionalData.type === 'OrderStatusChanged') {
-              this.router.navigate(['/order', event.notification.payload.additionalData.orderId]);
+      this.userService
+        .$user
+        .pipe(takeUntil(logged))
+        .subscribe(user => {
+          if (user && user.isLogged()) {
+            logged.emit();
+            this.oneSignalService.init(
+              environment.oneSignal.appId,
+              environment.oneSignal.googleProjectNumber,
+              environment.oneSignal.safariWebId,
+            );
+            if (!this.oneSignalService.subscribed) {
+              this.oneSignalService
+                .subscribe(user.id);
             }
+            this.oneSignalService
+              .$eventsOpenedThread
+              .subscribe(event => {
+                if (event.notification.isAppInFocus === false) {
+                  if (event.notification.payload.additionalData.type === 'OrderStatusChanged') {
+                    this.router.navigate(['/order', event.notification.payload.additionalData.orderId]);
+                  }
+                }
+              });
           }
         });
       if (this.platform.is('ios')) {

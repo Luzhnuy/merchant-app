@@ -15,9 +15,6 @@ import { ActionSheetController, AlertController, ModalController, Platform } fro
 import { PaymentCardsService } from '../shared/payment-cards.service';
 import { AskCreditCardModalComponent } from '../shared/components/modals/ask-credit-card-modal/ask-credit-card-modal.component';
 import { DatePipe } from '@angular/common';
-// import { FileTransfer, FileUploadOptions, FileTransferObject } from '@ionic-native/file-transfer/ngx';
-import { FileUploadOptions, FileTransferObject } from '@ionic-native/file-transfer/ngx';
-import { FileTransfer } from '@ionic-native/file-transfer';
 import { Camera, CameraOptions, PictureSourceType } from '@ionic-native/camera/ngx';
 import { from } from 'rxjs';
 import { File } from '@ionic-native/file';
@@ -27,6 +24,7 @@ enum HumanTypes {
   Booking = 'Booking',
   App = 'App',
   All = 'All',
+  Earnings = 'Earnings total',
 }
 
 @Component({
@@ -56,15 +54,16 @@ export class SettingsPage implements OnInit {
   rangeChangeCounter = 0;
   dateRange: Date[] = [];
   maxDate = new Date();
-  reportTypes: HumanTypes[] = [ HumanTypes.Booking, HumanTypes.App, HumanTypes.All];
+  reportTypes: HumanTypes[] = [ HumanTypes.Booking, HumanTypes.App, HumanTypes.All, HumanTypes.Earnings];
   selectedType: HumanTypes = HumanTypes.Booking;
   invalidReports = false;
   typesAssoc: {
     [key: string]: OrderType[];
   } = {
-    [HumanTypes.Booking]: [OrderType.Booking],
+    [HumanTypes.Booking]: [OrderType.Booking, OrderType.Trip],
     [HumanTypes.App]: [OrderType.Menu],
-    [HumanTypes.All]: [OrderType.Booking, OrderType.Menu],
+    [HumanTypes.All]: [OrderType.Booking, OrderType.Menu, OrderType.Trip],
+    [HumanTypes.Earnings]: [OrderType.Menu],
   };
   imageName: string;
   card: PaymentCard;
@@ -322,43 +321,14 @@ export class SettingsPage implements OnInit {
     }
   }
 
-  async download() {
+  download() {
     if (this.invalidReports || !this.dateRange || !this.dateRange.length) {
       return;
     }
-    try {
-      const startDate = new Date(this.dateRange[0].getTime());
-      const endDate = new Date(this.dateRange[1].getTime());
-      startDate.setHours(0, 0, 0, 0);
-      endDate.setHours(24, 0, 0, 0);
-      const token = await this.userService.getOneTimeAuthToken().toPromise();
-      const params = {
-        token,
-        limit: 9999,
-        page: 0,
-        range: [
-          startDate.toISOString(),
-          endDate.toISOString(),
-        ],
-        types: this.typesAssoc[this.selectedType],
-      };
-      const link = this.ordersService.getReportLink(params);
-      if (this.platform.is('ios') || this.platform.is('android')) {
-        try {
-          const blob = await this.downloaderService
-            .download(link);
-          await this.downloaderService
-            .save(this.getReportFileName(startDate, endDate, this.selectedType), blob, blob.type);
-          await this.helper.showToast('Report was saved successfully');
-        } catch (e) {
-          console.error(e);
-          await this.helper.showToast('Problems with downloading file');
-        }
-      } else {
-        this.downloadBrowser(link);
-      }
-    } catch (e) {
-      console.error(e);
+    if (this.selectedType !== HumanTypes.Earnings) {
+      this.downloadReport();
+    } else {
+      this.downloadInvoice();
     }
     return;
   }
@@ -379,12 +349,12 @@ export class SettingsPage implements OnInit {
     }
   }
 
-  private getReportFileName(startDate: Date, endDate: Date, type: string) {
+  private getReportFileName(startDate: Date, endDate: Date, type: HumanTypes) {
     let fileName = `report-${type}`;
     fileName += this.datePipe.transform(startDate, 'MMM-d-y');
     fileName += '-';
     fileName += this.datePipe.transform(endDate, 'MMM-d-y');
-    fileName += '.csv';
+    fileName += type === HumanTypes.Earnings ? '.pdf' : '.csv';
     return fileName;
   }
 
@@ -428,5 +398,111 @@ export class SettingsPage implements OnInit {
       default:
         return 'card_pay.png';
     }
+  }
+
+  private async downloadInvoice() {
+    try {
+      const { params, startDate, endDate } = await this.getDownloadParams();
+      const link = this.ordersService.getInvoiceLink(params);
+      await this.saveReport(link, startDate, endDate);
+    } catch (e) {
+      console.error(e);
+    }
+  }
+
+  private async downloadReport() {
+    try {
+      const { params, startDate, endDate } = await this.getDownloadParams();
+      const link = this.ordersService.getReportLink(params);
+      await this.saveReport(link, startDate, endDate);
+    } catch (e) {
+      console.error(e);
+    }
+  }
+
+  private async getDownloadParams() {
+    const startDate = new Date(this.dateRange[0].getTime());
+    const endDate = new Date(this.dateRange[1].getTime());
+    startDate.setHours(0, 0, 0, 0);
+    endDate.setHours(24, 0, 0, 0);
+    const token = await this.userService.getOneTimeAuthToken().toPromise();
+    const params = {
+      token,
+      limit: 9999,
+      page: 0,
+      range: [
+        startDate.toISOString(),
+        endDate.toISOString(),
+      ],
+      timezoneOffset: startDate.getTimezoneOffset(),
+      types: this.typesAssoc[this.selectedType],
+    };
+    return { params, startDate, endDate };
+  }
+
+  async saveFile(link, startDate, endDate, type: HumanTypes) {
+    if (this.isIOsOrAndroid()) {
+      try {
+        const blob = await this.downloaderService
+          .download(link);
+        await this.downloaderService
+          .save(this.getReportFileName(startDate, endDate, this.selectedType), blob, blob.type);
+        await this.helper.showToast('Report was saved successfully');
+      } catch (e) {
+        console.error(e);
+        await this.helper.showToast('Problems with downloading file');
+      }
+    } else {
+      this.downloadBrowser(link);
+    }
+  }
+
+  async saveReport(link, startDate, endDate) {
+    if (this.isIOsOrAndroid()) {
+      if (!this.platform.is('cordova')) {
+        const storeUrl = this.platform
+          .is('ios') ?
+          'https://apps.apple.com/app/id1523073977' :
+          'market://details?id=com.snapgrabdelivery.apps.merchants';
+        const alert = await this.alertController.create({
+          // header: 'Alert',
+          // subHeader: 'Subtitle',
+          message: `This functionality is unavailable in browser.
+            Please, use <a href="${storeUrl}"><b>SnapGrab for Merchants</b></a> app.`,
+          buttons: [
+            // 'Use browser', 'Download app',
+            {
+              text: 'Use browser',
+              role: 'cancel',
+              cssClass: 'secondary',
+            }, {
+              text: 'Download app',
+              handler: () => {
+                window.location.href = storeUrl;
+                console.log('Confirm Okay');
+              }
+            }
+          ],
+        });
+        await alert.present();
+        return;
+      }
+      try {
+        const blob = await this.downloaderService
+          .download(link);
+        await this.downloaderService
+          .save(this.getReportFileName(startDate, endDate, this.selectedType), blob, blob.type);
+        await this.helper.showToast('Report was saved successfully');
+      } catch (e) {
+        console.error(e);
+        await this.helper.showToast('Problems with downloading file');
+      }
+    } else {
+      this.downloadBrowser(link);
+    }
+  }
+
+  private isIOsOrAndroid() {
+    return this.platform.is('ios') || this.platform.is('android');
   }
 }

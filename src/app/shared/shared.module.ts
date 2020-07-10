@@ -1,6 +1,5 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { OrderDetailsComponent } from './components/order-details/order-details.component';
 import { IonicModule } from '@ionic/angular';
 import { HttpClientModule } from '@angular/common/http';
 import { StatusBadgeComponent } from './components/status-badge/status-badge.component';
@@ -44,7 +43,6 @@ const publicModules = [
 ];
 
 const publicComponents = [
-  OrderDetailsComponent,
   StatusBadgeComponent,
   BackButtonComponent,
   AddProductButtonComponent,

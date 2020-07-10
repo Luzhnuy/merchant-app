@@ -1,27 +1,143 @@
 <ion-content class="transparent ion-padding">
-
   <div class="booking-header">
     <img src="./assets/img/Bookings.png">
   </div>
-
+  <div class="booking-tabs ion-margin-bottom">
+    <ion-button
+        [color]="orderType === OrderType.Booking ? 'dark' : 'light'"
+        (click)="switchType(OrderType.Booking)"
+        class="ion-text-capitalize ion-margin-end"
+    >
+      Single Order
+    </ion-button>
+    <ion-button
+        class="ion-text-capitalize"
+        [color]="orderType === OrderType.Trip ? 'dark' : 'light'"
+        (click)="switchType(OrderType.Trip)"
+    >
+      Trip
+    </ion-button>
+  </div>
+  <ion-card class="trip-description ion-padding ion-margin-bottom" *ngIf="orderType === OrderType.Trip">
+    <img src="./assets/img/map-icon.png" class="ion-margin-end">
+    SnapGrab Trip enables you to send out multiple orders at once with discounted delivery fee. Your Trip will be picked up by a single driver and will be carried out in sequence immediately after pick-up. A minimum of 5 deliveries is required to place a Trip.
+  </ion-card>
   <form
       (submit)="createOrder()"
       #form="ngForm"
       class="transparent"
   >
-
-    <ion-card class="ion-padding">
-
-      <h1>Drop-off Details</h1>
-
-      <div *ngIf="apiError">
-        <small class="error">
-          {{ apiError }}
-        </small>
+    <div *ngIf="apiError">
+      <small class="error">
+        {{ apiError }}
+      </small>
+    </div>
+    <ion-card class="ion-padding" *ngIf="orderType === OrderType.Trip">
+      <h1>Delivery Details (min: {{ minTripOrders }})</h1>
+      <div class="booking-data-container">
+        <div class="form-group" *ngFor="let orderData of tripOrdersData; let idx = index">
+          <ion-fab-button
+              *ngIf="tripOrdersData.length > minTripOrders"
+              (click)="removeNewBookingOrder(idx)"
+              size="small"
+              color="light"
+          >
+            <ion-icon name="close-outline"></ion-icon>
+          </ion-fab-button>
+          <ion-grid>
+            <ion-row>
+              <ion-col class="number-row">
+                {{ idx + 1}}
+              </ion-col>
+              <ion-col>
+                <ion-grid>
+                  <ion-row>
+                    <ion-col size="12">
+                      <div class="form-group">
+                        <div class="input-group has-icon">
+                          <ion-icon name="pin"></ion-icon>
+                          <input
+                              type="text"
+                              class="form-control has-icon"
+                              [id]="'address-' + orderData.tmpId"
+                              placeholder="Recipient Adress"
+                              matInput
+                              required
+                              [name]="'address-' + orderData.tmpId"
+                              autocomplete="NoAutocompleteAddress"
+                              appAddressAutocomplete
+                              #addressEl="ngModel"
+                              [options]="placesOptions"
+                              (onAddressChange)="handleAddressChange($event, idx)"
+                              [(ngModel)]="orderData.address"
+                              [disabled]="!enabledBooking"
+                          >
+                        </div>
+                      </div>
+                      <div *ngIf="orderData.addressInvalid && (addressEl.dirty || addressEl.touched)">
+                        <small class="error">SnapGrab does not yet service this destination. We will let you know when we
+                          expand into this area.</small>
+                      </div>
+                    </ion-col>
+                    <ion-col sizeXs="12" sizeSm="6">
+                      <div class="input-group has-icon">
+                        <ion-icon name="person"></ion-icon>
+                        <input type="text"
+                               class="form-control has-icon"
+                               [id]="'name-' + orderData.tmpId"
+                               placeholder="Recipient Name"
+                               matInput
+                               required
+                               [name]="'name-' + orderData.tmpId"
+                               #nameEl="ngModel"
+                               autocomplete="NoAutocomplete"
+                               [(ngModel)]="orderData.name"
+                               [disabled]="!enabledBooking"
+                        >
+                      </div>
+                      <div *ngIf="nameEl.invalid && (nameEl.dirty || nameEl.touched)">
+                        <small class="error">Please enter the name</small>
+                      </div>
+                    </ion-col>
+                    <ion-col sizeXs="12" sizeSm="6">
+                      <div class="form-group">
+                        <div class="input-group has-icon">
+                          <ion-icon name="call"></ion-icon>
+                          <input type="tel"
+                                 class="form-control has-icon"
+                                 [id]="'phone-' + orderData.tmpId"
+                                 placeholder="Recipient’s Mobile Phone Number"
+                                 matInput
+                                 required
+                                 pattern="(\+\d{2}[ -]?)?((\d{3}-\d{3}-\d{4})|(\d{10})|(\d{3} \d{3} \d{4}))"
+                                 [name]="'phone-' + orderData.tmpId"
+                                 autocomplete="NoAutocomplete"
+                                 #phoneEl="ngModel"
+                                 [(ngModel)]="orderData.phone"
+                                 [disabled]="!enabledBooking"
+                          >
+                        </div>
+                      </div>
+                      <div *ngIf="phoneEl.invalid && (phoneEl.dirty || phoneEl.touched)">
+                        <small class="error">Please enter a correct phone</small>
+                      </div>
+                    </ion-col>
+                  </ion-row>
+                </ion-grid>
+              </ion-col>
+            </ion-row>
+          </ion-grid>
+          <hr/>
+        </div>
+        <ion-button size="small" color="light" (click)="addNewBookingOrder()">
+          Add order
+        </ion-button>
       </div>
+    </ion-card>
 
-      <div class="form-group">
-<!--        <label for="name">Dropoff Name:</label>-->
+    <ion-card class="ion-padding" *ngIf="orderType === OrderType.Booking">
+      <h1>Drop-off Details</h1>
+      <div class="form-group padding-top-8">
         <div class="input-group has-icon">
           <ion-icon name="person"></ion-icon>
           <input type="text"
@@ -38,13 +154,10 @@
           >
         </div>
       </div>
-
       <div *ngIf="nameEl.invalid && (nameEl.dirty || nameEl.touched)">
         <small class="error">Please enter the name</small>
       </div>
-
       <div class="form-group">
-<!--        <label for="address">Dropoff Address:</label>-->
         <div class="input-group has-icon">
           <ion-icon name="pin"></ion-icon>
           <input
@@ -65,31 +178,11 @@
           >
         </div>
       </div>
-
       <div *ngIf="addressInvalid && (addressEl.dirty || addressEl.touched)">
         <small class="error">SnapGrab does not yet service this destination. We will let you know when we
           expand into this area.</small>
       </div>
-
-<!--      <div class="form-group" style="display: none;">-->
-<!--        <label for="zipcode">Dropoff Postal Code:</label>-->
-<!--        <div class="input-group has-icon">-->
-<!--          <ion-icon name="map-outline"></ion-icon>-->
-<!--          <input type="text"-->
-<!--                 class="form-control has-icon"-->
-<!--                 id="zipcode"-->
-<!--                 placeholder="Postal Code"-->
-<!--                 matInput-->
-<!--                 required-->
-<!--                 disabled-->
-<!--                 name="zipcode"-->
-<!--                 [(ngModel)]="zipcode"-->
-<!--          >-->
-<!--        </div>-->
-<!--      </div>-->
-
       <div class="form-group">
-<!--        <label for="phone">Mobile Phone:</label>-->
         <div class="input-group has-icon">
           <ion-icon name="call"></ion-icon>
           <input type="tel"
@@ -107,19 +200,16 @@
           >
         </div>
       </div>
-
       <div *ngIf="phoneEl.invalid && (phoneEl.dirty || phoneEl.touched)">
         <small class="error">Please enter phone number in format:
           000-000-0000 or 000 000 0000 or 0000000000 or +00 000 000 0000, etc</small>
       </div>
-
     </ion-card>
-    <ion-card class="ion-padding">
+    <ion-card class="ion-padding" *ngIf="orderType === OrderType.Booking">
 
       <h1>Additional Information</h1>
 
       <div class="form-group ion-margin-top">
-<!--        <label for="instruction">Instruction:</label>-->
         <div class="input-group has-icon">
           <ion-icon name="reader-outline"></ion-icon>
           <input type="text"
@@ -180,11 +270,8 @@
 
     </ion-card>
     <ion-card class="ion-padding">
-
-      <h1>Pick up Scheduler</h1>
-
-      <p><b>Pick Up Time  (Please allow up to 60 minutes from scheduled pick up for completed delivery): </b></p>
-
+      <h1>Schedule pick-up time</h1>
+<!--      <p><b>Pick Up Time  (Please allow up to 60 minutes from scheduled pick up for completed delivery): </b></p>-->
       <ion-item>
         <ion-label>Date</ion-label>
         <ion-datetime
@@ -219,25 +306,22 @@
       </div>
 
     </ion-card>
-
     <ion-card
         class="confirmation-block ion-padding"
     >
-
       <h1>Confirm and Book</h1>
       <p>
         A detailed confirmation receipt will be sent to your e-mail
       </p>
-
       <ion-grid
           class="ion-no-padding ion-margin-vertical"
-          *ngIf="extras"
+          *ngIf="totals"
       >
         <ion-row class="ion-no-padding">
           <ion-col class="ion-no-padding" sizeXs="9" sizeMd="7" sizeLg="5" sizeXl="3">
             Base Fare
             <ion-chip
-                *ngIf="extras.surgeTime"
+                *ngIf="totals.extras.surgeTime"
                 color="tertiary"
                 tooltip="Prices are slightly higher for your scheduled delivery time du to high demand or difficult driving conditions."
                 positionV="bottom"
@@ -249,7 +333,7 @@
             </ion-chip>
           </ion-col>
           <ion-col class="ion-no-padding" size="2" sizeXs="3">
-            CA${{ extras.baseFare | number:'1.2-2' }}
+            CA${{ totals.extras.baseFare | number:'1.2-2' }}
           </ion-col>
         </ion-row>
         <ion-row class="ion-no-padding">
@@ -265,15 +349,15 @@
             ></ion-icon>
           </ion-col>
           <ion-col class="ion-no-padding" size="2" sizeXs="3">
-            CA${{ extras.distanceFare | number:'1.2-2' }}
+            CA${{ totals.extras.distanceFare | number:'1.2-2' }}
           </ion-col>
         </ion-row>
-        <ion-row class="ion-no-padding" *ngIf="extras && extras.largeOrderFare">
+        <ion-row class="ion-no-padding" *ngIf="totals.extras.largeOrderFare">
           <ion-col class="ion-no-padding" sizeXs="9" sizeMd="7" sizeLg="5" sizeXl="3">
             Large Order Fare
           </ion-col>
           <ion-col class="ion-no-padding" size="2" sizeXs="3">
-            CA${{ extras.largeOrderFare | number:'1.2-2' }}
+            CA${{ totals.extras.largeOrderFare | number:'1.2-2' }}
           </ion-col>
         </ion-row>
         <ion-row class="ion-no-padding">
@@ -281,7 +365,7 @@
             TPS
           </ion-col>
           <ion-col class="ion-no-padding" size="2" sizeXs="3">
-            CA${{ order.metadata.tps | number:'1.2-2' }}
+            CA${{ totals.tps | number:'1.2-2' }}
           </ion-col>
         </ion-row>
         <ion-row class="ion-no-padding">
@@ -289,7 +373,7 @@
             TVQ
           </ion-col>
           <ion-col class="ion-no-padding" size="2" sizeXs="3">
-            CA${{ order.metadata.tvq | number:'1.2-2' }}
+            CA${{ totals.tvq | number:'1.2-2' }}
           </ion-col>
         </ion-row>
         <ion-row class="ion-no-padding">
@@ -304,7 +388,7 @@
             </b>
           </ion-col>
           <ion-col class="ion-no-padding" size="2" sizeXs="3">
-            CA${{ order.metadata.totalAmount | number:'1.2-2' }}
+            CA${{ totals.totalAmount | number:'1.2-2' }}
           </ion-col>
         </ion-row>
       </ion-grid>
@@ -313,13 +397,8 @@
           color="primary"
           [disabled]="!enabledBooking || form.invalid || addressInvalid || timeInvalid || dateInvalid"
       >
-<!--        class="submit-button"-->
-        <!--        <ion-icon slot="start" name="send"></ion-icon>-->
         Place delivery
       </ion-button>
     </ion-card>
-
   </form>
-
-
 </ion-content>

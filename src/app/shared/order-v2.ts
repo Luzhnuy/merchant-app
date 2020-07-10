@@ -24,6 +24,7 @@ export enum OrderType {
   Custom = 'Custom',
   Menu = 'Menu',
   Booking = 'Booking',
+  Trip = 'Trip',
 }
 
 export class OrderV2 extends Entity {

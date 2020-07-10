@@ -11,5 +11,11 @@ export const environment = {
   imageHost: 'https://sgswiftadmin-api.snapgrabdelivery.com/',
   trackingUrlBaseUrl: 'https://sgswiftadmin.snapgrabdelivery.com/track/',
 
+  oneSignal: {
+    appId: 'b8959365-ea50-4c25-82fa-cb371c03fcb8',
+    googleProjectNumber: '313369182389',
+    safariWebId: 'web.onesignal.auto.639febc2-a356-4a97-8e69-81281557724a',
+  },
+
   wsSource: 'merchant',
 };

@@ -29,6 +29,7 @@ export class OrdersService extends EntitiesService<OrderV2> {
 
   protected readonly endpoint = 'orders';
   protected readonly endpointPrepareOrder = 'orders/prepare-order';
+  protected readonly endpointMinTripCount = 'price-calculator/min-trip-count';
 
   isWatching: boolean;
 
@@ -52,6 +53,24 @@ export class OrdersService extends EntitiesService<OrderV2> {
     private nativeAudio: NativeAudio,
   ) {
     super(helper, errorHandler);
+  }
+
+  public getMinTripOrdersCount() {
+    const subj = new Subject<number>();
+    this.apiClient
+      .get(
+        this.endpointMinTripCount,
+      )
+      .subscribe(
+        (resp: number) => {
+          subj.next(resp);
+          subj.complete();
+        }, err => {
+          subj.error(err);
+          subj.complete();
+        }
+      );
+    return subj.asObservable();
   }
 
   public setCurrentOrder(order: OrderV2) {
@@ -176,6 +195,11 @@ export class OrdersService extends EntitiesService<OrderV2> {
   getReportLink(query: any) {
     const searchParams = new URLSearchParams(query).toString();
     return this.apiClient.getUrl(`${this.endpoint}/reports?${searchParams}`);
+  }
+
+  getInvoiceLink(query: any) {
+    const searchParams = new URLSearchParams(query).toString();
+    return this.apiClient.getUrl(`${this.endpoint}/invoice?${searchParams}`);
   }
 
   getColorByStatus(status: OrderStatus) {

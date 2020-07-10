@@ -16,10 +16,7 @@ export class HelperService {
 
   async showLoading(message = 'Loading...', duration = 3000) {
     await this.stopLoading();
-    this.loading = await this.loadingController.create({
-      message: message,
-      duration: duration
-    });
+    this.loading = await this.loadingController.create({ message, duration });
     await this.loading.present();
   }
 

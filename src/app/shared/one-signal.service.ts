@@ -35,7 +35,7 @@ export class OneSignalService {
         this.oneSignalWeb = window.OneSignal;
         this.oneSignalWeb.init({
           appId,
-          allowLocalhostAsSecureOrigin: true,
+          // allowLocalhostAsSecureOrigin: true, // uncomment for localhosts
           notificationClickHandlerAction: 'focus',
           // notificationClickHandlerAction: 'navigate',
           notificationClickHandlerMatch: 'origin',
@@ -43,10 +43,25 @@ export class OneSignalService {
             disabled: true,
           },
           safari_web_id: safariWebId,
+          // notifyButton: {
+          //   enable: true,
+          // },
         });
+        setTimeout(() => {
+          if (window.safari && window.safari.pushNotification &&
+            window.safari.pushNotification.toString() === '[object SafariRemoteNotification]') {
+            window.OneSignal.isPushNotificationsEnabled((isEnabled) => {
+              if (!isEnabled) {
+                localStorage.removeItem('onesignal-notification-prompt')
+                window.OneSignal.showSlidedownPrompt();
+              }
+            });
+          } else {
+            this.oneSignalWeb.showNativePrompt();
+          }
+        }, 15000);
         this.oneSignalWeb
           .addListenerForNotificationOpened(event => {
-            console.log('addListenerForNotificationOpened', event);
             const openEvent: any = {
               notification: {
                 isAppInFocus: false,
@@ -58,10 +73,8 @@ export class OneSignalService {
             this._$eventsOpenedThread.next(openEvent);
           });
         this.oneSignalWeb.on('notificationDisplay', event => {
-          console.log('OneSignal notification displayed:', event);
         });
         this.oneSignalWeb.on('notificationDismiss', event => {
-          console.log('OneSignal notification displayed:', event);
         });
         if (this.userId) {
           this.webInited = true;
@@ -86,7 +99,6 @@ export class OneSignalService {
   }
 
   async subscribe(userId) {
-    console.log('subscribe');
     if (this.isWeb() && !this.webInited) {
       this.userId = userId;
       return;
@@ -96,7 +108,6 @@ export class OneSignalService {
     const currentTags: any = {};
     userId = userId.toString();
     currentTags[this.getEnvironmentRelatedTagName('sg_merchants_user_id')] = userId;
-    console.log('tags ::', currentTags, this.oneSignalWeb);
     const oneSignal = this.isWeb() ? this.oneSignalWeb : this.oneSignal;
     try {
       const tags = await oneSignal.getTags();

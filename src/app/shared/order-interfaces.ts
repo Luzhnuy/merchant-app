@@ -1,15 +1,12 @@
 import { OrderType } from './order-v2';
 
 export interface OrderPreparePriceData {
-  // chargeId?: number;
-  // chargeId2?: number;
   tvq?: number;
   tps?: number;
   tip?: number;
   tipPercent?: number;
   customAmount?: number;
   totalAmount?: number;
-  // chargedAmount?: number;
   discount?: number;
   deliveryCharge?: number;
   subtotal?: number;
