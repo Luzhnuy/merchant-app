@@ -23,7 +23,7 @@ export class ProductDeleteButtonComponent implements OnInit {
 
   async onDelete() {
     const alert = await this.alertController.create({
-      header: 'Are you sure you want to delete product?',
+      message: 'Are you sure you want to delete product?',
       buttons: [
         {
           text: 'Cancel',

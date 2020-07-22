@@ -22,7 +22,7 @@ export class DeleteSubOptionButtonComponent implements OnInit {
 
   async onDelete() {
     const alert = await this.alertController.create({
-      header: `Are you sure you want to delete option ${this.subOption.title}?`,
+      message: `Are you sure you want to delete option ${this.subOption.title}?`,
       buttons: [
         {
           text: 'Cancel',

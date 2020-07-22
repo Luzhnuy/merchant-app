@@ -120,4 +120,13 @@ ion-card {
       }
     }
   }
+
+  .api-token-input {
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+    font-size: 14px;
+    max-width: 300px;
+    padding-right: 16px !important;
+  }
 }

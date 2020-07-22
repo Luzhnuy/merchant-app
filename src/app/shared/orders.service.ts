@@ -77,6 +77,33 @@ export class OrdersService extends EntitiesService<OrderV2> {
     this.$$currentOrder.next(order);
   }
 
+  updateStatus(
+    id: number,
+    status: OrderStatus,
+    cancellationReason?: string,
+  ) {
+    const subj = new Subject<OrderV2>();
+    this.apiClient
+      .put(
+        `${this.endpoint}/status/${id}`,
+        {
+          id,
+          status,
+          cancellationReason,
+        }
+      )
+      .subscribe(
+        (data: OrderV2) => {
+          subj.next(new OrderV2(data));
+          subj.complete();
+        }, err => {
+          subj.error(err);
+          subj.complete();
+        },
+      );
+    return subj.asObservable();
+  }
+
   public prepareOrder(data: OrderPrepareRequestData) {
     const subj = new Subject<OrderPrepareData>();
     this.apiClient

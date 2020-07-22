@@ -25,7 +25,7 @@ export class DeleteOptionButtonComponent implements OnInit {
 
   async onDelete() {
     const alert = await this.alertController.create({
-      header: `Are you sure you want to delete category ${this.option.title}?`,
+      message: `Are you sure you want to delete category ${this.option.title}?`,
       buttons: [
         {
           text: 'Cancel',

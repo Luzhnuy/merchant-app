@@ -5,20 +5,20 @@
 export const environment = {
   production: false,
 
-  // apiUrlV2: 'http://localhost:3000/',
-  // wsUrl: 'ws://localhost:3001',
-  // imageHost: 'http://localhost:3000/',
-  // trackingUrlBaseUrl: 'http://localhost:4200/track/',
+  apiUrlV2: 'http://localhost:3000/',
+  wsUrl: 'ws://localhost:3001',
+  imageHost: 'http://localhost:3000/',
+  trackingUrlBaseUrl: 'http://localhost:4200/track/',
   //
   // apiUrlV2: 'http://192.168.0.102:3000/',
   // wsUrl: 'ws://192.168.0.102:3001',
   // imageHost: 'http://192.168.0.102:3000/',
   // trackingUrlBaseUrl: 'http://192.168.0.102:4200/track/',
   //
-  apiUrlV2: 'https://sg-swift-test.snapgrabdelivery.com/api/',
-  wsUrl: 'wss://sg-swift-test-ws.snapgrabdelivery.com',
-  imageHost: 'https://sg-swift-test.snapgrabdelivery.com/api/',
-  trackingUrlBaseUrl: 'https://sg-swift-test.snapgrabdelivery.com/track/',
+  // apiUrlV2: 'https://sg-swift-test.snapgrabdelivery.com/api/',
+  // wsUrl: 'wss://sg-swift-test-ws.snapgrabdelivery.com',
+  // imageHost: 'https://sg-swift-test.snapgrabdelivery.com/api/',
+  // trackingUrlBaseUrl: 'https://sg-swift-test.snapgrabdelivery.com/track/',
 
   oneSignal: {
     appId: 'b8959365-ea50-4c25-82fa-cb371c03fcb8',

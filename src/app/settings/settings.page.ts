@@ -19,6 +19,8 @@ import { Camera, CameraOptions, PictureSourceType } from '@ionic-native/camera/n
 import { from } from 'rxjs';
 import { File } from '@ionic-native/file';
 import { FileDownloaderService } from '../shared/file-downloader.service';
+import { ApiTokensService } from '../shared/api-tokens.service';
+import { ApiToken } from '../shared/api-token';
 
 enum HumanTypes {
   Booking = 'Booking',
@@ -69,6 +71,8 @@ export class SettingsPage implements OnInit {
   card: PaymentCard;
   isApp = false;
 
+  token: ApiToken;
+
   private cameraOptions: CameraOptions;
   // private file: File;
 
@@ -90,6 +94,7 @@ export class SettingsPage implements OnInit {
     private actionSheetController: ActionSheetController,
     // private file: File,
     private downloaderService: FileDownloaderService,
+    private tokenService: ApiTokensService,
   ) {
     // this.file = new File();
     this.cameraOptions = {
@@ -126,6 +131,10 @@ export class SettingsPage implements OnInit {
           this.logo = environment.imageHost + this.merchant.logo;
         }
         this.logoChanged = false;
+        this.tokenService
+          .getToken()
+          .pipe(take(1))
+          .subscribe(token => this.token = token);
       });
     this.isApp = this.platform.is('cordova');
   }
@@ -457,6 +466,45 @@ export class SettingsPage implements OnInit {
     }
   }
 
+  async generateNewApiToken() {
+    if (this.token.token) {
+      const alert = await this.alertController.create({
+        message: `Are you sure you want to generate new Api token. Old one will be removed.`,
+        buttons: [
+          {
+            text: 'No',
+            role: 'cancel',
+            cssClass: 'secondary',
+          }, {
+            text: 'Yes',
+            handler: () => {
+              this.generateToken();
+            }
+          }
+        ],
+      });
+      await alert.present();
+    } else {
+      this.generateToken();
+    }
+  }
+
+  private generateToken() {
+    this.tokenService
+      .generateToken()
+      .subscribe(token => this.token = token);
+  }
+
+  async copyTokenToClipboard() {
+    const input: any = document.querySelector('#api-token-input input');
+    console.log('input = ', input);
+    input.select();
+    input.setSelectionRange(0, 99999); /*For mobile devices*/
+    document.execCommand('copy');
+    await this.helper
+      .showToast('Api token copied into clipboard', 'success', 'top', 1500);
+  }
+
   async saveReport(link, startDate, endDate) {
     if (this.isIOsOrAndroid()) {
       if (!this.platform.is('cordova')) {
@@ -479,7 +527,6 @@ export class SettingsPage implements OnInit {
               text: 'Download app',
               handler: () => {
                 window.location.href = storeUrl;
-                console.log('Confirm Okay');
               }
             }
           ],

@@ -9,6 +9,7 @@ import { MenuSubOption } from '../shared/menu-sub-option';
 import { HelperService } from '../shared/helper.service';
 import { AlertController, Platform } from '@ionic/angular';
 import DomToImage from 'dom-to-image';
+import { ErrorHandlerService } from '../shared/error-handler.service';
 
 declare var cordova: any;
 
@@ -29,6 +30,13 @@ export class OrderPage implements OnInit {
   OrderStatus = OrderStatus;
   OrderType = OrderType;
 
+  subOptions: MenuSubOption[];
+
+  get showCancelOrder() {
+    return [OrderStatus.Received, OrderStatus.Accepted, OrderStatus.OnWay]
+      .indexOf(this.order.status) !== -1;
+  }
+
   constructor(
     private ordersService: OrdersService,
     private activatedRoute: ActivatedRoute,
@@ -36,6 +44,7 @@ export class OrderPage implements OnInit {
     private helper: HelperService,
     private platform: Platform,
     private alertController: AlertController,
+    private errorHandlerService: ErrorHandlerService,
   ) {}
 
   ngOnInit() {
@@ -53,25 +62,76 @@ export class OrderPage implements OnInit {
       this.options = await this.optionsService
         .getAll()
         .toPromise();
-      const subOptions = this.options.reduce((res: MenuSubOption[], option) => {
+      this.subOptions = this.options.reduce((res: MenuSubOption[], option) => {
         return [ ...res, ...option.subOptions];
       }, []);
-      this.order = await this.ordersService
-        .getSingle(orderId)
-        .toPromise();
-      this.order
-        .orderItems
-        .forEach(orderItem => {
-          if (orderItem.subOptionIds) {
-            orderItem.subOptions = orderItem.subOptionIds
-              .map(subOptionId => subOptions.find(subOption => subOption.id === subOptionId));
-          }
-        });
-      this.trackUrl = this.getTrackingUrl(this.order);
-      this.isActive = [ OrderStatus.Completed, OrderStatus.Cancelled ].indexOf(this.order.status) === -1;
+      await this.initOrder(orderId);
+      // this.order = await this.ordersService
+      //   .getSingle(orderId)
+      //   .toPromise();
+      // this.order
+      //   .orderItems
+      //   .forEach(orderItem => {
+      //     if (orderItem.subOptionIds) {
+      //       orderItem.subOptions = orderItem.subOptionIds
+      //         .map(subOptionId => subOptions.find(subOption => subOption.id === subOptionId));
+      //     }
+      //   });
+      // this.trackUrl = this.getTrackingUrl(this.order);
+      // this.isActive = [ OrderStatus.Completed, OrderStatus.Cancelled ].indexOf(this.order.status) === -1;
     } finally {
       await this.helper.stopLoading();
     }
+  }
+
+  private async initOrder(orderId: number) {
+    this.order = await this.ordersService
+      .getSingle(orderId)
+      .toPromise();
+    this.order
+      .orderItems
+      .forEach(orderItem => {
+        if (orderItem.subOptionIds) {
+          orderItem.subOptions = orderItem.subOptionIds
+            .map(subOptionId => this.subOptions.find(subOption => subOption.id === subOptionId));
+        }
+      });
+    this.trackUrl = this.getTrackingUrl(this.order);
+    this.isActive = [ OrderStatus.Completed, OrderStatus.Cancelled ].indexOf(this.order.status) === -1;
+  }
+
+  async cancelOrder() {
+    const alert = await this.alertController.create({
+      message: 'Are you sure you want to cancel order?',
+      buttons: [
+        {
+          text: 'Cancel',
+          role: 'cancel',
+          cssClass: 'secondary',
+        }, {
+          text: 'Yes',
+          handler: async () => {
+            await this.helper.showLoading();
+            try {
+              await this.ordersService
+                .updateStatus(
+                  this.order.id,
+                  OrderStatus.Cancelled,
+                  'Cancelled by Merchant',
+                )
+                .toPromise();
+              await this.initOrder(this.order.id);
+            } catch (e) {
+              await this.helper
+                .showError(this.errorHandlerService.handleError(e));
+            } finally {
+              await this.helper.stopLoading();
+            }
+          }
+        }
+      ]
+    });
+    await alert.present();
   }
 
   private isSafari() {

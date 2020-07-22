@@ -90,6 +90,14 @@
       >
         Send Receipt
       </ion-button>
+      <ion-button
+          color="light"
+          *ngIf="isActive"
+          (click)="cancelOrder()"
+      >
+<!--        *ngIf="showCancelOrder"-->
+        Cancel Order
+      </ion-button>
     </ion-item>
   </ion-card>
 
