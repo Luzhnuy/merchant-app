@@ -344,6 +344,28 @@ ion-card.new-card-ui {
   padding-right: 45px;
 }
 
+.plt-ipad {
+  ion-title {
+    margin: 0 auto;
+    text-align: left;
+    padding-left: 16px;
+  }
+
+  ion-split-pane {
+    padding-top: 64px !important;
+  }
+
+  app-history {
+    app-status-badge {
+      ion-badge {
+        position: relative;
+        top: -4px;
+      }
+    }
+  }
+
+}
+
 @media (max-width: 575px) {
   .hide-xs {
     display: none;

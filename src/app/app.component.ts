@@ -79,12 +79,15 @@ export class AppComponent implements OnInit {
         .subscribe(user => {
           if (user && user.isLogged()) {
             logged.emit();
+            console.log('initializeApp 0');
             this.oneSignalService.init(
               environment.oneSignal.appId,
               environment.oneSignal.googleProjectNumber,
               environment.oneSignal.safariWebId,
             );
+            console.log('initializeApp 1', this.oneSignalService.subscribed);
             if (!this.oneSignalService.subscribed) {
+              console.log('initializeApp 2', user.id);
               this.oneSignalService
                 .subscribe(user.id);
             }

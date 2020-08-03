@@ -35,7 +35,7 @@ export class OneSignalService {
         this.oneSignalWeb = window.OneSignal;
         this.oneSignalWeb.init({
           appId,
-          // allowLocalhostAsSecureOrigin: true, // uncomment for localhosts
+          allowLocalhostAsSecureOrigin: true, // uncomment for localhosts
           notificationClickHandlerAction: 'focus',
           // notificationClickHandlerAction: 'navigate',
           notificationClickHandlerMatch: 'origin',
@@ -50,10 +50,14 @@ export class OneSignalService {
         setTimeout(() => {
           if (window.safari && window.safari.pushNotification &&
             window.safari.pushNotification.toString() === '[object SafariRemoteNotification]') {
-            window.OneSignal.isPushNotificationsEnabled((isEnabled) => {
+            window.OneSignal.isPushNotificationsEnabled(async (isEnabled) => {
               if (!isEnabled) {
-                localStorage.removeItem('onesignal-notification-prompt')
-                window.OneSignal.showSlidedownPrompt();
+                const asked = localStorage.getItem('notification-asked');
+                if (!asked) {
+                  localStorage.removeItem('onesignal-notification-prompt');
+                  localStorage.setItem('notification-asked', 'true');
+                  window.OneSignal.showSlidedownPrompt();
+                }
               }
             });
           } else {
@@ -76,10 +80,12 @@ export class OneSignalService {
         });
         this.oneSignalWeb.on('notificationDismiss', event => {
         });
-        if (this.userId) {
-          this.webInited = true;
-          this.subscribe(this.userId)
-        }
+        setTimeout(() => {
+          if (this.userId) {
+            this.webInited = true;
+            this.subscribe(this.userId);
+          }
+        }, 1000);
       });
     } else {
       this.oneSignal.startInit(appId, googleProjectNumber);

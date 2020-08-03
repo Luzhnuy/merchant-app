@@ -31,11 +31,11 @@ export class ApiTokensService {
     return subj.asObservable();
   }
 
-  generateToken() {
+  generateToken(password) {
     const subj = new Subject<ApiToken>();
     this.apiClient.post(
       `${this.endpoint}`,
-      {}
+      { password }
     )
       .subscribe(
         (token: ApiToken) => {

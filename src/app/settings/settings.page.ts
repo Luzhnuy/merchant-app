@@ -21,6 +21,7 @@ import { File } from '@ionic-native/file';
 import { FileDownloaderService } from '../shared/file-downloader.service';
 import { ApiTokensService } from '../shared/api-tokens.service';
 import { ApiToken } from '../shared/api-token';
+import { TextFieldTypes } from '@ionic/core';
 
 enum HumanTypes {
   Booking = 'Booking',
@@ -489,10 +490,49 @@ export class SettingsPage implements OnInit {
     }
   }
 
-  private generateToken() {
-    this.tokenService
-      .generateToken()
-      .subscribe(token => this.token = token);
+  private async generateToken() {
+    // const prompt = await this.alertController
+    //   .
+    // inputs: [
+    //   {
+    //     name: 'name1',
+    //     type: 'text',
+    //     placeholder: 'Placeholder 1'
+    //   },
+    const alert = await this.alertController.create({
+      message: `Please, enter your password.`,
+      inputs: [
+        {
+          name: 'passwordConfirmation',
+          type: 'password',
+          placeholder: 'Password',
+        },
+      ],
+      buttons: [
+        {
+          text: 'Cancel',
+          role: 'cancel',
+          cssClass: 'secondary',
+        }, {
+          text: 'Ok',
+          handler: (value: { passwordConfirmation: string; }) => {
+            if (value.passwordConfirmation) {
+              this.tokenService
+                .generateToken(value.passwordConfirmation)
+                .subscribe(
+                  token => {
+                    this.token = token;
+                    alert.dismiss();
+                  },
+                  err => this.showError(err)
+                );
+            }
+            return false;
+          }
+        }
+      ],
+    });
+    await alert.present();
   }
 
   async copyTokenToClipboard() {

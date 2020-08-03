@@ -287,34 +287,34 @@
     </ion-list>
   </ion-card>
 
-<!--  <ion-card  class="new-card-ui full-page-card ion-margin-top ion-padding-bottom" *ngIf="token">-->
-<!--    <ion-item-->
-<!--        class="sg-card-header ion-padding-horizontal"-->
-<!--    >-->
-<!--      <h3>-->
-<!--        Api Token-->
-<!--      </h3>-->
-<!--      <a class="sg-card-header-link" color="primary" (click)="generateNewApiToken()" href="javascript:void(0);">-->
-<!--        Generate new token-->
-<!--      </a>-->
-<!--    </ion-item>-->
-<!--    <ion-item-->
-<!--        class="sg-card-payments ion-padding-horizontal"-->
-<!--    >-->
-<!--      <ion-input-->
-<!--          class="api-token-input"-->
-<!--          type="text"-->
-<!--          readonly-->
-<!--          [ngModel]="token.token"-->
-<!--          id="api-token-input"-->
-<!--      ></ion-input>-->
-<!--      <ion-button-->
-<!--          *ngIf="token.token"-->
-<!--          color="light"-->
-<!--          (click)="copyTokenToClipboard()"-->
-<!--      >-->
-<!--        <ion-icon name="copy-outline"></ion-icon>-->
-<!--      </ion-button>-->
-<!--    </ion-item>-->
-<!--  </ion-card>-->
+  <ion-card  class="new-card-ui full-page-card ion-margin-top ion-padding-bottom" *ngIf="token">
+    <ion-item
+        class="sg-card-header ion-padding-horizontal"
+    >
+      <h3>
+        Api Token
+      </h3>
+      <a class="sg-card-header-link" color="primary" (click)="generateNewApiToken()" href="javascript:void(0);">
+        Generate new token
+      </a>
+    </ion-item>
+    <ion-item
+        class="sg-card-payments ion-padding-horizontal"
+    >
+      <ion-input
+          class="api-token-input"
+          type="text"
+          readonly
+          [ngModel]="token.token"
+          id="api-token-input"
+      ></ion-input>
+      <ion-button
+          *ngIf="token.token"
+          color="light"
+          (click)="copyTokenToClipboard()"
+      >
+        <ion-icon name="copy-outline"></ion-icon>
+      </ion-button>
+    </ion-item>
+  </ion-card>
 </ion-content>
