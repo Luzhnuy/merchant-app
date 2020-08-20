@@ -2,14 +2,19 @@ import { Component, OnInit } from '@angular/core';
 import { OrderStatus, OrderType, OrderV2 } from '../shared/order-v2';
 import { OrdersService } from '../shared/orders.service';
 import { environment } from '../../environments/environment';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { OptionsService } from '../shared/options.service';
 import { MenuOption } from '../shared/menu-option';
 import { MenuSubOption } from '../shared/menu-sub-option';
 import { HelperService } from '../shared/helper.service';
-import { AlertController, Platform } from '@ionic/angular';
+import { AlertController, Platform, PopoverController, ModalController } from '@ionic/angular';
 import DomToImage from 'dom-to-image';
 import { ErrorHandlerService } from '../shared/error-handler.service';
+import { PopovercomponentPage } from '../shared/components/print-popover/print-popover.component';  
+import { PrintService } from '../shared/bt-print.service';
+import { SelectBtPrinterPage } from '../select-bt-printer/select-bt-printer.page';
+import { StorageVariableV2Service as StorageVariableService } from '../shared/storage-variable-v2.service';
+import { StorageVariablesV2Enum as StorageVariables } from '../shared/storage-variables-v2.enum';
 
 declare var cordova: any;
 
@@ -45,6 +50,11 @@ export class OrderPage implements OnInit {
     private platform: Platform,
     private alertController: AlertController,
     private errorHandlerService: ErrorHandlerService,
+    private popover:PopoverController,
+    private router: Router,
+    private printService:PrintService,
+    private storageVariable: StorageVariableService,
+    private modalController: ModalController,
   ) {}
 
   ngOnInit() {
@@ -53,7 +63,38 @@ export class OrderPage implements OnInit {
     // }, 10000);
   }
 
-  async ionViewWillEnter() {
+  async createPopover(ev: any) {    
+     const popover = await this.popover.create({
+        component: PopovercomponentPage,
+        event: ev,
+        translucent: true
+      });
+      popover.style.cssText = '--max-width: 110px;';
+      await popover.present();
+
+      const { data } = await popover.onDidDismiss();
+      switch(data)
+      {
+        case 1:
+          this.pagePrint();
+          break;
+
+        case 2:       
+          this.ticketPrint();
+          break;
+
+        default:
+          break;
+      }
+   }
+
+   async ionViewWillEnter() {
+    const urlParams = new URLSearchParams(location.search);
+    if (urlParams.get('passprnt_code'))
+    {    
+      console.log(urlParams);
+    }
+    
     const orderId = parseInt(this.activatedRoute.snapshot.params.id, 10);
     this.ordersService
       .viewOrder(orderId);
@@ -138,7 +179,63 @@ export class OrderPage implements OnInit {
     return navigator.vendor.match(/apple/i);
   }
 
-  async print() {
+  ticketPrint() {
+    let htmlData = `<body style="font-size:200% ;font-family:sans-serif"> 
+                      <br>
+                      Star PassPRNT Receipt Sample<br>
+                      <br>
+                      <table style="font-size:100%; width:100%">
+                      <tr><td>Eggs<td style="text-align:right">€2.50</tr>
+                      <tr><td>Lettuce<td style="text-align:right">€1.20<tr>
+                      <tr><td>Bread<td style="text-align:right">€1.30<tr>
+                      <tr><td>Cheese<td style="text-align:right">€4.25<tr>
+                      <tr><td>Milk<td style="text-align:right">€0.85<tr>
+                      <tr><td>Vegan Sausage<td style="text-align:right">€2.25<tr>
+                      </table>
+                      <br>
+                      <br>
+                      </body>
+                      `;
+                      
+    //Check if platform is browser:
+    if(this.isWeb()) {
+      this.printService.btPrintWeb(this.router.url, htmlData); 
+    } else {
+      // Print using native bluetooth plugin
+      let printerName = localStorage.getItem(StorageVariables.btPrinterName); //this.storageVariable.get<BtPrinter>(StorageVariables.btPrinterName);
+      if (printerName === null)
+      {
+        // TODO: Here we need to Show the Printer select Page.
+        //this.helper.showError("Could not find a valide Bluetooth Printer"); 
+        this.configureBtPrinter();
+        
+      }
+      else
+      {
+        this.printService.print(printerName, htmlData);
+      }
+    }                    
+   
+  }
+
+  private isWeb() {
+    return this.platform.is('desktop') || this.platform.is('mobileweb');
+  }
+
+  async configureBtPrinter()
+  {
+    const modal = await this.modalController.create({
+      component: SelectBtPrinterPage,
+      animated:true,
+      mode:'ios',
+      cssClass: 'my-custom-modal-css',
+      backdropDismiss:false,   
+    });
+    
+    return await modal.present();
+  }
+
+  async pagePrint() {
     const { maxWidth, maxHeight } = this.isSafari() ?
       { maxWidth: '210mm', maxHeight: '297mm' } : { maxWidth: '100%', maxHeight: '100%' };
     let html = `
