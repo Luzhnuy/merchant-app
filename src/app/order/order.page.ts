@@ -10,9 +10,8 @@ import { HelperService } from '../shared/helper.service';
 import { AlertController, Platform, PopoverController, ModalController } from '@ionic/angular';
 import DomToImage from 'dom-to-image';
 import { ErrorHandlerService } from '../shared/error-handler.service';
-import { PopovercomponentPage } from '../shared/components/print-popover/print-popover.component';  
+import { PrintPopoverComponent } from '../shared/components/print-popover/print-popover.component';  
 import { PrintService } from '../shared/bt-print.service';
-import { SelectBtPrinterPage } from '../select-bt-printer/select-bt-printer.page';
 import { StorageVariableV2Service as StorageVariableService } from '../shared/storage-variable-v2.service';
 import { StorageVariablesV2Enum as StorageVariables } from '../shared/storage-variables-v2.enum';
 
@@ -36,6 +35,7 @@ export class OrderPage implements OnInit {
   OrderType = OrderType;
 
   subOptions: MenuSubOption[];
+  isApp = false;
 
   get showCancelOrder() {
     return [OrderStatus.Received, OrderStatus.Accepted, OrderStatus.OnWay]
@@ -52,41 +52,17 @@ export class OrderPage implements OnInit {
     private errorHandlerService: ErrorHandlerService,
     private popover:PopoverController,
     private router: Router,
-    private printService:PrintService,
+    private btPrintService: PrintService,
     private storageVariable: StorageVariableService,
     private modalController: ModalController,
   ) {}
 
   ngOnInit() {
+    this.isApp = this.platform.is('cordova');
     // setInterval(() => {
     //   this.ordersService.putSoundOn();
     // }, 10000);
   }
-
-  async createPopover(ev: any) {    
-     const popover = await this.popover.create({
-        component: PopovercomponentPage,
-        event: ev,
-        translucent: true
-      });
-      popover.style.cssText = '--max-width: 110px;';
-      await popover.present();
-
-      const { data } = await popover.onDidDismiss();
-      switch(data)
-      {
-        case 1:
-          this.pagePrint();
-          break;
-
-        case 2:       
-          this.ticketPrint();
-          break;
-
-        default:
-          break;
-      }
-   }
 
    async ionViewWillEnter() {
     const urlParams = new URLSearchParams(location.search);
@@ -179,60 +155,195 @@ export class OrderPage implements OnInit {
     return navigator.vendor.match(/apple/i);
   }
 
-  ticketPrint() {
-    let htmlData = `<body style="font-size:200% ;font-family:sans-serif"> 
-                      <br>
-                      Star PassPRNT Receipt Sample<br>
-                      <br>
-                      <table style="font-size:100%; width:100%">
-                      <tr><td>Eggs<td style="text-align:right">€2.50</tr>
-                      <tr><td>Lettuce<td style="text-align:right">€1.20<tr>
-                      <tr><td>Bread<td style="text-align:right">€1.30<tr>
-                      <tr><td>Cheese<td style="text-align:right">€4.25<tr>
-                      <tr><td>Milk<td style="text-align:right">€0.85<tr>
-                      <tr><td>Vegan Sausage<td style="text-align:right">€2.25<tr>
-                      </table>
-                      <br>
-                      <br>
-                      </body>
-                      `;
-                      
-    //Check if platform is browser:
-    if(this.isWeb()) {
-      this.printService.btPrintWeb(this.router.url, htmlData); 
-    } else {
-      // Print using native bluetooth plugin
-      let printerName = localStorage.getItem(StorageVariables.btPrinterName); //this.storageVariable.get<BtPrinter>(StorageVariables.btPrinterName);
-      if (printerName === null)
-      {
-        // TODO: Here we need to Show the Printer select Page.
-        //this.helper.showError("Could not find a valide Bluetooth Printer"); 
-        this.configureBtPrinter();
+  async createPopover(ev: any) {    
+    const popover = await this.popover.create({
+       component: PrintPopoverComponent,
+       event: ev,
+       translucent: true
+     });
+     popover.style.cssText = '--max-width: 110px;';
+     await popover.present();
+
+     const { data } = await popover.onDidDismiss();
+     switch(data)
+     {
+       case 1:
+         this.pagePrint();
+         break;
+
+       case 2:       
+        if(!this.isApp) {
+          this.ticketBtWebPrint();     
+        } else {
+          this.ticketBtPrint();
+        }                    
+         break;
+
+       default:
+         break;
+     }
+  }
+
+  ticketBtPrint() {
+     // Print using native bluetooth plugin
+     let printerName = localStorage.getItem(StorageVariables.btPrinterName); //this.storageVariable.get<BtPrinter>(StorageVariables.btPrinterName);
+     if (printerName === null)
+     {
+       this.helper.showError("Could not find a valid Bluetooth Printer");     
+       this.router.navigate(['/settings']);
+     }
+     else
+     {
+       let data = "        SnapGrab                      \n" +
+                  "             123 Star Road\n" +
+                  "           City, State 12345\n" +
+                  "\n" +
+                  "Date:MM/DD/YYYY          Time:HH:MM PM\n" +
+                  "--------------------------------------\n" +
+                  "SALE\n" +
+                  "SKU            Description       Total\n" +
+                  "300678566      PLAIN T-SHIRT     10.99\n" +
+                  "300692003      BLACK DENIM       29.99\n" +
+                  "300651148      BLUE DENIM        29.99\n" +
+                  "300642980      STRIPED DRESS     49.99\n" +
+                  "30063847       BLACK BOOTS       35.99\n" +
+                  "300678566      PLAIN T-SHIRT     10.99\n" +
+                  "300692003      BLACK DENIM       29.99\n" +
+                  "300651148      BLUE DENIM        29.99\n" +
+                  "300642980      STRIPED DRESS     49.99\n" +
+                  "30063847       BLACK BOOTS       35.99\n" +
+                  "300678566      PLAIN T-SHIRT     10.99\n" +
+                  "300692003      BLACK DENIM       29.99\n" +
+                  "300651148      BLUE DENIM        29.99\n" +
+                  "300642980      STRIPED DRESS     49.99\n" +
+                  "30063847       BLACK BOOTS       35.99\n" +
+                  "300678566      PLAIN T-SHIRT     10.99\n" +
+                  "300692003      BLACK DENIM       29.99\n" +
+                  "300651148      BLUE DENIM        29.99\n" +
+                  "300642980      STRIPED DRESS     49.99\n" +
+                  "30063847       BLACK BOOTS       35.99\n" +
+                  "300678566      PLAIN T-SHIRT     10.99\n" +
+                  "300692003      BLACK DENIM       29.99\n" +
+                  "300651148      BLUE DENIM        29.99\n" +
+                  "300642980      STRIPED DRESS     49.99\n" +
+                  "30063847       BLACK BOOTS       35.99\n" +
+                  "\n" +
+                  "Subtotal                        156.95\n" +
+                  "Tax                               0.00\n" +
+                  "--------------------------------------\n" +
+                  "Total                          $156.95\n" +
+                  "--------------------------------------\n" +
+                  "\n" +
+                  "Charge\n" +
+                  "156.95\n" +
+                  "Visa XXXX-XXXX-XXXX-0123\n" +
+                  "Refunds and Exchanges\n" +
+                  "Within 30 days with receipt\n" +
+                  "And tags attached\n";
+
+       this.btPrintService.print(printerName, ''); // TODO : Add Data Here as second argument
+     }
+  }
+
+  ticketBtWebPrint() {
+    let emtpy_table_row = '<tr><td height="20" colspan="2"></td></tr>';
+
+    let html = '<html><head></head><body style="font-size:200% ;font-family:sans-serif"><p>SnapGrab</p>' +                 
+              // DeliveredTo Name
+              '<table style="font-size:80%; width:100%">' + 
+              emtpy_table_row +
+              '<tr>' +
+              '<td><strong>' + this.order.metadata.dropOffTitle + '</strong></td>' + 
+              '</tr>' +
+              emtpy_table_row +
+              // Time and Order Id         
+              '<tr>' + 
+              '<td>';
+
+    const options = { year: 'numeric', day: 'numeric', month: 'long', hour:'2-digit', minute: '2-digit' };
+    let l_date = new Date(this.order.scheduledAt);
+    html += l_date.toLocaleDateString(undefined, options);
+    html += '</td>';
+
+    html += '<td align="right">ORDER: ';
+    html += this.order.id;
+    html += '</td>' +
+            '</tr>' +
+            '</table><hr>';
+
+    html += '<table style="font-size:80%; width:100%">';
+    if (this.order.type === OrderType.Menu) {                        
+      html += this.order                     
+        .orderItems
+        .reduce((res, orderItem) => {
+          const price = orderItem.price.toFixed(2);
+          res += emtpy_table_row;
+          res += '<tr>' +
+                  '<td>' +
+                  orderItem.quantity + ' x ' +  orderItem.description +
+                  '</td>';
+          res += '<td align="right">' +
+                  '$' + price +
+                  '</td>' + 
+                  '</tr>';
+          
+          if (orderItem.subOptionIds) {
+            orderItem.subOptions.reduce((res2, subOption) => {
+              const price2 = subOption.price ? subOption.price.toFixed(2) : null;
+            
+              res += '<tr>' +
+                      '<td>' +
+                      '<small>' + subOption.title + '</small>' +
+                      '</td>' +
+                      '<td align="right">' +
+                      '<small>';
+              
+              if (price2) {
+                res += '$' + price2;
+              }
+              res += '</small>' +
+                      '</td>' +
+                      '</tr>';
+              
+              return res2;
+            }, '');
+          }
+          
+          return res;
+        }, '');
         
-      }
-      else
-      {
-        this.printService.print(printerName, htmlData);
-      }
-    }                    
-   
-  }
+    } else {
+      html += '<tr>' +
+              '<td>' + this.order.metadata.description + '</td>' +
+              '</tr>';
+    }
 
-  private isWeb() {
-    return this.platform.is('desktop') || this.platform.is('mobileweb');
-  }
-
-  async configureBtPrinter()
-  {
-    const modal = await this.modalController.create({
-      component: SelectBtPrinterPage,
-      animated:true,
-      mode:'ios',
-      cssClass: 'my-custom-modal-css',
-      backdropDismiss:false,   
-    });
+    let taxes = this.order.metadata.tps + this.order.metadata.tvq;
+    html += emtpy_table_row + 
+            '</table>' +
+            '<hr>' +
+            '<table style="font-size:80%; width:100%">' +
+            '<tr>' +
+            '<td>Subtotal</td>' +
+            '<td align="right">' + '$' + this.order.metadata.subtotal.toFixed(2) + '</td>' +
+            '</tr>' +
+            '<tr>' +
+            '<td>Taxes</td>' +
+            '<td align="right">' + '$' +  taxes.toFixed(2) + '</td>' +
+            '</tr>' +
+            '<tr>' +
+            '<td>Amount Paid</td>' +
+            '<td align="right">' + '$' +  this.order.metadata.totalAmount.toFixed(2) + '</td>' +
+            '</tr>' +
+            '</table>' +
+         //   '<table style="font-size:80%; width:100%">' +            
+          //  '<tr>' +
+          //  '<td align="center">' + 'Thank you for ordering from ' + this.order.merchant.name + '</td>' +           
+           // '</tr>' + 
+           // '</table>' +
+            '</body></html>';
     
-    return await modal.present();
+    this.btPrintService.printWeb(this.router.url, html); 
   }
 
   async pagePrint() {

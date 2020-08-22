@@ -1,17 +1,16 @@
-import { Component, OnInit } from '@angular/core';
-import { NavParams } from '@ionic/angular';
+import { Component } from '@angular/core';
 import { ModalController } from '@ionic/angular';
-import { PrintService } from '../shared/bt-print.service';
-import { HelperService } from '../shared/helper.service';
-import { StorageVariableV2Service as StorageVariableService } from '../shared/storage-variable-v2.service';
-import { StorageVariablesV2Enum as StorageVariables } from '../shared/storage-variables-v2.enum';
+import { PrintService } from '../../../bt-print.service';
+import { HelperService } from '../../../helper.service';
+import { StorageVariableV2Service as StorageVariableService } from '../../../storage-variable-v2.service';
+import { StorageVariablesV2Enum as StorageVariables } from '../../../storage-variables-v2.enum';
 
 @Component({
-  selector: 'select-bt-printer',
-  templateUrl: './select-bt-printer.page.html',
-  styleUrls: ['./select-bt-printer.page.scss'],
+  selector: 'select-bt-printer-modal',
+  templateUrl: './select-bt-printer-modal.component.html',
+  styleUrls: ['./select-bt-printer-modal.component.scss'],
 })
-export class SelectBtPrinterPage {
+export class SelectBtPrinterModalComponent {
 
   bluetoothList:any=[];
   selectedPrinter:any;
@@ -22,11 +21,6 @@ export class SelectBtPrinterPage {
       private helper: HelperService,
       private storageVariable: StorageVariableService
    ) {}
-
-
-   ionViewWillEnter() {
-    
-   }
    
    findBtDevices() {    
     this.printService.searchBtDevices()

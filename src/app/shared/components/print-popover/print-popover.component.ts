@@ -6,7 +6,7 @@ import { Component, OnInit } from
    templateUrl: './print-popover.component.html',
    styleUrls: ['./print-popover.component.scss'],
  })
- export class PopovercomponentPage implements OnInit {
+ export class PrintPopoverComponent implements OnInit {
 
    constructor(private popover:PopoverController) {} 
    ngOnInit() 

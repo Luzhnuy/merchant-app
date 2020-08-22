@@ -22,6 +22,8 @@ import { FileDownloaderService } from '../shared/file-downloader.service';
 import { ApiTokensService } from '../shared/api-tokens.service';
 import { ApiToken } from '../shared/api-token';
 import { TextFieldTypes } from '@ionic/core';
+import { StorageVariablesV2Enum as StorageVariables } from '../shared/storage-variables-v2.enum';
+import { SelectBtPrinterModalComponent } from '../shared/components/modals/select-bt-printer-modal/select-bt-printer-modal.component';
 
 enum HumanTypes {
   Booking = 'Booking',
@@ -71,6 +73,7 @@ export class SettingsPage implements OnInit {
   imageName: string;
   card: PaymentCard;
   isApp = false;
+  btPrinterName:string;
 
   token: ApiToken;
 
@@ -126,7 +129,7 @@ export class SettingsPage implements OnInit {
     });
     this.merchantsService
       .$merchant
-      .subscribe(merchant => {
+      .subscribe(merchant => {      
         this.merchant = merchant;
         if (this.merchant.logo) {
           this.logo = environment.imageHost + this.merchant.logo;
@@ -138,6 +141,9 @@ export class SettingsPage implements OnInit {
           .subscribe(token => this.token = token);
       });
     this.isApp = this.platform.is('cordova');
+    
+    let printerName = localStorage.getItem(StorageVariables.btPrinterName);
+    this.btPrinterName = (printerName === null) ? 'None': printerName;
   }
 
   ionViewWillEnter() {
@@ -166,7 +172,16 @@ export class SettingsPage implements OnInit {
       });
     this.loadCard();
   }
-
+  
+  async selectBtPrinter()
+  {
+    const modal = await this.modalController.create({
+      component: SelectBtPrinterModalComponent,
+    });
+    
+    await modal.present();
+  }
+  
   changeReceiptSubscription(res) {
     const savingData = new MerchantV2({
       id: this.merchant.id,

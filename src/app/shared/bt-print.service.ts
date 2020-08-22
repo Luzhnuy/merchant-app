@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { StarPRNT, PrintObj } from '@ionic-native/star-prnt/ngx';
-import { ApiV2Service } from './api-v2.service';
+import { HelperService } from './helper.service';
 
 @Injectable({
   providedIn: 'root'
@@ -8,17 +8,16 @@ import { ApiV2Service } from './api-v2.service';
 
 export class PrintService {
 
-  constructor(private starprnt: StarPRNT) { }
+  constructor(private starprnt: StarPRNT, private helper: HelperService) { }
 
   searchBtDevices()
   {
     return this.starprnt.portDiscovery('Bluetooth');   
   }
 
-  connect(printerName)
+  connect(printerName:string)
   {
-    let hasBarcodeReader = false;
-    return this.starprnt.connect(printerName, 'EscPosMobile', hasBarcodeReader);  
+    return this.starprnt.connect(printerName, 'StarGraphic', false);  
   }
 
   disconnect()
@@ -27,7 +26,7 @@ export class PrintService {
   }
 
  
-  print(printerName, data_string)
+  print(printerName:string, data:string)
   {
    
     var rasterObj = {
@@ -85,26 +84,26 @@ export class PrintService {
 
     this.starprnt.printRasterReceipt(printerName, 'StarGraphic', rasterObj)
       .then(result => {
-        console.log(" Write Success ");
-        alert("Success!")
+        this.helper.showToast("Print Success");
       }).catch(error => {
-        console.log(" Communication error");
-        alert("communication error") 
+        this.helper.showError("Print error " + error); 
       })
   }
 
-  public btPrintWeb(pageUrl, htmlData) {
+  public printWeb(pageUrl, htmlData) {
     let passprnt_uri = "starpassprnt://v1/print/nopreview?";  
 
     passprnt_uri += "size=" + 3;
     let back_url = 'http://localhost:8100/#' + pageUrl;
     //let back_url = 'https://merchants-portal-test.snapgrabdelivery.com/#' + pageUrl;
-    alert(back_url);
+    
     passprnt_uri += "&back=" + encodeURIComponent(back_url);
     passprnt_uri += "&popup=" + "enable";
-
-    passprnt_uri += "&html=" + encodeURIComponent(htmlData);
-    alert(passprnt_uri);
+    
+    // TODO : to be removed
+    //passprnt_uri += "&url=" + encodeURIComponent('https://www.star-m.jp/products/s_print/sdk/passprnt/sample/resource/receipt_sample.pdf');    
+    passprnt_uri += "&html=" + encodeURI(htmlData);
+    //console.log(passprnt_uri);
     location.href = passprnt_uri;     
   }
 }

@@ -57,10 +57,6 @@ const routes: Routes = [
     path: 'confirm-sms-phone',
     loadChildren: () => import('./confirm-sms-phone/confirm-sms-phone.module').then( m => m.ConfirmSmsPhonePageModule),
   },
-  {
-    path: 'select-bt-printer',
-    loadChildren: () => import('./select-bt-printer/select-bt-printer.module').then( m => m.SelectBtPrinterPageModule),
-  },
 ];
 
 @NgModule({

@@ -317,4 +317,29 @@
       </ion-button>
     </ion-item>
   </ion-card>
+
+  <ion-card  class="new-card-ui full-page-card ion-margin-top ion-padding-bottom" *ngIf="isApp">
+    <ion-item
+        class="sg-card-header ion-padding-horizontal"
+    >
+      <h3>
+        Bluetooth Printer
+      </h3>
+      <a class="sg-card-header-link" color="primary" (click)="selectBtPrinter()" href="javascript:void(0);">
+        Configure
+      </a>
+    </ion-item>
+    <ion-item
+        class="sg-card-payments ion-padding-horizontal">
+      <ion-input
+          class="api-token-input"
+          type="text"
+          readonly
+          [ngModel]="btPrinterName"
+          id="bt-printer-name"
+      ></ion-input>
+
+    </ion-item>
+  </ion-card>
+
 </ion-content>
