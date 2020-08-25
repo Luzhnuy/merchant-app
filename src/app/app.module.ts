@@ -11,6 +11,7 @@ import { AppRoutingModule } from './app-routing.module';
 import { SharedModule } from './shared/shared.module';
 
 import { StarPRNT } from '@ionic-native/star-prnt/ngx';
+import { File } from '@ionic-native/file/ngx';
 
 @NgModule({
   declarations: [AppComponent],
@@ -23,6 +24,7 @@ import { StarPRNT } from '@ionic-native/star-prnt/ngx';
   ],
   providers: [
     StarPRNT,
+    File,
     StatusBar,
     SplashScreen,
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy }

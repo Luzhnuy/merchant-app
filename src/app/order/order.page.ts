@@ -14,6 +14,8 @@ import { PrintPopoverComponent } from '../shared/components/print-popover/print-
 import { PrintService } from '../shared/bt-print.service';
 import { StorageVariableV2Service as StorageVariableService } from '../shared/storage-variable-v2.service';
 import { StorageVariablesV2Enum as StorageVariables } from '../shared/storage-variables-v2.enum';
+import { resolve } from 'dns';
+import html2canvas from 'html2canvas';
 
 declare var cordova: any;
 
@@ -52,7 +54,7 @@ export class OrderPage implements OnInit {
     private errorHandlerService: ErrorHandlerService,
     private popover:PopoverController,
     private router: Router,
-    private btPrintService: PrintService,
+    public  btPrintService: PrintService,
     private storageVariable: StorageVariableService,
     private modalController: ModalController,
   ) {}
@@ -240,49 +242,70 @@ export class OrderPage implements OnInit {
                   "Refunds and Exchanges\n" +
                   "Within 30 days with receipt\n" +
                   "And tags attached\n";
+       
+       let html = this.getPrintHtml();
+       var dirName = "bt-print"
+       var filename = "test.png";
 
-       this.btPrintService.print(printerName, ''); // TODO : Add Data Here as second argument
+       var iframe=document.createElement('iframe');
+       document.body.appendChild(iframe);
+       var iframedoc=iframe.contentDocument||iframe.contentWindow.document;
+       iframedoc.body.innerHTML=html;
+        
+       let outerthis = this;        
+       html2canvas(iframedoc.body).then(function(canvas) {
+          canvas.toBlob(function(blob) {          
+            outerthis.btPrintService.prepareImgFile(dirName, filename, blob).then(function(fileFullPath:string) {            
+              outerthis.btPrintService.print(printerName, fileFullPath);
+              }).catch(function(e) {
+                console.error("error:", e);
+              })
+          });
+       });
      }
   }
 
-  ticketBtWebPrint() {
-    let emtpy_table_row = '<tr><td height="20" colspan="2"></td></tr>';
+  getPrintHtml() {
+    let emtpy_table_row = '<tr><td style="height: 15px; overflow:hidden;" colspan="2"></td></tr>';
+    
+    const { maxWidth, maxHeight } = this.isSafari() ?
+    { maxWidth: '210mm', maxHeight: '297mm' } : { maxWidth: '100%', maxHeight: '100%' };
 
-    let html = '<html><head></head><body style="font-size:200% ;font-family:sans-serif"><p>SnapGrab</p>' +                 
+    let html = `<div id="print-html" style="font-family: Verdana, Geneva, sans-serif; background: #fff; max-width: ` + maxWidth + `; max-height: ` + maxHeight + `; width: 100%; height: 100%; padding: 10px;">` +
               // DeliveredTo Name
-              '<table style="font-size:80%; width:100%">' + 
+              `<table style="width:100%">` +
               emtpy_table_row +
               '<tr>' +
-              '<td><strong>' + this.order.metadata.dropOffTitle + '</strong></td>' + 
+              '<td colspan="2"><strong>' + this.order.metadata.dropOffTitle + '</strong></td>' +               
               '</tr>' +
               emtpy_table_row +
               // Time and Order Id         
               '<tr>' + 
-              '<td>';
+              '<td><small>';
 
     const options = { year: 'numeric', day: 'numeric', month: 'long', hour:'2-digit', minute: '2-digit' };
     let l_date = new Date(this.order.scheduledAt);
     html += l_date.toLocaleDateString(undefined, options);
-    html += '</td>';
+    html += '</small></td>';
 
-    html += '<td align="right">ORDER: ';
+    html += '<td  style="text-align:right"><small>ORDER: ';
     html += this.order.id;
-    html += '</td>' +
+    html += '</small></td>' +
             '</tr>' +
-            '</table><hr>';
+            emtpy_table_row +
+            '</table><hr style="height:2px;border-width:0;color:gray;background-color:gray">';
 
-    html += '<table style="font-size:80%; width:100%">';
+    html += '<table style="width:100%">';
     if (this.order.type === OrderType.Menu) {                        
       html += this.order                     
         .orderItems
         .reduce((res, orderItem) => {
           const price = orderItem.price.toFixed(2);
-          res += emtpy_table_row;
           res += '<tr>' +
-                  '<td>' +
+                  '<td><strong>' +
                   orderItem.quantity + ' x ' +  orderItem.description +
-                  '</td>';
-          res += '<td align="right">' +
+                  '</strong></td>';
+          res += '<td style="text-align:right">' +
                   '$' + price +
                   '</td>' + 
                   '</tr>';
@@ -295,7 +318,7 @@ export class OrderPage implements OnInit {
                       '<td>' +
                       '<small>' + subOption.title + '</small>' +
                       '</td>' +
-                      '<td align="right">' +
+                      '<td style="text-align:right">' +
                       '<small>';
               
               if (price2) {
@@ -317,33 +340,62 @@ export class OrderPage implements OnInit {
               '<td>' + this.order.metadata.description + '</td>' +
               '</tr>';
     }
-
+    
     let taxes = this.order.metadata.tps + this.order.metadata.tvq;
-    html += emtpy_table_row + 
-            '</table>' +
-            '<hr>' +
-            '<table style="font-size:80%; width:100%">' +
+    html += '</table>' + 
+            '<hr style="height:2px;border-width:0;color:gray;background-color:gray">' +         
+            '<table style="width:100%">' +
             '<tr>' +
             '<td>Subtotal</td>' +
-            '<td align="right">' + '$' + this.order.metadata.subtotal.toFixed(2) + '</td>' +
+            '<td  style="text-align:right">' + '$' + this.order.metadata.subtotal.toFixed(2) + '</td>' +
             '</tr>' +
             '<tr>' +
             '<td>Taxes</td>' +
-            '<td align="right">' + '$' +  taxes.toFixed(2) + '</td>' +
+            '<td  style="text-align:right">' + '$' +  taxes.toFixed(2) + '</td>' +
             '</tr>' +
             '<tr>' +
             '<td>Amount Paid</td>' +
-            '<td align="right">' + '$' +  this.order.metadata.totalAmount.toFixed(2) + '</td>' +
+            '<td  style="text-align:right">' + '$' +  this.order.metadata.totalAmount.toFixed(2) + '</td>' +
             '</tr>' +
-            '</table>' +
-         //   '<table style="font-size:80%; width:100%">' +            
-          //  '<tr>' +
-          //  '<td align="center">' + 'Thank you for ordering from ' + this.order.merchant.name + '</td>' +           
-           // '</tr>' + 
-           // '</table>' +
-            '</body></html>';
+            '</table>' +   
+            '<br><br><div  style="text-align: center">Thank you for ordering from ' + this.order.merchant.name + '</div><br><br>' +
+            '</div>';
+
+    return html;
+  }
+
+  ticketBtWebPrint() {
+    let html = this.getPrintHtml();
     
-    this.btPrintService.printWeb(this.router.url, html); 
+
+
+    var html_string = "<html><head></head><body><p>HI</p></body></html>";
+    var iframe=document.createElement('iframe');
+    document.body.appendChild(iframe);
+    setTimeout(function(){
+        var iframedoc=iframe.contentDocument||iframe.contentWindow.document;
+        iframedoc.body.innerHTML=html;
+
+        html2canvas(iframedoc.body).then(function(canvas) {
+        //  var link = document.createElement("a");
+      //    document.body.appendChild(link);
+          //link.download = "html_image.png";
+          var base64image = canvas.toDataURL("image/png");
+         // link.href = canvas.toDataURL("image/png");
+         // window.open(base64image , "_blank");
+
+          var image = new Image();
+          image.src = base64image;
+  
+          var w = window.open("");
+          w.document.write(image.outerHTML);
+
+          //link.target = '_blank';
+         // link.click();
+      });
+    }, 10);
+  
+    //this.btPrintService.printWeb(html); 
   }
 
   async pagePrint() {
