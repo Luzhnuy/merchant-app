@@ -30,7 +30,7 @@ export class PrintService {
     return this.starprnt.disconnect();
   }
 
-  prepareImgFile(folderPath:string, fileName:string, blob:any) {
+  private prepareImgFile(folderPath:string, fileName:string, blob:any) {
     let outerthis = this; 
     return new Promise((resolve, reject) => {
         this.file.resolveDirectoryUrl(folderPath).then((dirEntry) => {         
@@ -156,8 +156,8 @@ export class PrintService {
     //this.printWebTemp(htmlData);
     let passprnt_uri = "starpassprnt://v1/print/nopreview?";  
 
-    passprnt_uri += '&html=' + encodeURIComponent(htmlData);
     passprnt_uri += "size=3";
+    passprnt_uri += '&html=' + encodeURIComponent(htmlData);
     passprnt_uri += '&popup=enable';
 
     //passprnt_uri += "&url=" + encodeURIComponent("https://eazy4busy.com/passprnt/resource/myphoto.pdf");

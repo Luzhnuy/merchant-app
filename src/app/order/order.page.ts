@@ -65,13 +65,7 @@ export class OrderPage implements OnInit {
     // }, 10000);
   }
 
-   async ionViewWillEnter() {
-    const urlParams = new URLSearchParams(location.search);
-    if (urlParams.get('passprnt_code'))
-    {    
-      console.log(urlParams);
-    }
-    
+   async ionViewWillEnter() { 
     const orderId = parseInt(this.activatedRoute.snapshot.params.id, 10);
     this.ordersService
       .viewOrder(orderId);
