@@ -48,7 +48,7 @@ export class PrintService {
   async print(printerName:string, htmlData:string)
   {  
     var tempPath = cordova.file.cacheDirectory;
-    var tempFileName = "bt_print.png";
+    var tempFileName = "bt-print-temp.png";
     var tempFullPath = tempPath + tempFileName;
 
     var iframe=document.createElement('iframe');
@@ -122,15 +122,46 @@ export class PrintService {
     });
   }
 
+  printWebTemp2() {
+    var iframe=document.createElement('iframe');
+    document.body.appendChild(iframe);
+
+    var iframedoc = iframe.contentDocument || iframe.contentWindow.document;
+    iframedoc.body.innerHTML = htmlData;
+
+    
+    html2canvas(iframedoc.body, {scrollY: -window.scrollY}).then(function(canvas) {
+      canvas.toBlob(function(blob) {          
+        var url = URL.createObjectURL(blob);
+        url = url.split('blob:')[1];        
+        console.log(url);
+        window.navigator.msSaveBlob(blob, "bt-print-temp.pdf");
+
+        /*let passprnt_uri = "starpassprnt://v1/print/nopreview?";
+        passprnt_uri += "size=" + 3;
+        passprnt_uri += "&popup=" + "enable";
+       // passprnt_uri += "&html=" + encodeURIComponent(htmlData);
+        passprnt_uri += "&url=" + encodeURIComponent(url);
+        passprnt_uri += "&back=" + encodeURIComponent(window.location.href);
+       
+        //console.log(passprnt_uri);
+        location.href = passprnt_uri;*/
+
+      }, "image/png", 1);
+    }).catch(_ => {
+      console.log("Issue preparing data to be printed.");
+    });
+  }
   printWeb(htmlData:string) {    
     //this.printWebTemp(htmlData);
     let passprnt_uri = "starpassprnt://v1/print/nopreview?";  
 
-    passprnt_uri += "size=" + 3;
-    passprnt_uri += "&popup=" + "enable";
-    passprnt_uri += "&html=" + encodeURIComponent(htmlData);
+    passprnt_uri += '&html=' + encodeURIComponent(htmlData);
+    passprnt_uri += "size=3";
+    passprnt_uri += '&popup=enable';
+
     //passprnt_uri += "&url=" + encodeURIComponent("https://eazy4busy.com/passprnt/resource/myphoto.pdf");
-    passprnt_uri += "&back=" + encodeURIComponent(window.location.href);
+    passprnt_uri += '&back=' + encodeURIComponent(window.location.href);
    
     //console.log(passprnt_uri);
     location.href = passprnt_uri;

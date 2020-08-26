@@ -203,16 +203,16 @@ export class OrderPage implements OnInit {
   getPrintHtml() {
     let emtpy_table_row = '<tr><td style="height: 5px;" colspan="2"></td></tr>';
     
-    let html = `<div style="font-family: Verdana, Geneva, sans-serif; background: #fff; width: 100%;">` +
-                `<table style="width: 100%;">
-                <tr>
-                  <td style="text-align: left;">
-                    <img  style="width: 148px;" src="data:image/png;base64,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"/>
-                  </td>
-                </tr>
-              </table>` + 
+    let html = '<div style="font-family: Verdana, Geneva, sans-serif; background: #fff; width: 100%;">' +
+                '<table style="width: 100%;">' +
+                '<tr>' +
+                  '<td style="text-align: left;">' +
+                    '<img  style="width: 148px;" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAPAAAABACAYAAAAkn/rnAAAGZUlEQVR4Xu2d0XLkNgwE4///aF/5qta10ZFEDwFK4mryaooCBtMAKTvJ1/f39/d//scKWIEtFfgywFvWzUFbgb8KGGAbwQpsrIAB3rh4Dt0KGGB7wApsrIAB3rh4Dt0KGGB7wApsrIAB3rh4Dt0KGGB7wApsrIAB3rh4Dt0KGGB7wApsrIAB3rh4Dt0K3ALgr68vXAn/6TaWygsfoMAlACvAjmpgmB/gUKc4VOB0gKvgfc/KINvlT1XgVIAVeF9Q0mcM8VMt/Oy8TwGYQkin6mg/g/xsQz8t++UAz8BLQf5Z19rfED/Nxs/NdynAWXhfZRkBaYCfa15nvvBf6K+Cl0DcmsTVU7iXT/V7nmZKX4dyFV8ygavhnYX457kMYLN5ZN6ZK+ceT8/qmq3nKnWubO5bAUxAPoo5C9OnmWyVedV9M7oa4H/VLgc4WyBqCOVerEKczUF9H81553VZTUnzvkqfj5rAVYUixeiBkpnC2fgNb2NKCH8qG9X9jvp+DMAtcLJAzBb0/b1K0aN4R01DeU+U1yf9PNK0NV13+u3CRwA8mnq0gDOmrZ7CV3wVzZr1jJhnTzVR7c9qej9xUK+8+5DERwCe1S9iouwOHE28qJBRoL2f06KQQrR+HaUW8xhnVNwMfIqmVKfjNMzEt0JPom/vz3DfNVC0G308i/SJ3kN92fP/aQC/AogSmgGZftAiYkUFUeOryPcYd2bPyr2iD0vVWhJ4R/Xpga3U9Ez9SFwlAKvHg8iAFMjIQMcJkAWYvC9rslbRqk2TmUTKSSg6fRCDjtZEPjo+e1eARxM+0uhWABPAWpOcAk/3J8ao3Csq0o4Ar56+0fF81AhJfWmjyuyVvZ791aDif24W3X+75/e3Xy9QIN73Gn2YUEE/7htBRafxqgKTUw+ZgFF8dForTaZV6yiOlt70mehZNR6qyXGyrmhqlwLcgoQURYF9trlkOjxpBrMflWhjaTWwyMi9Iye9FhBjq3mPptQKIEa6KfqpeSqe/p+/rpzA1Bij41Bk6AzAFRCTKZgBfpQ/efcMBJl9VWPfDWB60lDz3B5gMnnphBgBMSOUGtuKSUTjJrFm4hs1tcy+VXEfj61Rg1ebdCZHqh2J+fekcPUEJoUbJRQZOzuBZ08J0RfPig49q13WhMSIZEr36kqeJWvU/Qk4We0ycbfiu/QOPGvA0bFqBFwEOykgOe6+TwG1YGR9VresCXcFOKvbcbqTWtEBMOvNywCuEJMcl6on8NUAR7qpcM6YsAcwebdas16zbsU9giDS7RVXtI7kOBPHbQDOFEidgK/1VLBZkUZxRQBEP1c7dMV+Z5hw5uPY772u8W8vkY9H1AdHzVvPEZ3JGrXhqwyUT+ARwFF3U4O/GmBi0qoij+7Umfs0yUFtMqMjdtTgiV5kDYlZ1Y1cjWb8nxksJQAfC6Z0tFloe0erUcejQlU0mlUfsZSjIzF6lCuZfK1GGu17rF+0PnNqIDqQSUli6AE80ygJG0sAPiYRFYcEOlpDGsaZ8JJOrXZ/tSFQw1TVhtQgU2cCj6qp6lMSg5oj9WVv3+UAVxmklwAtGhWqKl4VuNH9jzQExThnGbFKSwoa9YKiVe+aVpUb9eVygKN7z4xo5BlSNEWkbGHokZPE3bsmVMaY3Wt054uaEqkvhTeKI5vnWU2PavKrbcUfcpD7gxoYWU8hUADONCLlGEljbxmTmvHnHdGdeXQ/JO+h2pK9jjXPaNTyTxTD6NREAO7pTfMinj+uKTtCV3VbmsTIOMdCUZP9Iw78j7FF+0cQRe9VjBxNLPWEQO/StG4RRL0jazQkohpE/ox0UX4e5UhjJZqWA5yZYCRg9ahUKRaNb6d16hfanXJ7QqxbAaxM3Qj0JxSX5GiAiUr3XbME4FVTWAHYk5eZzgAzne66ahnA1RAr90DDq9mt6puB9lavrlBgKcAVECvgkg8gFaJ5DytwFwWWA5yBWPm1jO+8d7GU4zhTgVMAfiUUfV7PJO5jc0Y9P7urAqcCnJnGI4EN7672c9xZBU4H+D3gzEQ2tNnS+/lPUOBSgI8CVv/VzycUyDlYgZECtwLYpbICVkBTwABrenm1FbiVAgb4VuVwMFZAU8AAa3p5tRW4lQIG+FblcDBWQFPAAGt6ebUVuJUCBvhW5XAwVkBTwABrenm1FbiVAgb4VuVwMFZAU+APCkofjJbnW6EAAAAASUVORK5CYII="/>' +
+                  '</td>' +
+                '</tr>' +
+              '</table>' + 
               // DeliveredTo Name
-              `<table style="width:100%">` +
+              '<table style="width:100%">' +
               emtpy_table_row +
               '<tr>' +
               '<td colspan="2"><strong>' + this.order.metadata.dropOffTitle + '</strong></td>' +               
@@ -251,8 +251,7 @@ export class OrderPage implements OnInit {
 
           if (orderItem.subOptionIds) {
             orderItem.subOptions.reduce((res2, subOption) => {
-              const price2 = subOption.price ? subOption.price.toFixed(2) : null;
-            
+              const price2 = subOption.price ? subOption.price.toFixed(2) : null;              
               res += '<tr>' +
                       '<td>' +
                       '<small>' + subOption.title + '</small>' +
