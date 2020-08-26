@@ -194,74 +194,8 @@ export class OrderPage implements OnInit {
        this.router.navigate(['/settings']);
      }
      else
-     {
-       let data = "        SnapGrab                      \n" +
-                  "             123 Star Road\n" +
-                  "           City, State 12345\n" +
-                  "\n" +
-                  "Date:MM/DD/YYYY          Time:HH:MM PM\n" +
-                  "--------------------------------------\n" +
-                  "SALE\n" +
-                  "SKU            Description       Total\n" +
-                  "300678566      PLAIN T-SHIRT     10.99\n" +
-                  "300692003      BLACK DENIM       29.99\n" +
-                  "300651148      BLUE DENIM        29.99\n" +
-                  "300642980      STRIPED DRESS     49.99\n" +
-                  "30063847       BLACK BOOTS       35.99\n" +
-                  "300678566      PLAIN T-SHIRT     10.99\n" +
-                  "300692003      BLACK DENIM       29.99\n" +
-                  "300651148      BLUE DENIM        29.99\n" +
-                  "300642980      STRIPED DRESS     49.99\n" +
-                  "30063847       BLACK BOOTS       35.99\n" +
-                  "300678566      PLAIN T-SHIRT     10.99\n" +
-                  "300692003      BLACK DENIM       29.99\n" +
-                  "300651148      BLUE DENIM        29.99\n" +
-                  "300642980      STRIPED DRESS     49.99\n" +
-                  "30063847       BLACK BOOTS       35.99\n" +
-                  "300678566      PLAIN T-SHIRT     10.99\n" +
-                  "300692003      BLACK DENIM       29.99\n" +
-                  "300651148      BLUE DENIM        29.99\n" +
-                  "300642980      STRIPED DRESS     49.99\n" +
-                  "30063847       BLACK BOOTS       35.99\n" +
-                  "300678566      PLAIN T-SHIRT     10.99\n" +
-                  "300692003      BLACK DENIM       29.99\n" +
-                  "300651148      BLUE DENIM        29.99\n" +
-                  "300642980      STRIPED DRESS     49.99\n" +
-                  "30063847       BLACK BOOTS       35.99\n" +
-                  "\n" +
-                  "Subtotal                        156.95\n" +
-                  "Tax                               0.00\n" +
-                  "--------------------------------------\n" +
-                  "Total                          $156.95\n" +
-                  "--------------------------------------\n" +
-                  "\n" +
-                  "Charge\n" +
-                  "156.95\n" +
-                  "Visa XXXX-XXXX-XXXX-0123\n" +
-                  "Refunds and Exchanges\n" +
-                  "Within 30 days with receipt\n" +
-                  "And tags attached\n";
-       
+     { 
        let html = this.getPrintHtml();
-      /* var dirName = "bt-print"
-       var filename = "test.png";
-
-       var iframe=document.createElement('iframe');
-       document.body.appendChild(iframe);
-       var iframedoc=iframe.contentDocument||iframe.contentWindow.document;
-       iframedoc.body.innerHTML=html;
-        
-       let outerthis = this;        
-       html2canvas(iframedoc.body).then(function(canvas) {
-          canvas.toBlob(function(blob) {          
-            outerthis.btPrintService.prepareImgFile(dirName, filename, blob).then(function(fileFullPath:string) {            
-              outerthis.btPrintService.print(printerName, fileFullPath);
-              }).catch(function(e) {
-                console.error("error:", e);
-              })
-          });
-       });*/
-
        this.btPrintService.print(printerName, html);
      }
   }
@@ -269,10 +203,7 @@ export class OrderPage implements OnInit {
   getPrintHtml() {
     let emtpy_table_row = '<tr><td style="height: 5px;" colspan="2"></td></tr>';
     
-    const { maxWidth, maxHeight } = this.isSafari() ?
-    { maxWidth: '210mm', maxHeight: '297mm' } : { maxWidth: '100%', maxHeight: '100%' };
-
-    let html = `<div id="print-html" style="font-family: Verdana, Geneva, sans-serif; background: #fff; max-width: ` + maxWidth + `; width: 100%; padding: 5px;">` +
+    let html = `<div style="font-family: Verdana, Geneva, sans-serif; background: #fff; width: 100%;">` +
                 `<table style="width: 100%;">
                 <tr>
                   <td style="text-align: left;">
@@ -317,51 +248,7 @@ export class OrderPage implements OnInit {
                   '$' + price +
                   '</td>' + 
                   '</tr>';
-          
-                  res += '<tr>' +
-                  '<td><strong>' +
-                  orderItem.quantity + ' x ' +  orderItem.description +
-                  '</strong></td>';
-          res += '<td style="text-align:right">' +
-                  '$' + price +
-                  '</td>' + 
-                  '</tr>';
 
-                  res += '<tr>' +
-                  '<td><strong>' +
-                  orderItem.quantity + ' x ' +  orderItem.description +
-                  '</strong></td>';
-          res += '<td style="text-align:right">' +
-                  '$' + price +
-                  '</td>' + 
-                  '</tr>';
-
-                  res += '<tr>' +
-                  '<td><strong>' +
-                  orderItem.quantity + ' x ' +  orderItem.description +
-                  '</strong></td>';
-          res += '<td style="text-align:right">' +
-                  '$' + price +
-                  '</td>' + 
-                  '</tr>';
-
-                  res += '<tr>' +
-                  '<td><strong>' +
-                  orderItem.quantity + ' x ' +  orderItem.description +
-                  '</strong></td>';
-          res += '<td style="text-align:right">' +
-                  '$' + price +
-                  '</td>' + 
-                  '</tr>';
-
-                  res += '<tr>' +
-                  '<td><strong>' +
-                  orderItem.quantity + ' x ' +  orderItem.description +
-                  '</strong></td>';
-          res += '<td style="text-align:right">' +
-                  '$' + price +
-                  '</td>' + 
-                  '</tr>';
           if (orderItem.subOptionIds) {
             orderItem.subOptions.reduce((res2, subOption) => {
               const price2 = subOption.price ? subOption.price.toFixed(2) : null;

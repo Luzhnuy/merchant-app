@@ -30,101 +30,109 @@ export class PrintService {
     return this.starprnt.disconnect();
   }
 
-  prepareImgFile(dirName, filename, blob) {
-    var folderpath = "file:///storage/emulated/0";
+  prepareImgFile(folderPath:string, fileName:string, blob:any) {
+    let outerthis = this; 
     return new Promise((resolve, reject) => {
-        this.file.resolveDirectoryUrl(folderpath).then((dirEntry) => {
-          dirEntry.getDirectory(dirName, { create: true }, function (dir) {
-                dir.getFile(filename, { create: true, exclusive: false }, function (fileEntry) {
+        this.file.resolveDirectoryUrl(folderPath).then((dirEntry) => {         
+          dirEntry.getFile(fileName, { create: true, exclusive: false }, function (fileEntry) {
                     fileEntry.createWriter(function (fileWriter) {
-                        fileWriter.write(blob);
-                        resolve(folderpath + fileEntry.fullPath);
+                        fileWriter.onwriteend = resolve;
+                        fileWriter.onerror = reject
+                        fileWriter.write(blob);                        
                     });
                 }, reject);
-            }, reject);
         }, reject);
     });
   }
 
-  print(printerName:string, htmlData:string)
-  {         
-    var dirName = "bt-print"
-    var filename = "test.png";
+  async print(printerName:string, htmlData:string)
+  {  
+    var tempPath = cordova.file.cacheDirectory;
+    var tempFileName = "bt_print.png";
+    var tempFullPath = tempPath + tempFileName;
 
     var iframe=document.createElement('iframe');
     document.body.appendChild(iframe);
     var iframedoc = iframe.contentDocument || iframe.contentWindow.document;
     iframedoc.body.innerHTML = htmlData;
     
-    let outerthis = this;        
+    let outerthis = this; 
+    await this.helper.showLoading("Please wait ...", 5000);
+      
     html2canvas(iframedoc.body, {scrollY: -window.scrollY}).then(function(canvas) {
       canvas.toBlob(function(blob) {          
-        outerthis.prepareImgFile(dirName, filename, blob).then(function(fileFullPath:string) { 
+        outerthis.prepareImgFile(tempPath, tempFileName, blob).then(function() { 
           
-          var imageObj = {
-            uri: fileFullPath,
-            width: 576, // options: 384 = 2", 576 = 3", 832 = 4"
-            cutReceipt:true, // Defaults to true
-            openCashDrawer:false // Defaults to true
-          };
+            var imageObj = {
+              uri: tempFullPath,
+              width: 576, // options: 384 = 2", 576 = 3", 832 = 4"  (Defaults to 576)
+              cutReceipt:true, // Defaults to true
+              openCashDrawer:false // Defaults to true
+            };
 
-          outerthis.starprnt.printImage(printerName, 'StarGraphic', imageObj)
-            .then(result => {
-              outerthis.helper.showToast("Print Success");
-            }).catch(error => {
-              outerthis.helper.showError("Print error " + error); 
-          })
+            outerthis.starprnt.printImage(printerName, 'StarGraphic', imageObj)
+              .then(result => {
+                outerthis.helper.showToast("Print Success");
+                outerthis.helper.stopLoading();
+              }).catch(_ => {
+                outerthis.printErrHandler("Communication issue with the Bt-Printer.");
+            })
 
-          }).catch(function(e) {
-            console.error("error:", e);
+          }).catch(_ => {
+            outerthis.printErrHandler("Issue saving data to be printed.");
           })
 
       }, "image/png", 1);
+    }).catch(_ => {
+      outerthis.printErrHandler("Issue preparing data to be printed.");      
     });
-  
   }
 
-  printWeb(htmlData) {    
+  printErrHandler(err:any) {
+    this.helper.showError("Print error: " + err); 
+    this.helper.stopLoading();
+  }
 
+  printWebTemp(htmlData) {
     var iframe=document.createElement('iframe');
     document.body.appendChild(iframe);
-    //setTimeout(function(){
-        var iframedoc = iframe.contentDocument || iframe.contentWindow.document;
-        iframedoc.body.innerHTML = htmlData;
 
-        html2canvas(iframedoc.body, {scrollY: -window.scrollY}).then(function(canvas) {
-          var link = document.createElement("a");
-          document.body.appendChild(link);
-          link.download = "html_image.png";
-          
-          
-          link.href = canvas.toDataURL("image/png", 1);
-          
-          link.target = '_blank';
-          link.click();
+    var iframedoc = iframe.contentDocument || iframe.contentWindow.document;
+    iframedoc.body.innerHTML = htmlData;
+    
 
-         /*
-         var base64image = canvas.toDataURL("image/png");
-          var image = new Image();
-          image.src = base64image;
-  
-          var w = window.open("");
-          w.document.write(image.outerHTML);
-          */
-          
-      });
-    //}, 10);
+    html2canvas(iframedoc.body, {scrollY: -window.scrollY}).then(function(canvas) {
+    /* var link = document.createElement("a");
+      document.body.appendChild(link);
+      link.download = "html_image.png";
+      
+      
+      link.href = canvas.toDataURL("image/png", 1);
+      
+      link.target = '_blank';
+      link.click();*/
 
-    /*let passprnt_uri = "starpassprnt://v1/print/nopreview?";  
+      
+      var base64image = canvas.toDataURL("image/png");
+      var image = new Image();
+      image.src = base64image;
+
+      var w = window.open("");
+      w.document.write(image.outerHTML);      
+    });
+  }
+
+  printWeb(htmlData:string) {    
+    //this.printWebTemp(htmlData);
+    let passprnt_uri = "starpassprnt://v1/print/nopreview?";  
 
     passprnt_uri += "size=" + 3;
     passprnt_uri += "&popup=" + "enable";
-    //passprnt_uri += "&html=" + encodeURIComponent(htmlData);
-    passprnt_uri += "&url=" + encodeURIComponent("https://eazy4busy.com/passprnt/resource/myphoto.pdf");
-    let back_url = window.location.href;
-    passprnt_uri += "&back=" + encodeURIComponent(back_url);
+    passprnt_uri += "&html=" + encodeURIComponent(htmlData);
+    //passprnt_uri += "&url=" + encodeURIComponent("https://eazy4busy.com/passprnt/resource/myphoto.pdf");
+    passprnt_uri += "&back=" + encodeURIComponent(window.location.href);
    
     //console.log(passprnt_uri);
-    location.href = passprnt_uri;*/
+    location.href = passprnt_uri;
   }
 }
