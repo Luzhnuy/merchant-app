@@ -197,7 +197,7 @@ export class OrderPage implements OnInit {
   getPrintHtml() {
     let emtpy_table_row = '<tr><td style="height: 5px;" colspan="2"></td></tr>';
     
-    let html = '<div id="print-html" style="background: #fff; font-family: Verdana, Geneva, sans-serif; width: 100%;">' +
+    let html = '<div id="print-html" style="background: #fff; font-family:Verdana, Geneva, sans-serif; font-weight: 500; width: 100%;">' +
                 '<table style="width: 100%;">' +
                 '<tr>' +
                   '<td style="text-align: left;">' +
@@ -290,7 +290,7 @@ export class OrderPage implements OnInit {
             '<td  style="text-align:right">' + '$' +  this.order.metadata.totalAmount.toFixed(2) + '</td>' +
             '</tr>' +          
             '</table><br><br>' +
-            '<div style="height: 100%; text-align: center;">Thank you for ordering from ' + this.order.merchant.name + '</div><br>' +
+            '<div style="text-align: center;">Thank you for ordering from ' + this.order.merchant.name + '</div><br><br>' +            
             '</div>';
 
     return html;

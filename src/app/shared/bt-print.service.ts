@@ -54,19 +54,18 @@ export class PrintService {
     var tempFileName = "bt-print-temp.png";
     var tempFullPath = tempPath + tempFileName;
 
-    var iframe=document.createElement('iframe');
+    var iframe = document.createElement('iframe');
     document.body.appendChild(iframe);
     var iframedoc = iframe.contentDocument || iframe.contentWindow.document;
     iframedoc.body.innerHTML = htmlData;
     const div = iframedoc.getElementById("print-html");
 
-    const options = {y: 10, height:  div.clientHeight};
-
+    // const options = {height:  div.clientHeight};    
+    const options = {x: 0, y: 0 , foreignObjectRendering: true};
     let outerthis = this; 
-
     await this.helper.showLoading("Please wait ...", 5000);   
 
-    html2canvas(div /*, options*/).then(function(canvas) {
+    html2canvas(div, options).then(function(canvas) {
       canvas.toBlob(function(blob) {          
         outerthis.prepareImgFile(tempPath, tempFileName, blob).then(function() { 
           
@@ -93,6 +92,8 @@ export class PrintService {
     }).catch(_ => {
       outerthis.printErrHandler("Issue preparing data to be printed.");      
     });
+
+    // TODO: Check if Need to remove the IFRAME after rendering
   }
 
   printErrHandler(err:any) {
@@ -102,42 +103,42 @@ export class PrintService {
 
   async printWebTemp(htmlData) {
      
-  var div1=document.createElement('div');
-  document.body.appendChild(div1);  
-  div1.innerHTML = htmlData;  
-  const div = div1.getElementsByTagName("div")[0];
-  
+  var iframe = document.createElement('iframe');
+  document.body.appendChild(iframe);
+  var iframedoc = iframe.contentDocument || iframe.contentWindow.document;
+
+  iframedoc.body.innerHTML = htmlData;
+  const div = iframedoc.getElementById("print-html");
+
+  const options = {x:0, y:0, foreignObjectRendering:true, windowHeight: div.clientHeight, backgroundColor:'#30fc03'};
+
   var clientHeight = div.offsetHeight;
-  var tempHeight = div.getBoundingClientRect().height;
+  
   console.log("div.offsetHeight : " + div.clientHeight);
+  console.log("div.scrollHeight : " + div.scrollHeight);
   console.log("clientHeight : " + clientHeight);
-  console.log("tempHeight : " + tempHeight);
- 
+    
+  html2canvas(div, options).then(function(canvas) {   
+     
+        console.log("canvas height : " + canvas.height);
+     /* var link = document.createElement("a");
+        document.body.appendChild(link);
+        link.download = "html_image.png";
+        
+        
+        link.href = canvas.toDataURL("image/png", 1);
+        
+        link.target = '_blank';
+        link.click();*/
 
-  //const options = {backgroundColor:'#30fc03', height: clientHeight};
-  
-  // {y: 10, scrollY: -window.scrollY}
-    html2canvas(div).then(function(canvas) {     
-      console.log("canvas height : " + canvas.height);
-      var link = document.createElement("a");
-      document.body.appendChild(link);
-      link.download = "html_image.png";
-      
-      
-      link.href = canvas.toDataURL("image/png", 1);
-      
-      link.target = '_blank';
-      link.click();
+        
+        var base64image = canvas.toDataURL("image/png",1);
+        var image = new Image();
+        image.src = base64image;
 
-      /*
-      var base64image = canvas.toDataURL("image/png",1);
-      var image = new Image();
-      image.src = base64image;
-
-      var w = window.open("");
-      w.document.write(image.outerHTML);*/
+        var w = window.open("");
+        w.document.write(image.outerHTML);
     });
-  
   }
   
   printWeb(htmlData:string) {    
