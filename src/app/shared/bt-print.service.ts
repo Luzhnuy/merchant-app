@@ -13,6 +13,9 @@ declare let cordova: any;
 
 export class PrintService {
 
+  m_iframe:any;
+  m_iframedoc:any;
+  m_url:any;
   constructor(public file: File, private starprnt: StarPRNT, private helper: HelperService) { }
 
   searchBtDevices()
@@ -55,11 +58,15 @@ export class PrintService {
     document.body.appendChild(iframe);
     var iframedoc = iframe.contentDocument || iframe.contentWindow.document;
     iframedoc.body.innerHTML = htmlData;
-    
+    const div = iframedoc.getElementById("print-html");
+
+    const options = {y: 10, height:  div.clientHeight};
+
     let outerthis = this; 
-    await this.helper.showLoading("Please wait ...", 5000);
-      
-    html2canvas(iframedoc.body, {scrollY: -window.scrollY}).then(function(canvas) {
+
+    await this.helper.showLoading("Please wait ...", 5000);   
+
+    html2canvas(div /*, options*/).then(function(canvas) {
       canvas.toBlob(function(blob) {          
         outerthis.prepareImgFile(tempPath, tempFileName, blob).then(function() { 
           
@@ -71,7 +78,7 @@ export class PrintService {
             };
 
             outerthis.starprnt.printImage(printerName, 'StarGraphic', imageObj)
-              .then(result => {
+              .then(_ => {
                 outerthis.helper.showToast("Print Success");
                 outerthis.helper.stopLoading();
               }).catch(_ => {
@@ -93,16 +100,26 @@ export class PrintService {
     this.helper.stopLoading();
   }
 
-  printWebTemp(htmlData) {
-    var iframe=document.createElement('iframe');
-    document.body.appendChild(iframe);
+  async printWebTemp(htmlData) {
+     
+  var div1=document.createElement('div');
+  document.body.appendChild(div1);  
+  div1.innerHTML = htmlData;  
+  const div = div1.getElementsByTagName("div")[0];
+  
+  var clientHeight = div.offsetHeight;
+  var tempHeight = div.getBoundingClientRect().height;
+  console.log("div.offsetHeight : " + div.clientHeight);
+  console.log("clientHeight : " + clientHeight);
+  console.log("tempHeight : " + tempHeight);
+ 
 
-    var iframedoc = iframe.contentDocument || iframe.contentWindow.document;
-    iframedoc.body.innerHTML = htmlData;
-    
-
-    html2canvas(iframedoc.body, {scrollY: -window.scrollY}).then(function(canvas) {
-    /* var link = document.createElement("a");
+  //const options = {backgroundColor:'#30fc03', height: clientHeight};
+  
+  // {y: 10, scrollY: -window.scrollY}
+    html2canvas(div).then(function(canvas) {     
+      console.log("canvas height : " + canvas.height);
+      var link = document.createElement("a");
       document.body.appendChild(link);
       link.download = "html_image.png";
       
@@ -110,60 +127,29 @@ export class PrintService {
       link.href = canvas.toDataURL("image/png", 1);
       
       link.target = '_blank';
-      link.click();*/
+      link.click();
 
-      
-      var base64image = canvas.toDataURL("image/png");
+      /*
+      var base64image = canvas.toDataURL("image/png",1);
       var image = new Image();
       image.src = base64image;
 
       var w = window.open("");
-      w.document.write(image.outerHTML);      
+      w.document.write(image.outerHTML);*/
     });
+  
   }
-
-  printWebTemp2() {
-    var iframe=document.createElement('iframe');
-    document.body.appendChild(iframe);
-
-    var iframedoc = iframe.contentDocument || iframe.contentWindow.document;
-    iframedoc.body.innerHTML = htmlData;
-
-    
-    html2canvas(iframedoc.body, {scrollY: -window.scrollY}).then(function(canvas) {
-      canvas.toBlob(function(blob) {          
-        var url = URL.createObjectURL(blob);
-        url = url.split('blob:')[1];        
-        console.log(url);
-        window.navigator.msSaveBlob(blob, "bt-print-temp.pdf");
-
-        /*let passprnt_uri = "starpassprnt://v1/print/nopreview?";
-        passprnt_uri += "size=" + 3;
-        passprnt_uri += "&popup=" + "enable";
-       // passprnt_uri += "&html=" + encodeURIComponent(htmlData);
-        passprnt_uri += "&url=" + encodeURIComponent(url);
-        passprnt_uri += "&back=" + encodeURIComponent(window.location.href);
-       
-        //console.log(passprnt_uri);
-        location.href = passprnt_uri;*/
-
-      }, "image/png", 1);
-    }).catch(_ => {
-      console.log("Issue preparing data to be printed.");
-    });
-  }
+  
   printWeb(htmlData:string) {    
-    //this.printWebTemp(htmlData);
-    let passprnt_uri = "starpassprnt://v1/print/nopreview?";  
+    this.printWebTemp(htmlData);
 
-    passprnt_uri += "size=3";
+   /* let passprnt_uri = 'starpassprnt://v1/print/nopreview?';
+    
+    passprnt_uri += 'size=3';
     passprnt_uri += '&html=' + encodeURIComponent(htmlData);
-    passprnt_uri += '&popup=enable';
-
-    //passprnt_uri += "&url=" + encodeURIComponent("https://eazy4busy.com/passprnt/resource/myphoto.pdf");
+    passprnt_uri += '&popup=enable';  
     passprnt_uri += '&back=' + encodeURIComponent(window.location.href);
-   
-    //console.log(passprnt_uri);
-    location.href = passprnt_uri;
+
+    location.href = passprnt_uri;*/
   }
 }
