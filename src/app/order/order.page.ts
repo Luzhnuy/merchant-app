@@ -13,7 +13,6 @@ import { ErrorHandlerService } from '../shared/error-handler.service';
 import { PrintPopoverComponent } from '../shared/components/print-popover/print-popover.component';  
 import { PrintService } from '../shared/bt-print.service';
 import { StorageVariablesV2Enum as StorageVariables } from '../shared/storage-variables-v2.enum';
-import { resolve } from 'dns';
 
 declare var cordova: any;
 

@@ -42,7 +42,6 @@
     "cordova-plugin-nativeaudio": "^3.0.9",
     "cordova-plugin-printer": "^0.8.0",
     "dom-to-image": "^2.6.0",
-    "cordova-android": "^8.1.0",
     "html2canvas": "^1.0.0-rc.7",
     "ion2-calendar": "^3.0.0-rc.0",
     "moment": "^2.25.3",
@@ -65,6 +64,7 @@
     "@types/jasminewd2": "~2.0.3",
     "@types/node": "^12.11.1",
     "codelyzer": "^5.1.2",
+    "cordova-android": "^8.1.0",
     "cordova-plugin-device": "^2.0.2",
     "cordova-plugin-ionic-keyboard": "^2.2.0",
     "cordova-plugin-splashscreen": "^5.0.2",
@@ -88,7 +88,9 @@
     "plugins": {
       "cordova-plugin-file-transfer": {},
       "cordova-plugin-file": {},
-      "cordova-plugin-camera": {},
+      "cordova-plugin-camera": {
+        "ANDROID_SUPPORT_V4_VERSION": "27.+"
+      },
       "cordova-plugin-whitelist": {},
       "cordova-plugin-statusbar": {},
       "cordova-plugin-device": {},
@@ -106,8 +108,8 @@
       "cordova-plugin-starprnt": {}
     },
     "platforms": [
-      "android",
-      "ios"
+      "ios",
+      "android"
     ]
   }
 }
