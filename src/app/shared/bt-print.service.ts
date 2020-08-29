@@ -59,8 +59,7 @@ export class PrintService {
     var iframedoc = iframe.contentDocument || iframe.contentWindow.document;
     iframedoc.body.innerHTML = htmlData;
     const div = iframedoc.getElementById("print-html");
-
-    // const options = {height:  div.clientHeight};    
+ 
     const options = {x: 0, y: 0 , foreignObjectRendering: true};
     let outerthis = this; 
     await this.helper.showLoading("Please wait ...", 5000);   
@@ -78,79 +77,39 @@ export class PrintService {
 
             outerthis.starprnt.printImage(printerName, 'StarGraphic', imageObj)
               .then(_ => {
+                iframe.remove();
                 outerthis.helper.showToast("Print Success");
                 outerthis.helper.stopLoading();
               }).catch(_ => {
+                iframe.remove();
                 outerthis.printErrHandler("Communication issue with the Bt-Printer.");
             })
 
           }).catch(_ => {
+            iframe.remove();
             outerthis.printErrHandler("Issue saving data to be printed.");
           })
 
       }, "image/png", 1);
     }).catch(_ => {
+      iframe.remove();
       outerthis.printErrHandler("Issue preparing data to be printed.");      
     });
-
-    // TODO: Check if Need to remove the IFRAME after rendering
   }
 
   printErrHandler(err:any) {
     this.helper.showError("Print error: " + err); 
     this.helper.stopLoading();
   }
-
-  async printWebTemp(htmlData) {
-     
-  var iframe = document.createElement('iframe');
-  document.body.appendChild(iframe);
-  var iframedoc = iframe.contentDocument || iframe.contentWindow.document;
-
-  iframedoc.body.innerHTML = htmlData;
-  const div = iframedoc.getElementById("print-html");
-
-  const options = {x:0, y:0, foreignObjectRendering:true, windowHeight: div.clientHeight, backgroundColor:'#30fc03'};
-
-  var clientHeight = div.offsetHeight;
-  
-  console.log("div.offsetHeight : " + div.clientHeight);
-  console.log("div.scrollHeight : " + div.scrollHeight);
-  console.log("clientHeight : " + clientHeight);
-    
-  html2canvas(div, options).then(function(canvas) {   
-     
-        console.log("canvas height : " + canvas.height);
-     /* var link = document.createElement("a");
-        document.body.appendChild(link);
-        link.download = "html_image.png";
-        
-        
-        link.href = canvas.toDataURL("image/png", 1);
-        
-        link.target = '_blank';
-        link.click();*/
-
-        
-        var base64image = canvas.toDataURL("image/png",1);
-        var image = new Image();
-        image.src = base64image;
-
-        var w = window.open("");
-        w.document.write(image.outerHTML);
-    });
-  }
   
   printWeb(htmlData:string) {    
-    this.printWebTemp(htmlData);
-
-   /* let passprnt_uri = 'starpassprnt://v1/print/nopreview?';
+    let passprnt_uri = 'starpassprnt://v1/print/nopreview?';
     
     passprnt_uri += 'size=3';
     passprnt_uri += '&html=' + encodeURIComponent(htmlData);
     passprnt_uri += '&popup=enable';  
     passprnt_uri += '&back=' + encodeURIComponent(window.location.href);
 
-    location.href = passprnt_uri;*/
+    location.href = passprnt_uri;
   }
 }
