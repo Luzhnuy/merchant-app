@@ -87,6 +87,7 @@
   "cordova": {
     "plugins": {
       "cordova-plugin-file-transfer": {},
+      "cordova-plugin-file": {},
       "cordova-plugin-camera": {},
       "cordova-plugin-whitelist": {},
       "cordova-plugin-statusbar": {},
@@ -102,8 +103,7 @@
       "cordova-plugin-nativeaudio": {},
       "onesignal-cordova-plugin": {},
       "cordova-plugin-ionic-webview": {},
-      "cordova-plugin-starprnt": {},
-      "cordova-plugin-file": {}
+      "cordova-plugin-starprnt": {}
     },
     "platforms": [
       "android",
