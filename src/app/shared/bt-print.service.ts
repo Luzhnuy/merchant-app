@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import { StarPRNT } from '@ionic-native/star-prnt/ngx';
 import { HelperService } from './helper.service';
-import DomToImage from 'dom-to-image';
 import { File } from '@ionic-native/file/ngx';
 import html2canvas from 'html2canvas';
 
@@ -13,9 +12,6 @@ declare let cordova: any;
 
 export class PrintService {
 
-  m_iframe:any;
-  m_iframedoc:any;
-  m_url:any;
   constructor(public file: File, private starprnt: StarPRNT, private helper: HelperService) { }
 
   searchBtDevices()
@@ -106,7 +102,7 @@ export class PrintService {
     let passprnt_uri = 'starpassprnt://v1/print/nopreview?';
     
     passprnt_uri += 'size=3';
-    passprnt_uri += '&html=' + encodeURIComponent(htmlData);
+    passprnt_uri += '&html=' + encodeURIComponent(htmlData);  
     passprnt_uri += '&popup=enable';  
     passprnt_uri += '&back=' + encodeURIComponent(window.location.href);
 
