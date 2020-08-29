@@ -255,11 +255,19 @@ export class OrderPage implements OnInit {
                  <td> ${this.order.metadata.description}</td>
                </tr>`;
     }
-    
-    let taxes = this.order.metadata.tps + this.order.metadata.tvq;
     html += `</table>
-             <hr style="height:2px;border-width:0;background-color:gray">
-             <table style="width:100%">
+             <hr style="height:2px;border-width:0;background-color:gray">`;
+
+    let taxes = null;
+    if (this.order.metadata.tps && this.order.metadata.tvq) {
+       taxes = this.order.metadata.tps + this.order.metadata.tvq;
+    }
+    
+    if (this.order.metadata.subtotal && 
+        taxes && 
+        this.order.metadata.totalAmount) {
+        
+      html +=`<table style="width:100%">
               <tr>
                 <td>Subtotal</td>
                 <td  style="text-align:right">$${this.order.metadata.subtotal.toFixed(2)}</td>
@@ -272,17 +280,17 @@ export class OrderPage implements OnInit {
                <td>Amount Paid</td>
                <td  style="text-align:right">$${this.order.metadata.totalAmount.toFixed(2)}</td>
              </tr>
-             </table><br><br>
-             <div style="text-align: center;">Thank you for ordering from ${this.order.merchant.name}</div><br><br>
-             </div>`;
+             </table>`;
+    }
+    
+    html +=`<br><br><div style="text-align: center;">Thank you for ordering from ${this.order.merchant.name}</div>
+            <br><br></div>`;
 
     return html;
   }
 
   ticketBtWebPrint() {
-    let html = this.getPrintHtml();
-  
-    this.btPrintService.printWeb(html); 
+    this.btPrintService.printWeb(this.getPrintHtml()); 
   }
 
   async pagePrint() {
