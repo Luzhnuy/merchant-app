@@ -7,7 +7,7 @@ import { OptionsService } from '../shared/options.service';
 import { MenuOption } from '../shared/menu-option';
 import { MenuSubOption } from '../shared/menu-sub-option';
 import { HelperService } from '../shared/helper.service';
-import { AlertController, Platform, PopoverController, ModalController } from '@ionic/angular';
+import { AlertController, Platform, PopoverController } from '@ionic/angular';
 import DomToImage from 'dom-to-image';
 import { ErrorHandlerService } from '../shared/error-handler.service';
 import { PrintPopoverComponent } from '../shared/components/print-popover/print-popover.component';  
@@ -54,8 +54,6 @@ export class OrderPage implements OnInit {
     private popover:PopoverController,
     private router: Router,
     public  btPrintService: PrintService,
-    private storageVariable: StorageVariableService,
-    private modalController: ModalController,
   ) {}
 
   ngOnInit() {
@@ -181,7 +179,7 @@ export class OrderPage implements OnInit {
 
   ticketBtPrint() {
      // Print using native bluetooth plugin
-     let printerName = localStorage.getItem(StorageVariables.btPrinterName); //this.storageVariable.get<BtPrinter>(StorageVariables.btPrinterName);
+     let printerName = localStorage.getItem(StorageVariables.btPrinterName);
      if (printerName === null)
      {
        this.helper.showError("Could not find a valid Bluetooth Printer");     
