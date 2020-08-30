@@ -179,6 +179,14 @@ export class SettingsPage implements OnInit {
       component: SelectBtPrinterModalComponent,
     });
     
+    modal.onDidDismiss()
+    .then((data) => {
+      if (data.data)
+      {
+        let printerName = localStorage.getItem(StorageVariables.btPrinterName);
+        this.btPrinterName = (printerName === null) ? 'None': printerName;
+      }
+    });
     await modal.present();
   }
   
