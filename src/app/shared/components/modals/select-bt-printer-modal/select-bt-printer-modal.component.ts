@@ -2,7 +2,6 @@ import { Component } from '@angular/core';
 import { ModalController } from '@ionic/angular';
 import { PrintService } from '../../../bt-print.service';
 import { HelperService } from '../../../helper.service';
-import { StorageVariableV2Service as StorageVariableService } from '../../../storage-variable-v2.service';
 import { StorageVariablesV2Enum as StorageVariables } from '../../../storage-variables-v2.enum';
 
 @Component({
@@ -18,8 +17,7 @@ export class SelectBtPrinterModalComponent {
   constructor(
       private printService:PrintService, 
       private modalController: ModalController,
-      private helper: HelperService,
-      private storageVariable: StorageVariableService
+      private helper: HelperService
    ) {}
    
    findBtDevices() {    
@@ -35,9 +33,7 @@ export class SelectBtPrinterModalComponent {
 
    selectPrinter(printerName:string, modelName:string) {
      this.selectedPrinter= printerName;
- 
-     //this.storageVariable.set(StorageVariables.btPrinterName, printerName);
-     //this.storageVariable.set(StorageVariables.btPrinterModel, modelName);
+
      localStorage.setItem(StorageVariables.btPrinterName, printerName);
      localStorage.setItem(StorageVariables.btPrinterModel, modelName);
    }
