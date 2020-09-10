@@ -14,10 +14,10 @@ export class ApiTokensService {
     protected readonly apiClient: ApiV2Service,
   ) {}
 
-  getToken() {
+  getToken(production: boolean = true) {
     const subj = new Subject<ApiToken>();
     this.apiClient.get(
-      `${this.endpoint}`,
+      this.getEndpoint(production),
     )
       .subscribe(
         (token: ApiToken) => {
@@ -31,10 +31,10 @@ export class ApiTokensService {
     return subj.asObservable();
   }
 
-  generateToken(password) {
+  generateToken(password, production: boolean = true) {
     const subj = new Subject<ApiToken>();
     this.apiClient.post(
-      `${this.endpoint}`,
+      this.getEndpoint(production),
       { password }
     )
       .subscribe(
@@ -47,6 +47,10 @@ export class ApiTokensService {
         },
       );
     return subj.asObservable();
+  }
+
+  private getEndpoint(production: boolean) {
+    return production ? this.endpoint : `${this.endpoint}/test`;
   }
 
 }

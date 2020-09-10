@@ -233,11 +233,8 @@ export class BookingPage implements OnInit {
           .toPromise();
       } else {
         this.applyFormDataToTripOrders();
-        const tripUuid = Math.random().toString(36).replace(/[^a-z]+/g, '').substr(0, 10);
-        await forkJoin(
-            // this.tripOrders.map((order, idx) => this.ordersService.create(order)),
-            this.tripOrders.map((order, idx) => this.runSaveOrder(order, idx, tripUuid)),
-          )
+        await this.ordersService
+          .createTrip(this.tripOrders)
           .toPromise();
       }
       this.toastController.create({

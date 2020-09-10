@@ -1,6 +1,6 @@
 import { Component, EventEmitter, OnInit } from '@angular/core';
 import { OrdersSearchParams, OrdersService } from '../shared/orders.service';
-import { OrderV2 } from '../shared/order-v2';
+import { OrderType, OrderV2 } from '../shared/order-v2';
 import { HelperService } from '../shared/helper.service';
 import { takeUntil } from 'rxjs/operators';
 
@@ -12,7 +12,7 @@ import { takeUntil } from 'rxjs/operators';
 export class OrdersListPage implements OnInit {
 
   orders: OrderV2[] = [];
-
+  allOrders: OrderV2[] = [];
   private params: OrdersSearchParams = new OrdersSearchParams();
 
   leave$ = new EventEmitter();
@@ -22,8 +22,10 @@ export class OrdersListPage implements OnInit {
     private ordersService: OrdersService
   ) { }
 
-  ngOnInit() {
+  ngOnInit() { }
 
+  filterChange($event) {
+    this.orders = $event;
   }
 
   ionViewDidLeave() {
@@ -36,7 +38,8 @@ export class OrdersListPage implements OnInit {
       .getAll()
       .pipe( takeUntil(this.leave$) )
       .subscribe(orders => {
-        this.orders = orders;
+        this.allOrders = orders.concat([]);
+        // this.filterOrders();
         this.helper.stopLoading();
       }, error => {
         this.helper.stopLoading();

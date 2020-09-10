@@ -1,0 +1,10 @@
+<ion-segment (ionChange)="orderTypeChange($event)" [value]="orderTypesValues[0]" class="segment-margin">
+  <ion-segment-button [value]="type" *ngFor="let type of orderTypesValues; let idx = index;">
+    <ion-label>
+      {{ type === OrderType.Menu ? 'Menu' : 'Booking' }}
+      <snall *ngIf="ordersByTypes[idx].length">
+        ({{ ordersByTypes[idx].length }})
+      </snall>
+    </ion-label>
+  </ion-segment-button>
+</ion-segment>

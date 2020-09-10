@@ -8,11 +8,13 @@ import { HelperService } from './shared/helper.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { OrdersService } from './shared/orders.service';
 import { MerchantsService } from './shared/merchants.service';
-import { OrderStatus, OrderV2 } from './shared/order-v2';
+import { OrderStatus, OrderType, OrderV2 } from './shared/order-v2';
 import { OneSignalService } from './shared/one-signal.service';
 import { environment } from '../environments/environment';
 import { pipe } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { takeUntil, timeout } from 'rxjs/operators';
+
+declare var window: any;
 
 @Component({
   selector: 'app-root',
@@ -22,8 +24,9 @@ import { takeUntil } from 'rxjs/operators';
 export class AppComponent implements OnInit {
   curOrder: OrderV2;
   isLogged: boolean;
+  allOrders: OrderV2[] = [];
   orders: OrderV2[] = [];
-
+  greenScreenOrders = 0;
   private authUrls = ['/login', '/forgot-password', '/sign-up', '/confirm-sms-phone'];
 
   constructor(
@@ -44,6 +47,11 @@ export class AppComponent implements OnInit {
 
   ngOnInit() {
     this.ordersService
+      .newExternalOrder$
+      .subscribe(() => {
+        this.showGreenScreen();
+      });
+    this.ordersService
       .$currentOrder
       .subscribe(order => {
         this.curOrder = order;
@@ -63,11 +71,35 @@ export class AppComponent implements OnInit {
                   .startWatch();
                 this.ordersService
                   .getAll()
-                  .subscribe(orders => this.orders = orders);
+                  .subscribe(orders => {
+                    this.allOrders = orders;
+                  });
               }
             });
         }
       });
+  }
+
+  private async showGreenScreen() {
+    if (this.greenScreenOrders) {
+      this.greenScreenOrders++;
+    } else {
+      this.greenScreenOrders = 1;
+    }
+  }
+
+  hideGreenScreen() {
+    const element = window.document
+      .getElementsByClassName('green-screen')[0];
+    element.style.opacity = 0;
+    setTimeout(() => {
+      this.greenScreenOrders = 0;
+      element.style.opacity = 1;
+    }, 320);
+  }
+
+  filterChange($event) {
+    this.orders = $event;
   }
 
   initializeApp() {
@@ -79,15 +111,12 @@ export class AppComponent implements OnInit {
         .subscribe(user => {
           if (user && user.isLogged()) {
             logged.emit();
-            console.log('initializeApp 0');
             this.oneSignalService.init(
               environment.oneSignal.appId,
               environment.oneSignal.googleProjectNumber,
               environment.oneSignal.safariWebId,
             );
-            console.log('initializeApp 1', this.oneSignalService.subscribed);
             if (!this.oneSignalService.subscribed) {
-              console.log('initializeApp 2', user.id);
               this.oneSignalService
                 .subscribe(user.id);
             }

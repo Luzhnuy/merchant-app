@@ -22,6 +22,7 @@ import { FileDownloaderService } from '../shared/file-downloader.service';
 import { ApiTokensService } from '../shared/api-tokens.service';
 import { ApiToken } from '../shared/api-token';
 import { TextFieldTypes } from '@ionic/core';
+import { Token } from '@angular/compiler';
 
 enum HumanTypes {
   Booking = 'Booking',
@@ -73,6 +74,7 @@ export class SettingsPage implements OnInit {
   isApp = false;
 
   token: ApiToken;
+  testToken: ApiToken;
 
   private cameraOptions: CameraOptions;
   // private file: File;
@@ -136,6 +138,10 @@ export class SettingsPage implements OnInit {
           .getToken()
           .pipe(take(1))
           .subscribe(token => this.token = token);
+        this.tokenService
+          .getToken(false)
+          .pipe(take(1))
+          .subscribe(token => this.testToken = token);
       });
     this.isApp = this.platform.is('cordova');
   }
@@ -467,8 +473,9 @@ export class SettingsPage implements OnInit {
     }
   }
 
-  async generateNewApiToken() {
-    if (this.token.token) {
+  async generateNewApiToken(production = true) {
+    const token: ApiToken = production ? this.token : this.testToken;
+    if (token && token.token) {
       const alert = await this.alertController.create({
         message: `Are you sure you want to generate new Api token. Old one will be removed.`,
         buttons: [
@@ -479,26 +486,18 @@ export class SettingsPage implements OnInit {
           }, {
             text: 'Yes',
             handler: () => {
-              this.generateToken();
+              this.generateToken(production);
             }
           }
         ],
       });
       await alert.present();
     } else {
-      this.generateToken();
+      this.generateToken(production);
     }
   }
 
-  private async generateToken() {
-    // const prompt = await this.alertController
-    //   .
-    // inputs: [
-    //   {
-    //     name: 'name1',
-    //     type: 'text',
-    //     placeholder: 'Placeholder 1'
-    //   },
+  private async generateToken(production: boolean) {
     const alert = await this.alertController.create({
       message: `Please, enter your password.`,
       inputs: [
@@ -518,10 +517,14 @@ export class SettingsPage implements OnInit {
           handler: (value: { passwordConfirmation: string; }) => {
             if (value.passwordConfirmation) {
               this.tokenService
-                .generateToken(value.passwordConfirmation)
+                .generateToken(value.passwordConfirmation, production)
                 .subscribe(
                   token => {
-                    this.token = token;
+                    if (production) {
+                      this.token = token;
+                    } else {
+                      this.testToken = token;
+                    }
                     alert.dismiss();
                   },
                   err => this.showError(err)
@@ -535,9 +538,9 @@ export class SettingsPage implements OnInit {
     await alert.present();
   }
 
-  async copyTokenToClipboard() {
-    const input: any = document.querySelector('#api-token-input input');
-    console.log('input = ', input);
+  async copyTokenToClipboard(production = true) {
+    const id = production ? 'api-token-input' : 'test-api-token-input';
+    const input: any = document.querySelector(`#${id} input`);
     input.select();
     input.setSelectionRange(0, 99999); /*For mobile devices*/
     document.execCommand('copy');

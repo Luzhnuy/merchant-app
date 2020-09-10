@@ -2,6 +2,10 @@
   <ion-card class="full-page-card">
     <h1 class="text-align-center"><ion-icon name="calendar"></ion-icon>Active orders</h1>
     <ion-list>
+      <app-order-type-segment
+        [allOrders]="allOrders"
+        (orders)="filterChange($event)"
+      ></app-order-type-segment>
       <ion-item
           *ngFor="let order of orders"
           class="ion-activatable ripple-parent"

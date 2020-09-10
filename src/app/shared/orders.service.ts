@@ -6,7 +6,7 @@ import { ApiV2Service } from './api-v2.service';
 import { EntitiesService } from './entities.service';
 import { HelperService } from './helper.service';
 import { ErrorHandlerService } from './error-handler.service';
-import { OrderStatus, OrderType, OrderV2 } from './order-v2';
+import { OrderSource, OrderStatus, OrderType, OrderV2 } from './order-v2';
 import { OrderPrepareData, OrderPrepareRequestData } from './order-interfaces';
 import { WsClientService } from './ws-client.service';
 import { StorageCollectionService } from './storage-collection.service';
@@ -41,6 +41,9 @@ export class OrdersService extends EntitiesService<OrderV2> {
   private $$currentOrder: BehaviorSubject<OrderV2> = new BehaviorSubject<OrderV2>(null);
   public $currentOrder: Observable<OrderV2> = this.$$currentOrder.asObservable();
 
+  private newExternalOrder$$ = new Subject<OrderV2>();
+  public newExternalOrder$ = this.newExternalOrder$$.asObservable();
+
   private watchedOrderIds: number[];
 
   constructor(
@@ -53,6 +56,27 @@ export class OrdersService extends EntitiesService<OrderV2> {
     private nativeAudio: NativeAudio,
   ) {
     super(helper, errorHandler);
+  }
+
+  public createTrip(orders: OrderV2[]) {
+    const subj = new Subject<OrderV2[]>();
+    this.apiClient.post(
+      `${this.endpoint}/trip`,
+      orders,
+    )
+      .subscribe(
+        (data: OrderV2[]) => {
+          subj.next(data);
+          subj.complete();
+        }, err => {
+          this.helper.showError(
+            this.errorHandler.handleError(err)
+          );
+          subj.error(err);
+          subj.complete();
+        },
+      );
+    return subj.asObservable();
   }
 
   public getMinTripOrdersCount() {
@@ -192,6 +216,8 @@ export class OrdersService extends EntitiesService<OrderV2> {
             .forEach(order => {
               if (newOrdersIds.indexOf(order.id) > -1) {
                 order.isNew = true;
+                this.newExternalOrder$$
+                  .next(order);
               }
             });
           setTimeout(() => {
@@ -304,8 +330,10 @@ export class OrdersService extends EntitiesService<OrderV2> {
         let order = this.orders.find(o => o.id === orderData.id);
         if (!order) {
           order = new OrderV2(orderData);
-          if (order.type === OrderType.Menu) {
+          if (order.source !== OrderSource.Merchant) {
             order.isNew = true;
+            this.newExternalOrder$$
+              .next(order);
           }
           this.orders.push(order);
           this.updateSoundState();

@@ -66,19 +66,6 @@ export class OrderPage implements OnInit {
         return [ ...res, ...option.subOptions];
       }, []);
       await this.initOrder(orderId);
-      // this.order = await this.ordersService
-      //   .getSingle(orderId)
-      //   .toPromise();
-      // this.order
-      //   .orderItems
-      //   .forEach(orderItem => {
-      //     if (orderItem.subOptionIds) {
-      //       orderItem.subOptions = orderItem.subOptionIds
-      //         .map(subOptionId => subOptions.find(subOption => subOption.id === subOptionId));
-      //     }
-      //   });
-      // this.trackUrl = this.getTrackingUrl(this.order);
-      // this.isActive = [ OrderStatus.Completed, OrderStatus.Cancelled ].indexOf(this.order.status) === -1;
     } finally {
       await this.helper.stopLoading();
     }

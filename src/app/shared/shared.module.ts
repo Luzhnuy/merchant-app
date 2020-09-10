@@ -36,6 +36,7 @@ import { AddressAutocompleteDirective } from './directives/address-autocomplete.
 import { FileOpener } from '@ionic-native/file-opener/ngx';
 import { NativeAudio } from '@ionic-native/native-audio/ngx';
 import { OneSignal } from '@ionic-native/onesignal/ngx';
+import { OrderTypeSegmentComponent } from './components/order-type-segment/order-type-segment.component';
 
 const publicModules = [
   FileUploadModule,
@@ -67,6 +68,7 @@ const publicComponents = [
   OptionItemModalComponent,
   OptionEyeButtonComponent,
   SubOptionEyeButtonComponent,
+  OrderTypeSegmentComponent,
 ];
 
 const publicDirective = [

@@ -1,4 +1,12 @@
 <ion-app>
+  <div class="green-screen" *ngIf="greenScreenOrders" (click)="hideGreenScreen()">
+    <div class="green-orders-count">
+      {{ greenScreenOrders }}
+    </div>
+    <div class="green-new-orders">
+      New Order{{ greenScreenOrders > 1 ? 's' : '' }}
+    </div>
+  </div>
   <ion-header *ngIf="isLogged">
     <ion-toolbar class="header-horizontal-padding-phone">
       <ion-buttons slot="start" color="primary" class="hide-tablet">
@@ -29,6 +37,11 @@
     <ion-menu contentId="main">
       <ion-content style="--offset-top: 52px;">
         <ion-list class="menu-orders-list hide-phone ion-padding-vertical ion-padding-start">
+          <app-order-type-segment
+            [allOrders]="allOrders"
+            [totalCount]="allOrders.length"
+            (orders)="filterChange($event)"
+          ></app-order-type-segment>
           <ion-menu-toggle auto-hide="false" *ngFor="let order of orders">
             <ion-item
                 class="ion-no-padding ion-margin-bottom"
@@ -60,10 +73,10 @@
               </ion-label>
             </ion-menu-button>
             <ion-badge
-                *ngIf="orders && orders.length"
+                *ngIf="allOrders && allOrders.length"
                 slot="end"
                 color="primary"
-            > {{ orders.length }} </ion-badge>
+            > {{ allOrders.length }} </ion-badge>
           </ion-item>
           <ion-item>
             <ion-menu-button [routerLink]="['/history']">

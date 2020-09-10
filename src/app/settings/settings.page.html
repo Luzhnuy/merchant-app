@@ -82,6 +82,7 @@
         {{ merchant.enableMenu ? 'Active' : 'Inactive' }}
       </span>
       <ion-toggle
+          class="margin-right-8"
           slot="end"
           mode="md"
           [disabled]="!logo"
@@ -295,10 +296,11 @@
         Api Token
       </h3>
       <a class="sg-card-header-link" color="primary" (click)="generateNewApiToken()" href="javascript:void(0);">
-        Generate new token
+        Generate Production Token
       </a>
     </ion-item>
     <ion-item
+        *ngIf="token.token"
         class="sg-card-payments ion-padding-horizontal"
     >
       <ion-input
@@ -312,6 +314,38 @@
           *ngIf="token.token"
           color="light"
           (click)="copyTokenToClipboard()"
+      >
+        <ion-icon name="copy-outline"></ion-icon>
+      </ion-button>
+    </ion-item>
+  </ion-card>
+
+  <ion-card  class="new-card-ui full-page-card ion-margin-top ion-padding-bottom" *ngIf="testToken">
+    <ion-item
+        class="sg-card-header ion-padding-horizontal"
+    >
+      <h3>
+        Test Api Token
+      </h3>
+      <a class="sg-card-header-link" color="primary" (click)="generateNewApiToken(false)" href="javascript:void(0);">
+        Generate Testing Token
+      </a>
+    </ion-item>
+    <ion-item
+        *ngIf="testToken.token"
+        class="sg-card-payments ion-padding-horizontal"
+    >
+      <ion-input
+          class="api-token-input"
+          type="text"
+          readonly
+          [ngModel]="testToken.token"
+          id="test-api-token-input"
+      ></ion-input>
+      <ion-button
+          *ngIf="testToken.token"
+          color="light"
+          (click)="copyTokenToClipboard(false)"
       >
         <ion-icon name="copy-outline"></ion-icon>
       </ion-button>

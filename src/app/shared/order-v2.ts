@@ -18,6 +18,7 @@ export enum OrderSource {
   Customer = 'Customer',
   Merchant = 'Merchant',
   Manual = 'Manual',
+  Api = 'Api',
 }
 
 export enum OrderType {
