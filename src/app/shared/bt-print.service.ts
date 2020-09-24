@@ -97,15 +97,4 @@ export class PrintService {
     this.helper.showError("Print error: " + err); 
     this.helper.stopLoading();
   }
-  
-  printWeb(htmlData:string) {    
-    let passprnt_uri = 'starpassprnt://v1/print/nopreview?';
-    
-    passprnt_uri += 'size=3';
-    passprnt_uri += '&html=' + encodeURIComponent(htmlData);  
-    passprnt_uri += '&popup=enable';  
-    passprnt_uri += '&back=' + encodeURIComponent(window.location.href);
-
-    location.href = passprnt_uri;
-  }
 }

@@ -146,33 +146,34 @@ export class OrderPage implements OnInit {
     return navigator.vendor.match(/apple/i);
   }
 
-  async createPopover(ev: any) {    
-    const popover = await this.popover.create({
-       component: PrintPopoverComponent,
-       event: ev,
-       translucent: true
-     });
-     popover.style.cssText = '--max-width: 110px;';
-     await popover.present();
+  async printCheck(ev: any) {
+    if(!this.isApp) {
+      this.pagePrint();
+    }
+    else {
+      const popover = await this.popover.create({
+        component: PrintPopoverComponent,
+        event: ev,
+        translucent: true
+      });
+      popover.style.cssText = '--max-width: 110px;';
+      await popover.present();
 
-     const { data } = await popover.onDidDismiss();
-     switch(data)
-     {
-       case 1:
-         this.pagePrint();
-         break;
+      const { data } = await popover.onDidDismiss();
+      switch(data)
+      {
+        case 1:
+          this.pagePrint();
+          break;
 
-       case 2:       
-        if(!this.isApp) {
-          this.ticketBtWebPrint();     
-        } else {
-          this.ticketBtPrint();
-        }                    
-         break;
+        case 2:        
+          this.ticketBtPrint();          
+          break;
 
-       default:
-         break;
-     }
+        default:
+          break;
+      }
+    }
   }
 
   ticketBtPrint() {
@@ -287,10 +288,6 @@ export class OrderPage implements OnInit {
             <br><br></div>`;
 
     return html;
-  }
-
-  ticketBtWebPrint() {
-    this.btPrintService.printWeb(this.getPrintHtml()); 
   }
 
   async pagePrint() {
