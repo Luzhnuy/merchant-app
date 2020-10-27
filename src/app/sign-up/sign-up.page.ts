@@ -7,6 +7,9 @@ import { ErrorHandlerService } from '../shared/error-handler.service';
 import { UserServiceV2 } from '../shared/user-v2.service';
 import { ApiV2Service } from '../shared/api-v2.service';
 
+declare var fbq: (...args) => void;
+declare var lintrk: (...args) => void;
+
 export enum ZipcodesLists {
   Customers = 'customers',
   Merchants = 'merchants',
@@ -57,6 +60,12 @@ export class SignUpPage implements OnInit {
   ) { }
 
   ngOnInit() {
+    if (typeof fbq === 'function') {
+      fbq('track', 'PageView');
+    }
+    if (typeof lintrk === 'function') {
+      lintrk('track');
+    }
     this.apiClientService
       .get(`${this.endpointZipcodes}/lists`)
       .subscribe((lists: { [key: string ]: { zipcode: string }[]; }) => {

@@ -21,8 +21,6 @@ import { File } from '@ionic-native/file';
 import { FileDownloaderService } from '../shared/file-downloader.service';
 import { ApiTokensService } from '../shared/api-tokens.service';
 import { ApiToken } from '../shared/api-token';
-import { TextFieldTypes } from '@ionic/core';
-import { Token } from '@angular/compiler';
 
 enum HumanTypes {
   Booking = 'Booking',
@@ -77,7 +75,6 @@ export class SettingsPage implements OnInit {
   testToken: ApiToken;
 
   private cameraOptions: CameraOptions;
-  // private file: File;
 
   constructor(
     public userService: UserServiceV2,
@@ -92,14 +89,11 @@ export class SettingsPage implements OnInit {
     private paymentCardsService: PaymentCardsService,
     private platform: Platform,
     private datePipe: DatePipe,
-    // private transfer: FileTransfer,
     private camera: Camera,
     private actionSheetController: ActionSheetController,
-    // private file: File,
     private downloaderService: FileDownloaderService,
     private tokenService: ApiTokensService,
   ) {
-    // this.file = new File();
     this.cameraOptions = {
       quality: 85,
       targetHeight: 800,
@@ -182,6 +176,16 @@ export class SettingsPage implements OnInit {
       .update(savingData)
       .subscribe();
   }
+
+  // updateBringBack(bringBack: boolean) {
+  //   const savingData = new MerchantV2({
+  //     id: this.merchant.id,
+  //     bringBack,
+  //   }, true);
+  //   this.merchantsService
+  //     .update(savingData)
+  //     .subscribe();
+  // }
 
   logout() {
     this.userService
@@ -350,12 +354,12 @@ export class SettingsPage implements OnInit {
   }
 
   async toggleMenuActive($event) {
-    this.merchant.enableMenu = $event;
+    this.merchant.menuActive = $event;
     try {
       await this.merchantsService
         .update({
           id: this.merchant.id,
-          enableMenu: $event,
+          menuActive: $event,
         } as any)
         .toPromise();
     } catch (e) {

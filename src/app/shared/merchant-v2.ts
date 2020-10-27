@@ -17,8 +17,11 @@ export class MerchantV2 extends Entity {
   userId: number;
   enableBooking = true;
   enableMenu = false;
+  menuActive = false;
   subscribedOnReceipt: boolean;
   categories: MenuCategory[] = [];
+  // bringBack: boolean;
+  ageVerification: boolean;
 
   constructor(data?: Partial<MerchantV2>, strict = false) {
     super();

@@ -21,6 +21,7 @@ export interface OrderPrepareData extends OrderPrepareDistanceData, OrderPrepare
   type: OrderType;
   largeOrder?: boolean;
   bringBack?: boolean;
+  // bringBackOnUnavailable?: boolean;
 }
 
 export interface OrderPrepareRequestData extends OrderPrepareData {

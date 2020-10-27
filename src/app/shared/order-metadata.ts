@@ -6,6 +6,7 @@ export class OrderMetadata {
   description: string;
   largeOrder: boolean;
   bringBack: boolean;
+  bringBackOnUnavailable: boolean;
   deliveryCharge: number;
   subtotal: number;
   taxes: number;

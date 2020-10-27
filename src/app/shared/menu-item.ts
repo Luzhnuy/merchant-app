@@ -14,6 +14,8 @@ export class MenuItem extends Entity {
   price: number;
   image: string;
   isWaiting: boolean;
+  inventory: number;
+  quantityStopper = false;
   categoryName?: string;
 
   constructor(data?: Partial<MenuItem>, strict = false) {

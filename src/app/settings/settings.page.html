@@ -75,18 +75,18 @@
     >
       <span
           class="status-circle"
-          [ngClass]="{ 'status-active': merchant.enableMenu, 'status-inactive': !merchant.enableMenu }"
+          [ngClass]="{ 'status-active': merchant.menuActive, 'status-inactive': !merchant.menuActive }"
       >
       </span>
       <span>
-        {{ merchant.enableMenu ? 'Active' : 'Inactive' }}
+        {{ merchant.menuActive ? 'Active' : 'Inactive' }}
       </span>
       <ion-toggle
           class="margin-right-8"
           slot="end"
           mode="md"
-          [disabled]="!logo"
-          [(ngModel)]="merchant.enableMenu"
+          [disabled]="!logo || !merchant.enableMenu"
+          [(ngModel)]="merchant.menuActive"
           (ngModelChange)="toggleMenuActive($event);"
       ></ion-toggle>
     </ion-item>

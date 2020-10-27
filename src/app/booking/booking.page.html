@@ -269,9 +269,38 @@
       </ion-item>
 
     </ion-card>
+    <ion-card class="ion-padding" *ngIf="orderType === OrderType.Booking">
+      <h1>
+        Actions to take when customer is not home
+        <ion-icon
+            name="information-circle-outline"
+            tooltip="An additional return fee may be charged to your method of payment if you wish to return the delivery to your pick-up location. The return fee will not exceed the original delivery fee"
+            positionV="top"
+            positionH="left"
+            event="click"
+        ></ion-icon>
+      </h1>
+      <div class="input-group has-icon">
+        <ion-select
+            class="form-control"
+            id="bringBackOnUnavailable"
+            required
+            name="bringBackOnUnavailable"
+            [value]="bringBackOnUnavailableOptions[0]"
+            (ionChange)="bringBackOnUnavailableOptionChanged($event)"
+        >
+          <ion-select-option
+              *ngFor="let option of bringBackOnUnavailableOptions"
+              [value]="option"
+          >
+            {{ option }}
+          </ion-select-option>
+        </ion-select>
+      </div>
+    </ion-card>
+
     <ion-card class="ion-padding">
       <h1>Schedule pick-up time</h1>
-<!--      <p><b>Pick Up Time  (Please allow up to 60 minutes from scheduled pick up for completed delivery): </b></p>-->
       <ion-item>
         <ion-label>Date</ion-label>
         <ion-datetime

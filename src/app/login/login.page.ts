@@ -3,6 +3,9 @@ import { ToastController } from '@ionic/angular';
 import { Router } from '@angular/router';
 import { UserServiceV2 } from '../shared/user-v2.service';
 
+declare var fbq: (...args) => void;
+declare var lintrk: (...args) => void;
+
 @Component({
   selector: 'app-login',
   templateUrl: './login.page.html',
@@ -20,6 +23,12 @@ export class LoginPage implements OnInit {
   ) { }
 
   ngOnInit() {
+    if (typeof fbq === 'function') {
+      fbq('track', 'PageView');
+    }
+    if (typeof lintrk === 'function') {
+      lintrk('track');
+    }
   }
 
   login() {

@@ -366,6 +366,18 @@ ion-card.new-card-ui {
 
 }
 
+ion-alert {
+
+  .alert-wrapper {
+    --max-width: 360px;
+    --width: 348px;
+  }
+}
+
+.form-control {
+  height: calc(1.5em + .75rem + 1px);
+}
+
 @media (max-width: 575px) {
   .hide-xs {
     display: none;

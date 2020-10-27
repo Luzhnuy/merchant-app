@@ -73,13 +73,50 @@
             name="category"
             [(ngModel)]="categoryId"
         >
-          <ion-select-option *ngFor="let category of categories" [value]="category.id">{{category.name}}</ion-select-option>
+          <ion-select-option *ngFor="let category of categories" [value]="category.id">
+            {{ category.name }}
+          </ion-select-option>
         </ion-select>
       </div>
     </div>
 
     <div *ngIf="categoryEl.invalid && (categoryEl.dirty || categoryEl.touched)" class="ion-margin-bottom">
       <small class="error">Please select the category</small>
+    </div>
+
+    <div class="form-group">
+      <label for="inventory">Inventory:</label>
+      <div class="input-group">
+        <input type="number"
+               class="form-control"
+               id="inventory"
+               matInput
+               required
+               min="-1"
+               max="32767"
+               name="inventory"
+               #inventoryEl="ngModel"
+               autocomplete="NoAutocomplete"
+               [(ngModel)]="inventory"
+               (blur)="inventoryBlur()"
+        >
+      </div>
+    </div>
+    <small> '-1' - no limit</small>
+    <div *ngIf="inventoryEl.invalid && (inventoryEl.dirty || inventoryEl.touched)" class="ion-margin-bottom">
+      <small class="error">Please type the inventory</small>
+    </div>
+
+    <div class="form-group">
+      <label for="quantityStopper">Quantity Stopper:</label>
+      <input type="checkbox"
+             id="quantityStopper"
+             name="quantityStopper"
+             #quantityStopperEl="ngModel"
+             autocomplete="NoAutocomplete"
+             [disabled]="inventory == -1"
+             [(ngModel)]="quantityStopper"
+      >
     </div>
 
     <div class="form-group">

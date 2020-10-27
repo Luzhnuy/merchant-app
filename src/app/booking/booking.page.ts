@@ -44,6 +44,11 @@ class TripOrderData {
   totals: OrderPrepareDataWithExtras;
 }
 
+enum BringBackOnUnavailableOptions {
+  leave = 'Leave at door/lobby/reception',
+  bringBack = 'Return delivery to pick-up location',
+}
+
 @Component({
   selector: 'app-booking',
   templateUrl: './booking.page.html',
@@ -66,6 +71,12 @@ export class BookingPage implements OnInit {
   instruction: string;
   phone: string;
   bringBack = false;
+  bringBackOnUnavailable = false;
+  bringBackOnUnavailableOptions: Array<BringBackOnUnavailableOptions> = [
+    BringBackOnUnavailableOptions.leave,
+    BringBackOnUnavailableOptions.bringBack,
+  ];
+
   largeOrder = false;
 
   dateInvalid = false;
@@ -191,6 +202,10 @@ export class BookingPage implements OnInit {
     if (this.shortTime) {
       this.timeChanged({detail: {value: this.shortTime.substring(0, 5)}});
     }
+  }
+
+  bringBackOnUnavailableOptionChanged(option) {
+    this.bringBackOnUnavailable = option.detail.value === BringBackOnUnavailableOptions.bringBack;
   }
 
   addNewBookingOrder() {
@@ -617,6 +632,7 @@ export class BookingPage implements OnInit {
     this.order.metadata.dropOffPhone = this.phone;
     this.order.metadata.largeOrder = this.largeOrder;
     this.order.metadata.bringBack = this.bringBack;
+    this.order.metadata.bringBackOnUnavailable = this.bringBackOnUnavailable;
     this.order.metadata.utcOffset = (this.googlePlaceAddress as any).utc_offset_minutes;
   }
 

@@ -27,7 +27,7 @@ import {
 export class TooltipBox implements AfterViewInit {
   // @HostBinding('@fade') fadeState:string = 'invisible';
 
-  @Input() role:string = 'status';
+  @Input() role = 'status';
   @Input() text:string;
   @Input() tooltipHtml:string;
   @Input() tooltipStyles:{ [key:string]:string; } = {};
@@ -59,9 +59,9 @@ export class TooltipBox implements AfterViewInit {
     );
   }
 
-  private initResolve:Function;
+  private initResolve: () => void;
 
-  public init:Promise<void>;
+  public init: Promise<void>;
 
   constructor(
     public elementRef:ElementRef,

@@ -25,6 +25,8 @@ export class ProductModalComponent implements OnInit {
   name = '';
   description = '';
   price = '';
+  inventory = '-1';
+  quantityStopper = false;
   disabled = false;
   image: any;
   categories: MenuCategory[];
@@ -71,25 +73,41 @@ export class ProductModalComponent implements OnInit {
     this.isApp = this.platform.is('cordova');
   }
 
-  ngOnInit() {
+  async ngOnInit() {
     if (this.data) {
       this.name = this.data.name || '';
       this.description = this.data.description || '';
       this.price = this.data.price.toString() || '';
-      this.categoryId = this.data.categoryId || null;
+      this.inventory = this.data.inventory.toString() || '-1';
+      this.quantityStopper = this.inventory === '-1' ? false : this.data.quantityStopper;
       this.disabled = this.data.isPublished;
-      // this.image = this.data.image ? environment.imageHost + this.data.image : null;
       this.image = this.data.image;
+      if (this.data.id) {
+        const currentOrder = await this.itemsV2Service
+          .getSingle(this.data.id)
+          .toPromise();
+        this.inventory = currentOrder.inventory.toString();
+        this.data.inventory = currentOrder.inventory;
+      }
     }
     this.categoriesV2Service
       .$categories
       .pipe(take(1))
-      .subscribe(categories => this.categories = categories);
+      .subscribe(categories => {
+        this.categories = categories;
+        this.categoryId = this.data.categoryId || null;
+      });
   }
 
   loadCategories() {
     this.categoriesV2Service
       .loadCategories();
+  }
+
+  inventoryBlur() {
+    if (this.inventory.toString() === '-1') {
+      this.quantityStopper = false;
+    }
   }
 
   submit() {
@@ -98,6 +116,8 @@ export class ProductModalComponent implements OnInit {
       name: this.name,
       description: this.description,
       price: parseFloat(this.price),
+      inventory: parseInt(this.inventory, 10),
+      quantityStopper: this.quantityStopper,
       categoryId: this.categoryId,
       isPublished: this.disabled,
       merchantId: this.accountId,
