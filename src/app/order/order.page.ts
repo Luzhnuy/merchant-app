@@ -2,14 +2,17 @@ import { Component, OnInit } from '@angular/core';
 import { OrderStatus, OrderType, OrderV2 } from '../shared/order-v2';
 import { OrdersService } from '../shared/orders.service';
 import { environment } from '../../environments/environment';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { OptionsService } from '../shared/options.service';
 import { MenuOption } from '../shared/menu-option';
 import { MenuSubOption } from '../shared/menu-sub-option';
 import { HelperService } from '../shared/helper.service';
-import { AlertController, Platform } from '@ionic/angular';
+import { AlertController, Platform, PopoverController } from '@ionic/angular';
 import DomToImage from 'dom-to-image';
 import { ErrorHandlerService } from '../shared/error-handler.service';
+import { PrintPopoverComponent } from '../shared/components/print-popover/print-popover.component';  
+import { PrintService } from '../shared/bt-print.service';
+import { StorageVariablesV2Enum as StorageVariables } from '../shared/storage-variables-v2.enum';
 
 declare var cordova: any;
 
@@ -31,6 +34,7 @@ export class OrderPage implements OnInit {
   OrderType = OrderType;
 
   subOptions: MenuSubOption[];
+  isApp = false;
 
   get showCancelOrder() {
     return [OrderStatus.Received, OrderStatus.Accepted, OrderStatus.OnWay]
@@ -45,15 +49,19 @@ export class OrderPage implements OnInit {
     private platform: Platform,
     private alertController: AlertController,
     private errorHandlerService: ErrorHandlerService,
+    private popover:PopoverController,
+    private router: Router,
+    public  btPrintService: PrintService,
   ) {}
 
   ngOnInit() {
+    this.isApp = this.platform.is('cordova');
     // setInterval(() => {
     //   this.ordersService.putSoundOn();
     // }, 10000);
   }
 
-  async ionViewWillEnter() {
+   async ionViewWillEnter() { 
     const orderId = parseInt(this.activatedRoute.snapshot.params.id, 10);
     this.ordersService
       .viewOrder(orderId);
@@ -125,7 +133,150 @@ export class OrderPage implements OnInit {
     return navigator.vendor.match(/apple/i);
   }
 
-  async print() {
+  async printCheck(ev: any) {
+    if (!this.isApp) {
+      this.pagePrint();
+    } else {
+      const popover = await this.popover.create({
+        component: PrintPopoverComponent,
+        event: ev,
+        translucent: true
+      });
+      popover.style.cssText = '--max-width: 110px;';
+      await popover.present();
+
+      const { data } = await popover.onDidDismiss();
+      switch(data)
+      {
+        case 1:
+          this.pagePrint();
+          break;
+
+        case 2:        
+          this.ticketBtPrint();          
+          break;
+
+        default:
+          break;
+      }
+    }
+  }
+
+  ticketBtPrint() {
+     // Print using native bluetooth plugin
+     let printerName = localStorage.getItem(StorageVariables.btPrinterName);
+     if (printerName === null)
+     {
+       this.helper.showError("Could not find a valid Bluetooth Printer");     
+       this.router.navigate(['/settings']);
+     }
+     else
+     { 
+       let html = this.getPrintHtml();
+       this.btPrintService.print(printerName, html);
+     }
+  }
+
+  getPrintHtml() {
+    let emtpy_table_row = `<tr><td style="height: 5px;" colspan="2"></td></tr>`;
+    
+    let html = `<div id="print-html" style="background: #fff; font-family:Verdana, Geneva, sans-serif; font-size: 16px; font-weight: 500; width: 100%;">
+                <table style="width: 100%;">
+                <tr>
+                  <td style="text-align: left;">
+                    <img  style="width: 120px;" src="data:image/png;base64,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"/>
+                  </td>
+                </tr>
+              </table>
+              <table style="font-size: 100%; width:100%">
+              ${emtpy_table_row}
+              <tr>
+              <td colspan="2"><strong>${this.order.metadata.dropOffTitle}</strong></td>
+              </tr>
+              ${emtpy_table_row}
+              <tr>
+               <td><small>`;
+
+    const options = { year: 'numeric', day: 'numeric', month: 'long', hour:'2-digit', minute: '2-digit' };
+    let l_date = new Date(this.order.scheduledAt);
+    html += l_date.toLocaleDateString(undefined, options);
+    html += `</small></td>
+             <td  style="text-align:right"><small>ORDER: ${this.order.id}</small></td>
+             </tr>
+             ${emtpy_table_row}
+            </table><hr style="height:2px;border-width:0;background-color:gray">
+            <table style="font-size: 100%; width:100%">`;
+
+    if (this.order.type === OrderType.Menu) {                        
+      html += this.order                     
+        .orderItems
+        .reduce((res, orderItem) => {
+          const price = orderItem.price.toFixed(2);
+          res += `<tr>
+                    <td><strong> ${orderItem.quantity} x ${orderItem.description} </strong></td>
+                    <td style="text-align:right"> $${price}</td> 
+                  </tr>`;
+
+          if (orderItem.subOptionIds) {
+            orderItem.subOptions.reduce((res2, subOption) => {
+              const price2 = subOption.price ? subOption.price.toFixed(2) : null;              
+              res += `<tr>
+                      <td style="padding-left:15px;"><small> ${subOption.title}</small></td>
+                      <td style="text-align:right"><small>`;
+              
+              if (price2) {
+                res += `$${price2}`;
+              }
+              res += `</small></td>
+                      </tr>`;
+              
+              return res2;
+            }, '');
+          }
+          
+          return res;
+        }, '');
+        
+    } else {
+      html += `<tr>
+                 <td> ${this.order.metadata.description}</td>
+               </tr>`;
+    }
+    html += `</table>
+             <hr style="height:2px;border-width:0;background-color:gray">`;
+
+    let taxes = null;
+    if (this.order.metadata.tps && this.order.metadata.tvq) {
+       taxes = this.order.metadata.tps + this.order.metadata.tvq;
+    }
+    
+    if (this.order.metadata.subtotal && 
+        taxes && 
+        this.order.metadata.totalAmount) {
+        
+      html +=`<table style="font-size: 100%; width:100%">
+              <tr>
+                <td>Subtotal</td>
+                <td  style="text-align:right">$${this.order.metadata.subtotal.toFixed(2)}</td>
+              </tr>
+             <tr>
+               <td>Taxes</td>
+               <td  style="text-align:right">$${taxes.toFixed(2)}</td>
+             </tr>
+             <tr>
+               <td>Amount Paid</td>
+               <td  style="text-align:right">$${this.order.metadata.totalAmount.toFixed(2)}</td>
+             </tr>
+             </table>`;
+    }
+    
+    html +=`<br><br><div style="text-align: center;">Thank you for ordering from ${this.order.merchant.name}</div>
+            <br><br></div>`;
+
+    return html;
+  }
+
+  async pagePrint() {
     const { maxWidth, maxHeight } = this.isSafari() ?
       { maxWidth: '210mm', maxHeight: '297mm' } : { maxWidth: '100%', maxHeight: '100%' };
     let html = `

@@ -15,7 +15,9 @@ import { AddProductButtonComponent } from './components/buttons/add-product-butt
 import { AddProductButtonBigComponent } from './components/buttons/add-product-button-big/add-product-button-big.component';
 import { AddCategoryButtonComponent } from './components/buttons/add-category-button/add-category-button.component';
 import { EditCreditCardComponent } from './components/edit-credit-card/edit-credit-card.component';
+import { PrintPopoverComponent } from './components/print-popover/print-popover.component';
 import { AskCreditCardModalComponent } from './components/modals/ask-credit-card-modal/ask-credit-card-modal.component';
+import { SelectBtPrinterModalComponent } from './components/modals/select-bt-printer-modal/select-bt-printer-modal.component';
 import { ConfirmOrderModalComponent } from './components/modals/confirm-order-modal/confirm-order-modal.component';
 import { FileUploadModule } from 'ng2-file-upload';
 import { ApiV2Service } from './api-v2.service';
@@ -56,7 +58,9 @@ const publicComponents = [
   ProductDeleteButtonComponent,
   CategoryDeleteButtonComponent,
   EditCreditCardComponent,
+  PrintPopoverComponent,
   AskCreditCardModalComponent,
+  SelectBtPrinterModalComponent,
   ConfirmOrderModalComponent,
   AddOptionButtonComponent,
   AddSubOptionButtonComponent,
@@ -100,6 +104,7 @@ const publicDirective = [
     ProductModalComponent,
     CategoryModalComponent,
     AskCreditCardModalComponent,
+    SelectBtPrinterModalComponent,
     ConfirmOrderModalComponent,
     OptionModalComponent,
     SubOptionModalComponent,

@@ -1,0 +1,29 @@
+    <ion-toolbar color="light">
+        <ion-title class="ion-text-center ion-text-uppercase">
+            Bluetooth Printer
+        </ion-title>
+        <ion-buttons slot="end">
+          <ion-button (click)="closeModal()">
+            <ion-icon name="close"></ion-icon>
+          </ion-button>
+        </ion-buttons>
+      </ion-toolbar>
+
+      <ion-content class="ion-padding">
+        <ion-button expand="full" color="danger" (click)="findBtDevices()">
+            Find Devices
+        </ion-button>
+        <ion-list>
+        <ion-list-header>
+            List of Bluetooth Devices
+        </ion-list-header>
+        <ion-item *ngFor="let item of bluetoothList" (click)="selectPrinter(item.portName, item.modelName)">
+            {{item.modelName}}
+        </ion-item>
+        </ion-list>
+
+        <div style="padding:14px;">
+            <strong>Selected Printer:</strong> {{selectedPrinter}}
+        </div>   
+      </ion-content>
+     

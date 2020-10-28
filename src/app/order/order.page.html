@@ -6,38 +6,11 @@
     <ion-item
         class="sg-card-header ion-margin-horizontal ion-padding-horizontal"
     >
-<!--      <ion-grid>-->
-<!--        <ion-row>-->
-<!--          <ion-col>-->
-<!--            <h3>-->
-<!--              Order #{{ order.id }}-->
-<!--            </h3>-->
-<!--          </ion-col>-->
-<!--          <ion-col>-->
-<!--            <app-status-badge [status]="order.status"></app-status-badge>-->
-<!--          </ion-col>-->
-<!--          <ion-col class="text-align-right">-->
-<!--            <a href="javascript:void(0);" class="sg-card-header-link" (click)="print()" color="primary">-->
-<!--            <span class="hide-phone">-->
-<!--                Print Order Details-->
-<!--            </span>-->
-<!--              <span class="hide-tablet">-->
-<!--            Print-->
-<!--            </span>-->
-<!--            </a>-->
-<!--          </ion-col>-->
-<!--        </ion-row>-->
-<!--        <ion-row>-->
-<!--          <ion-col>-->
-<!--            Completed at: 2020.09.12-->
-<!--          </ion-col>-->
-<!--        </ion-row>-->
-<!--      </ion-grid>-->
       <h3>
         Order #{{ order.id }}
       </h3>
       <app-status-badge [status]="order.status"></app-status-badge>
-      <a href="javascript:void(0);" class="sg-card-header-link" (click)="print()" color="primary">
+      <a href="javascript:void(0);" class="sg-card-header-link" (click)="printCheck($event)" color="primary">      
         <span class="hide-phone">
             Print Order Details
         </span>

@@ -21,6 +21,8 @@ import { File } from '@ionic-native/file';
 import { FileDownloaderService } from '../shared/file-downloader.service';
 import { ApiTokensService } from '../shared/api-tokens.service';
 import { ApiToken } from '../shared/api-token';
+import { StorageVariablesV2Enum as StorageVariables } from '../shared/storage-variables-v2.enum';
+import { SelectBtPrinterModalComponent } from '../shared/components/modals/select-bt-printer-modal/select-bt-printer-modal.component';
 
 enum HumanTypes {
   Booking = 'Booking',
@@ -42,7 +44,6 @@ export class SettingsPage implements OnInit {
   merchant: MerchantV2 = null;
   logo: any;
   logoChanged = false;
-  private subscrId: number;
   invalidDate = false;
   closeHour: string;
   openHour: string;
@@ -70,6 +71,7 @@ export class SettingsPage implements OnInit {
   imageName: string;
   card: PaymentCard;
   isApp = false;
+  btPrinterName:string;
 
   token: ApiToken;
   testToken: ApiToken;
@@ -138,6 +140,9 @@ export class SettingsPage implements OnInit {
           .subscribe(token => this.testToken = token);
       });
     this.isApp = this.platform.is('cordova');
+
+    let printerName = localStorage.getItem(StorageVariables.btPrinterName);
+    this.btPrinterName = (printerName === null) ? 'None': printerName;
   }
 
   ionViewWillEnter() {
@@ -167,6 +172,23 @@ export class SettingsPage implements OnInit {
     this.loadCard();
   }
 
+  async selectBtPrinter()
+  {
+    const modal = await this.modalController.create({
+      component: SelectBtPrinterModalComponent,
+    });
+
+    modal.onDidDismiss()
+    .then((data) => {
+      if (data.data)
+      {
+        let printerName = localStorage.getItem(StorageVariables.btPrinterName);
+        this.btPrinterName = (printerName === null) ? 'None': printerName;
+      }
+    });
+    await modal.present();
+  }
+
   changeReceiptSubscription(res) {
     const savingData = new MerchantV2({
       id: this.merchant.id,
@@ -176,16 +198,6 @@ export class SettingsPage implements OnInit {
       .update(savingData)
       .subscribe();
   }
-
-  // updateBringBack(bringBack: boolean) {
-  //   const savingData = new MerchantV2({
-  //     id: this.merchant.id,
-  //     bringBack,
-  //   }, true);
-  //   this.merchantsService
-  //     .update(savingData)
-  //     .subscribe();
-  // }
 
   logout() {
     this.userService

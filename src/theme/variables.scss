@@ -312,3 +312,10 @@
   --ion-color-light-shade: #d7d8da;
   --ion-color-light-tint: #f5f6f9;
 }
+
+.my-custom-modal-css {
+  height: 80%;
+  top: 20%;
+  position: absolute; 
+  display: block;  
+}
