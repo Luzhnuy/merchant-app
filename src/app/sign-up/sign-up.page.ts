@@ -63,9 +63,9 @@ export class SignUpPage implements OnInit {
     if (typeof fbq === 'function') {
       fbq('track', 'PageView');
     }
-    if (typeof lintrk === 'function') {
-      lintrk('track');
-    }
+    // if (typeof lintrk === 'function') {
+    //   lintrk('track');
+    // }
     this.apiClientService
       .get(`${this.endpointZipcodes}/lists`)
       .subscribe((lists: { [key: string ]: { zipcode: string }[]; }) => {
@@ -117,6 +117,9 @@ export class SignUpPage implements OnInit {
         this.userServiceV2
           .login(this.email, this.password)
           .subscribe(() => {
+            if (typeof lintrk === 'function') {
+              lintrk('track');
+            }
             this.router.navigate(['/']);
           }, err => {
             this.helper.showError(this.errorHandler.handleError(err));

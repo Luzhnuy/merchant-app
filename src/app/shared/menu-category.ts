@@ -8,6 +8,7 @@ export class MenuCategory extends Entity {
   merchantId: number;
   name: string;
   description: string;
+  itemsCount: number;
 
   constructor(data?: Partial<MenuCategory>, strict = false) {
     super();

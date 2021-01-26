@@ -26,9 +26,9 @@ export class LoginPage implements OnInit {
     if (typeof fbq === 'function') {
       fbq('track', 'PageView');
     }
-    if (typeof lintrk === 'function') {
-      lintrk('track');
-    }
+    // if (typeof lintrk === 'function') {
+    //   lintrk('track');
+    // }
   }
 
   login() {

@@ -1,18 +1,18 @@
-import { Component, OnInit } from '@angular/core';
-import { OrderStatus, OrderType, OrderV2 } from '../shared/order-v2';
-import { OrdersService } from '../shared/orders.service';
-import { environment } from '../../environments/environment';
-import { ActivatedRoute, Router } from '@angular/router';
-import { OptionsService } from '../shared/options.service';
-import { MenuOption } from '../shared/menu-option';
-import { MenuSubOption } from '../shared/menu-sub-option';
-import { HelperService } from '../shared/helper.service';
-import { AlertController, Platform, PopoverController } from '@ionic/angular';
+import {Component, OnInit} from '@angular/core';
+import {OrderStatus, OrderType, OrderV2} from '../shared/order-v2';
+import {OrdersService} from '../shared/orders.service';
+import {environment} from '../../environments/environment';
+import {ActivatedRoute, Router} from '@angular/router';
+import {OptionsService} from '../shared/options.service';
+import {MenuOption} from '../shared/menu-option';
+import {MenuSubOption} from '../shared/menu-sub-option';
+import {HelperService} from '../shared/helper.service';
+import {AlertController, Platform, PopoverController} from '@ionic/angular';
 import DomToImage from 'dom-to-image';
-import { ErrorHandlerService } from '../shared/error-handler.service';
-import { PrintPopoverComponent } from '../shared/components/print-popover/print-popover.component';  
-import { PrintService } from '../shared/bt-print.service';
-import { StorageVariablesV2Enum as StorageVariables } from '../shared/storage-variables-v2.enum';
+import {ErrorHandlerService} from '../shared/error-handler.service';
+import {PrintPopoverComponent} from '../shared/components/print-popover/print-popover.component';
+import {PrintService} from '../shared/bt-print.service';
+import {StorageVariablesV2Enum as StorageVariables} from '../shared/storage-variables-v2.enum';
 
 declare var cordova: any;
 
@@ -246,26 +246,26 @@ export class OrderPage implements OnInit {
              <hr style="height:2px;border-width:0;background-color:gray">`;
 
     let taxes = null;
-    if (this.order.metadata.tps && this.order.metadata.tvq) {
-       taxes = this.order.metadata.tps + this.order.metadata.tvq;
+    let totalAmount = null;
+    if (this.order.type === OrderType.Menu && this.order.metadata.subtotal) {
+      taxes = (0.05 + 0.09975) * this.order.metadata.subtotal;
+      totalAmount = parseFloat(this.order.metadata.subtotal.toString()) + taxes;
     }
     
-    if (this.order.metadata.subtotal && 
-        taxes && 
-        this.order.metadata.totalAmount) {
+    if (this.order.metadata.subtotal && taxes && totalAmount) {
         
       html +=`<table style="font-size: 100%; width:100%">
               <tr>
                 <td>Subtotal</td>
-                <td  style="text-align:right">$${this.order.metadata.subtotal.toFixed(2)}</td>
+                <td style="text-align:right">$${this.order.metadata.subtotal.toFixed(2)}</td>
               </tr>
              <tr>
                <td>Taxes</td>
-               <td  style="text-align:right">$${taxes.toFixed(2)}</td>
+               <td style="text-align:right">$${taxes.toFixed(2)}</td>
              </tr>
              <tr>
                <td>Amount Paid</td>
-               <td  style="text-align:right">$${this.order.metadata.totalAmount.toFixed(2)}</td>
+               <td style="text-align:right">$${totalAmount.toFixed(2)}</td>
              </tr>
              </table>`;
     }

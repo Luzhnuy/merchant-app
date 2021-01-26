@@ -15,9 +15,9 @@ export const environment = {
   // imageHost: 'http://192.168.0.102:3000/',
   // trackingUrlBaseUrl: 'http://192.168.0.102:4200/track/',
   //
-  apiUrlV2: 'https://sg-swift-test.snapgrabdelivery.com/api/',
+  apiUrlV2: 'https://sg-swift-test-api.snapgrabdelivery.com/',
   wsUrl: 'wss://sg-swift-test-ws.snapgrabdelivery.com',
-  imageHost: 'https://sg-swift-test.snapgrabdelivery.com/api/',
+  imageHost: 'https://sg-swift-test-api.snapgrabdelivery.com/',
   trackingUrlBaseUrl: 'https://sg-swift-test.snapgrabdelivery.com/track/',
 
   oneSignal: {

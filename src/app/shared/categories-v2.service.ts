@@ -1,12 +1,12 @@
-import { Injectable } from '@angular/core';
-import { EntitiesService } from './entities.service';
-import { ApiV2Service } from './api-v2.service';
-import { MenuCategory } from './menu-category';
-import { HelperService } from './helper.service';
-import { ErrorHandlerService } from './error-handler.service';
-import { environment } from '../../environments/environment';
-import { Observable, ReplaySubject, Subject, Subscription } from 'rxjs';
-import { MerchantV2 } from './merchant-v2';
+import {Injectable} from '@angular/core';
+import {EntitiesService} from './entities.service';
+import {ApiV2Service} from './api-v2.service';
+import {MenuCategory} from './menu-category';
+import {HelperService} from './helper.service';
+import {ErrorHandlerService} from './error-handler.service';
+import {environment} from '../../environments/environment';
+import {Observable, ReplaySubject, Subject, Subscription} from 'rxjs';
+import {MerchantV2} from './merchant-v2';
 
 @Injectable({
   providedIn: 'root'
@@ -43,16 +43,16 @@ export class CategoriesV2Service extends EntitiesService<MenuCategory> {
       .subscribe(
         (data: MenuCategory[]) => {
           data = data.map(cat => {
-              cat.items = cat.items
-                .map(item => {
-                  item.categoryName = cat.name;
-                  if (item.image) {
-                    item.image = environment.imageHost + item.image;
-                  }
-                  return item;
-                });
-              return cat;
-            });
+            cat.items = cat.items
+              .map(item => {
+                item.categoryName = cat.name;
+                if (item.image) {
+                  item.image = environment.imageHost + item.image;
+                }
+                return item;
+              });
+            return cat;
+          });
           subj.next(data);
           subj.complete();
         }, err => {
@@ -66,5 +66,11 @@ export class CategoriesV2Service extends EntitiesService<MenuCategory> {
     return subj.asObservable();
   }
 
-
+  getAllLite(params?): Observable<MenuCategory[]> {
+    const obs = this.apiClient.get<MenuCategory[]>(
+      `${this.endpoint}/lite`,
+      params,
+    );
+    return obs;
+  }
 }

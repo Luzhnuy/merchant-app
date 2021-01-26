@@ -58,8 +58,11 @@ export class AddressAutocompleteDirective implements AfterViewInit {
     }
 
     inputEl.addEventListener('keydown', (event: KeyboardEvent) => {
+      if (!event || !event.key) {
+        console.error('Skipped Event :: ', event)
+        return;
+      }
       const key = event.key.toLowerCase();
-
       if (key === 'enter' && event.target === inputEl) {
         event.preventDefault();
         event.stopPropagation();

@@ -116,4 +116,23 @@ export abstract class EntitiesService<T extends { id: number }> {
       );
     return subj.asObservable();
   }
+
+  total(searchParams?: any) {
+    const subj = new Subject<number>();
+    this.apiClient
+      .get(
+        `${this.endpoint}/total`,
+        searchParams,
+      )
+      .subscribe(
+        (data: { total: number }) => {
+          subj.next(data.total);
+          subj.complete();
+        }, err => {
+          subj.error(err);
+          subj.complete();
+        },
+      );
+    return subj.asObservable();
+  }
 }

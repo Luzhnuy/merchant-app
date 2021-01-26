@@ -1,5 +1,34 @@
 <ion-content>
-  <app-add-product-button-big *ngIf="merchant" [accountId]="merchant.id"></app-add-product-button-big>
+  <ng-container *ngIf="merchant">
+    <ion-row class="ion-margin-vertical">
+      <ion-col sizeXs="12" sizeMd="7" sizeLg="8" sizeXl="9" class="ion-padding-start">
+        <form
+                (submit)="searchChanged()"
+                #form="ngForm"
+                class="transparent"
+        >
+          <div class="input-group has-icon">
+            <ion-icon name="search-outline"></ion-icon>
+            <input type="text"
+                   class="form-control has-icon"
+                   id="name-search"
+                   placeholder="Search"
+                   matInput
+                   name="searchQuery"
+                   required
+                   #nameEl="ngModel"
+                   autocomplete="NoAutocomplete"
+                   [(ngModel)]="query"
+            >
+            <ion-icon name="close-circle-outline" style="right:0" (click)="clearSearch()"></ion-icon>
+          </div>
+        </form>
+      </ion-col>
+      <ion-col sizeXs="12" sizeMd="5" sizeLg="4" sizeXl="3">
+        <app-add-product-button-big *ngIf="merchant" [accountId]="merchant.id"></app-add-product-button-big>
+      </ion-col>
+    </ion-row>
+  </ng-container>
   <div class="ion-padding" *ngIf="merchant">
     <table class="table table-striped table-with-actions">
       <thead>
@@ -33,5 +62,42 @@
         </tr>
       </tbody>
     </table>
+    <div class="ion-text-center" *ngIf="totalPagesCount > 1">
+      <ion-buttons class="ion-justify-content-center">
+        <ion-button size="small"
+                    (click)="setPage(0)"
+                    [disabled]="curStartIdx === 0"
+        >
+          <<
+        </ion-button>
+        <ion-button size="small"
+                    (click)="prevPage()"
+                    [disabled]="page === 0"
+        >
+          <
+        </ion-button>
+        <ion-button
+                size="small"
+                *ngFor="let i of pageNumbers"
+                (click)="setPage(i)"
+                [disabled]="i === page"
+        >
+          {{ i + 1 }}
+        </ion-button>
+        <ion-button size="small"
+                    (click)="nextPage()"
+                    [disabled]="page === totalPagesCount - 1"
+        >
+          >
+        </ion-button>
+        <ion-button size="small"
+                    (click)="setPage(totalPagesCount - 1)"
+                    [disabled]="curStartIdx + pageButtonsCount === totalPagesCount"
+        >
+          >>
+        </ion-button>
+      </ion-buttons>
+      Pagination here
+    </div>
   </div>
 </ion-content>

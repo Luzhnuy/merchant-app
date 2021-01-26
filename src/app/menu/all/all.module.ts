@@ -7,6 +7,7 @@ import { IonicModule } from '@ionic/angular';
 
 import { AllPage } from './all.page';
 import { SharedModule } from '../../shared/shared.module';
+import {CategoryItemComponent} from "./category-item/category-item.component";
 // import { CategoryModalComponent } from '../../shared/category-modal/category-modal.component';
 
 const routes: Routes = [
@@ -27,6 +28,9 @@ const routes: Routes = [
   // entryComponents: [
   //   CategoryModalComponent,
   // ],
-  declarations: [AllPage]
+  declarations: [
+    AllPage,
+    CategoryItemComponent,
+  ]
 })
 export class AllPageModule {}

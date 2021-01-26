@@ -1,0 +1,39 @@
+<ng-container *ngIf="category.itemsCount === 0 || (category.items && category.items.length)">
+  <ion-item color="light" class="category-title-wrapper">
+    <ion-label>
+          <span class="category-title">
+            <b>
+              {{ category.name }}:
+            </b>
+            <small>
+              {{ category.description }}
+            </small>
+          </span>
+    </ion-label>
+    <ion-buttons *ngIf="category.id" slot="end">
+      <app-add-product-button [accountId]="merchant.id" [categoryId]="category.id"></app-add-product-button>
+      <app-category-eye-button [category]="category"></app-category-eye-button>
+      <ion-button (click)="showCategoryModal(category)">
+        <ion-icon name="create"></ion-icon>
+      </ion-button>
+      <app-category-delete-button [accountId]="merchant.id" [categoryId]="category.id"></app-category-delete-button>
+    </ion-buttons>
+  </ion-item>
+  <ion-item *ngFor="let item of category.items">
+    <ion-label class="app-padding-right-45">
+          <span class="product-inner-label">
+            {{ item.name }}: {{ item.description }}
+          </span>
+      <b class="product-price">
+        $ {{ item.price | number:'1.2-2'}}
+      </b>
+    </ion-label>
+    <ion-buttons slot="end">
+      <app-product-eye-button [item]="item"></app-product-eye-button>
+      <ion-button (click)="showProductModal(item)">
+        <ion-icon name="create"></ion-icon>
+      </ion-button>
+      <app-product-delete-button [accountId]="merchant.id" [productId]="item.id"></app-product-delete-button>
+    </ion-buttons>
+  </ion-item>
+</ng-container>

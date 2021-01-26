@@ -2,9 +2,9 @@
   <ion-segment-button [value]="type" *ngFor="let type of orderTypesValues; let idx = index;">
     <ion-label>
       {{ type === OrderType.Menu ? 'Menu' : 'Booking' }}
-      <snall *ngIf="ordersByTypes[idx].length">
+      <small *ngIf="ordersByTypes[idx].length">
         ({{ ordersByTypes[idx].length }})
-      </snall>
+      </small>
     </ion-label>
   </ion-segment-button>
 </ion-segment>
