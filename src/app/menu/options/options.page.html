@@ -4,6 +4,34 @@
       [merchant]="merchant"
       (save)="onSave()"
   ></app-add-option-button>
+  <ng-container>
+    <ion-row class="ion-justify-content-center">
+      <ion-col sizeXs="4" sizeMd="3">
+        <ion-button fill="clear" size="large" class="sync square">
+          <div class="inner">
+            <img src="./assets/img/shopify.png" alt="">
+            <span>Sync with Shopify</span>
+          </div>
+        </ion-button>
+      </ion-col>
+      <ion-col sizeXs="4" sizeMd="3">
+        <ion-button fill="clear" size="large" class="sync square">
+          <div class="inner">
+            <img src="./assets/img/square.svg" alt="">
+            <span>Sync with square</span>
+          </div>
+        </ion-button>
+      </ion-col>
+      <ion-col sizeXs="4" sizeMd="3">
+        <ion-button fill="clear" size="large" class="sync square">
+          <div class="inner">
+            <img src="./assets/img/lightspeed.png" alt="">
+            <span>Sync with Lightspeed</span>
+          </div>
+        </ion-button>
+      </ion-col>
+    </ion-row>
+  </ng-container>
   <ng-container *ngIf="merchant">
     <div *ngFor="let option of options" class="menu-grid-container ion-padding">
       <ion-item color="light" class="category-title-wrapper">

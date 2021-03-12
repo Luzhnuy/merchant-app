@@ -2,6 +2,34 @@
   <div class="ion-margin-vertical">
     <app-add-category-button *ngIf="merchant" [accountId]="merchant.id"></app-add-category-button>
   </div>
+  <ng-container>
+    <ion-row class="ion-justify-content-center">
+      <ion-col sizeXs="4" sizeMd="3">
+        <ion-button fill="clear" size="large" class="sync square">
+          <div class="inner">
+            <img src="./assets/img/shopify.png" alt="">
+            <span>Sync with Shopify</span>
+          </div>
+        </ion-button>
+      </ion-col>
+      <ion-col sizeXs="4" sizeMd="3">
+        <ion-button fill="clear" size="large" class="sync square">
+          <div class="inner">
+            <img src="./assets/img/square.svg" alt="">
+            <span>Sync with square</span>
+          </div>
+        </ion-button>
+      </ion-col>
+      <ion-col sizeXs="4" sizeMd="3">
+        <ion-button fill="clear" size="large" class="sync square">
+          <div class="inner">
+            <img src="./assets/img/lightspeed.png" alt="">
+            <span>Sync with Lightspeed</span>
+          </div>
+        </ion-button>
+      </ion-col>
+    </ion-row>
+  </ng-container>
   <div *ngIf="merchant" class="ion-padding">
     <table class="table table-striped table-with-actions">
       <thead>
@@ -26,7 +54,7 @@
                 <ion-icon name="create"></ion-icon>
               </ion-button>
               <app-category-delete-button [accountId]="merchant.id" [categoryId]="category.id"></app-category-delete-button>
-            </ion-buttons>
+            </i on-buttons>
           </td>
         </tr>
       </tbody>

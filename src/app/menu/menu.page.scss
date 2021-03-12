@@ -35,3 +35,34 @@ ion-tabs {
     }
   }
 }
+
+.sync {
+  background-color: #000000;
+  color: #ffffff;
+
+  .inner {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    img {
+      width: 24px;
+      height: 24px;
+    }
+    span {
+      text-transform: none;
+      font-size: 1.2em;
+      line-height: 2em;
+      font-weight: 400;
+      margin-left: 10px;
+
+    }
+  }
+
+}
+
+ion-row .hydrated {
+  display: flex;
+  justify-content: center !important;
+}
