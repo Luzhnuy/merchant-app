@@ -36,6 +36,11 @@ ion-tabs {
   }
 }
 
+.sync-buttons {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+}
 .sync {
   background-color: #000000;
   color: #ffffff;
